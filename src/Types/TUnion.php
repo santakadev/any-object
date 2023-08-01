@@ -5,7 +5,7 @@ namespace Santakadev\AnyObject\Types;
 use Exception;
 use ReflectionUnionType;
 
-class Union
+class TUnion
 {
     public function __construct(
         /** @var string[] */

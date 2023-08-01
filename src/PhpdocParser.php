@@ -10,7 +10,7 @@ use PhpParser\NodeVisitorAbstract;
 use PhpParser\ParserFactory;
 use ReflectionProperty;
 use Santakadev\AnyObject\Types\TArray;
-use Santakadev\AnyObject\Types\Union;
+use Santakadev\AnyObject\Types\TUnion;
 
 class PhpdocParser
 {
@@ -51,7 +51,7 @@ class PhpdocParser
             }
         }
 
-        return new TArray(new Union($unionTypes));
+        return new TArray(new TUnion($unionTypes));
     }
 
     private function buildClassNameToFQCNMap(ReflectionProperty $reflectionProperty): array

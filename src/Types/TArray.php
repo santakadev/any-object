@@ -5,7 +5,7 @@ namespace Santakadev\AnyObject\Types;
 class TArray
 {
     public function __construct(
-        private readonly Union $union
+        private readonly TUnion $union
     ) {
     }
 

@@ -10,7 +10,7 @@ use ReflectionIntersectionType;
 use ReflectionProperty;
 use ReflectionUnionType;
 use Santakadev\AnyObject\Types\TArray;
-use Santakadev\AnyObject\Types\Union;
+use Santakadev\AnyObject\Types\TUnion;
 
 class AnyObject
 {
@@ -50,41 +50,17 @@ class AnyObject
     // TODO: support enums
     private function buildRandomValue(ReflectionProperty $reflectionProperty, array $visited): string|int|float|bool|object|array|null
     {
-        $type = $reflectionProperty->getType();
-
-        if ($type === null) {
-            throw new Exception(sprintf('Missing type declaration for property "%s"', $reflectionProperty->getName()));
-        }
-
-        if ($type instanceof ReflectionUnionType) {
-            $unionType = Union::fromReflection($type);
-            return $this->buildSingleRandomValue($unionType, $visited);
-        } else if ($type instanceof ReflectionIntersectionType) {
-            throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionProperty->getName()));
-        } else {
-            if ($type->getName() === 'mixed') {
-                throw new Exception("Unsupported type for stub creation: mixed");
-            }
-
-            if ($type->getName() === 'array') {
-                // TODO: support of associative arrays
-                $arrayType = $this->phpdocParser->parseArrayType($reflectionProperty);
-                return $this->buildSingleRandomValue($arrayType, $visited);
-            }
-
-            $typeName = $type->allowsNull() ? new Union([$type->getName(), 'null']) : $type->getName();
-
-            return $this->buildSingleRandomValue($typeName, $visited);
-        }
+        $type = $this->typeFromReflection($reflectionProperty);
+        return $this->buildSingleRandomValue($type, $visited);
     }
 
-    private function buildSingleRandomValue(string|TArray|Union $type, array $visited): string|int|float|bool|object|array|null
+    private function buildSingleRandomValue(string|TArray|TUnion $type, array $visited): string|int|float|bool|object|array|null
     {
         if ($type instanceof TArray) {
             return $this->buildRandomArray($type, $visited);
         }
 
-        if ($type instanceof Union) {
+        if ($type instanceof TUnion) {
             return $this->buildSingleRandomValue($type->pickRandom(), $visited);
         }
 
@@ -110,5 +86,35 @@ class AnyObject
             $array[] = $this->buildSingleRandomValue($arrayType->pickRandom(), $visited);
         }
         return $array;
+    }
+
+    private function typeFromReflection(ReflectionProperty $reflectionProperty): TUnion|TArray|string
+    {
+        $reflectionType = $reflectionProperty->getType();
+
+        if ($reflectionType === null) {
+            throw new Exception(sprintf('Missing type declaration for property "%s"', $reflectionProperty->getName()));
+        }
+
+        if ($reflectionType instanceof ReflectionUnionType) {
+            return TUnion::fromReflection($reflectionType);
+        } else if ($reflectionType instanceof ReflectionIntersectionType) {
+            throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionProperty->getName()));
+        } else {
+            if ($reflectionType->getName() === 'mixed') {
+                throw new Exception("Unsupported type for stub creation: mixed");
+            }
+
+            if ($reflectionType->getName() === 'array') {
+                // TODO: support of associative arrays
+                return $this->phpdocParser->parseArrayType($reflectionProperty);
+            }
+
+            if ($reflectionType->allowsNull()) {
+                return new TUnion([$reflectionType->getName(), 'null']);
+            }
+
+            return $reflectionType->getName();
+        }
     }
 }
