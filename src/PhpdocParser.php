@@ -14,7 +14,7 @@ class PhpdocParser
     /**
      * @return string[]|false
      */
-    public function parseArrayType(ReflectionProperty $reflectionProperty): array|false
+    public function parseArrayType(ReflectionProperty $reflectionProperty): UnionType|false
     {
         $docblock = $reflectionProperty->getDocComment();
 
@@ -32,10 +32,7 @@ class PhpdocParser
         return false;
     }
 
-    /**
-     * @return string[]
-     */
-    private function parsePhpdocArrayType($rawType, ReflectionProperty $reflectionProperty): array
+    private function parsePhpdocArrayType($rawType, ReflectionProperty $reflectionProperty): UnionType
     {
         $unionTypes = [];
 
@@ -51,7 +48,7 @@ class PhpdocParser
             }
         }
 
-        return $unionTypes;
+        return new UnionType($unionTypes);
     }
 
     private function buildClassNameToFQCNMap(ReflectionProperty $reflectionProperty): array

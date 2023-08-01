@@ -53,9 +53,9 @@ class AnyObject
         }
 
         if ($type instanceof ReflectionUnionType) {
-            $unionTypeNames = array_map(fn($x) => $x->getName(), $type->getTypes());
-            $pickedTypeName = $this->pickRandomType($unionTypeNames);
-            return $this->buildSingleRandomValue($pickedTypeName, $visited);
+            $unionType = new UnionType(array_map(fn($x) => $x->getName(), $type->getTypes()));
+            $pickedType = $unionType->pickRandom();
+            return $this->buildSingleRandomValue($pickedType, $visited);
         } else if ($type instanceof ReflectionIntersectionType) {
             throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionProperty->getName()));
         } else {
@@ -64,12 +64,12 @@ class AnyObject
             }
             if ($type->getName() === 'array') {
                 $phpdocParser = new PhpdocParser();
-                $unionTypeNames = $phpdocParser->parseArrayType($reflectionProperty);
-                if (false === $unionTypeNames) {
+                $unionType = $phpdocParser->parseArrayType($reflectionProperty);
+                if (false === $unionType) {
                     throw new Exception(sprintf("Untyped array in %s::%s. Add type Phpdoc typed array comment.", $reflectionProperty->getDeclaringClass()->getName(), $reflectionProperty->getName()));
                 }
-                $pickedTypeName = $this->pickRandomType($unionTypeNames);
-                return $this->buildRandomArrayOf($pickedTypeName, $visited);
+                $pickedType = $unionType->pickRandom();
+                return $this->buildRandomArrayOf($pickedType, $visited);
             }
 
             $nullFrequency = 0.5;
@@ -105,16 +105,5 @@ class AnyObject
             $array[] = $this->buildSingleRandomValue($typeName, $visited);
         }
         return $array;
-    }
-
-    private function pickRandomType(array $unionTypeNames): mixed
-    {
-        if (in_array('array', $unionTypeNames)) {
-            throw new Exception("Unsupported type array in union types");
-        }
-
-        $randomArrayKey = array_rand($unionTypeNames);
-        $pickedTypeName = $unionTypeNames[$randomArrayKey];
-        return $pickedTypeName;
     }
 }
