@@ -2,19 +2,22 @@
 
 namespace Santakadev\AnyObject;
 
+use Exception;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Use_;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\ParserFactory;
 use ReflectionProperty;
+use Santakadev\AnyObject\Types\TArray;
+use Santakadev\AnyObject\Types\Union;
 
 class PhpdocParser
 {
     /**
      * @return string[]|false
      */
-    public function parseArrayType(ReflectionProperty $reflectionProperty): UnionType|false
+    public function parseArrayType(ReflectionProperty $reflectionProperty): TArray|false
     {
         $docblock = $reflectionProperty->getDocComment();
 
@@ -29,10 +32,10 @@ class PhpdocParser
             }
         }
 
-        return false;
+        throw new Exception(sprintf("Untyped array in %s::%s. Add type Phpdoc typed array comment.", $reflectionProperty->getDeclaringClass()->getName(), $reflectionProperty->getName()));
     }
 
-    private function parsePhpdocArrayType($rawType, ReflectionProperty $reflectionProperty): UnionType
+    private function parsePhpdocArrayType($rawType, ReflectionProperty $reflectionProperty): TArray
     {
         $unionTypes = [];
 
@@ -48,7 +51,7 @@ class PhpdocParser
             }
         }
 
-        return new UnionType($unionTypes);
+        return new TArray(new Union($unionTypes));
     }
 
     private function buildClassNameToFQCNMap(ReflectionProperty $reflectionProperty): array

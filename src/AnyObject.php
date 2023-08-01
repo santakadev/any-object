@@ -9,14 +9,18 @@ use ReflectionClass;
 use ReflectionIntersectionType;
 use ReflectionProperty;
 use ReflectionUnionType;
+use Santakadev\AnyObject\Types\TArray;
+use Santakadev\AnyObject\Types\Union;
 
 class AnyObject
 {
-    private Generator $faker;
+    private readonly Generator $faker;
+    private readonly PhpdocParser $phpdocParser;
 
     public function __construct()
     {
         $this->faker = Factory::create();
+        $this->phpdocParser = new PhpdocParser();
     }
 
     public function of(string $class): object
@@ -43,7 +47,7 @@ class AnyObject
         return $instance;
     }
 
-    // TODO: support of associative arrays
+    // TODO: support enums
     private function buildRandomValue(ReflectionProperty $reflectionProperty, array $visited): string|int|float|bool|object|array|null
     {
         $type = $reflectionProperty->getType();
@@ -53,56 +57,57 @@ class AnyObject
         }
 
         if ($type instanceof ReflectionUnionType) {
-            $unionType = new UnionType(array_map(fn($x) => $x->getName(), $type->getTypes()));
-            $pickedType = $unionType->pickRandom();
-            return $this->buildSingleRandomValue($pickedType, $visited);
+            $unionType = Union::fromReflection($type);
+            return $this->buildSingleRandomValue($unionType, $visited);
         } else if ($type instanceof ReflectionIntersectionType) {
             throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionProperty->getName()));
         } else {
             if ($type->getName() === 'mixed') {
                 throw new Exception("Unsupported type for stub creation: mixed");
             }
+
             if ($type->getName() === 'array') {
-                $phpdocParser = new PhpdocParser();
-                $unionType = $phpdocParser->parseArrayType($reflectionProperty);
-                if (false === $unionType) {
-                    throw new Exception(sprintf("Untyped array in %s::%s. Add type Phpdoc typed array comment.", $reflectionProperty->getDeclaringClass()->getName(), $reflectionProperty->getName()));
-                }
-                $pickedType = $unionType->pickRandom();
-                return $this->buildRandomArrayOf($pickedType, $visited);
+                // TODO: support of associative arrays
+                $arrayType = $this->phpdocParser->parseArrayType($reflectionProperty);
+                return $this->buildSingleRandomValue($arrayType, $visited);
             }
 
-            $nullFrequency = 0.5;
-            if ($type->allowsNull() && $this->faker->boolean($nullFrequency * 100)) {
-                return null;
-            }
+            $typeName = $type->allowsNull() ? new Union([$type->getName(), 'null']) : $type->getName();
 
-            return $this->buildSingleRandomValue($type->getName(), $visited);
+            return $this->buildSingleRandomValue($typeName, $visited);
         }
     }
 
-    private function buildSingleRandomValue(string $typeName, array $visited): string|int|float|bool|object|null
+    private function buildSingleRandomValue(string|TArray|Union $type, array $visited): string|int|float|bool|object|array|null
     {
+        if ($type instanceof TArray) {
+            return $this->buildRandomArray($type, $visited);
+        }
+
+        if ($type instanceof Union) {
+            return $this->buildSingleRandomValue($type->pickRandom(), $visited);
+        }
+
         return match (true) {
-            $typeName === 'string' => $this->faker->text(),
-            $typeName === 'int' => $this->faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
-            $typeName === 'float' => $this->faker->randomFloat(), // TODO: negative float values
-            $typeName === 'bool' => $this->faker->boolean(),
-            $typeName === 'null' => null,
+            $type === 'string' => $this->faker->text(),
+            $type === 'int' => $this->faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
+            $type === 'float' => $this->faker->randomFloat(), // TODO: negative float values
+            $type === 'bool' => $this->faker->boolean(),
+            $type === 'null' => null,
             // TODO: think the best way of handling circular references
-            class_exists($typeName) => $visited[$typeName] ?? $this->buildRecursive($typeName, $visited),
-            default => throw new Exception("Unsupported type for stub creation: $typeName"),
+            class_exists($type) => $visited[$type] ?? $this->buildRecursive($type, $visited),
+            default => throw new Exception("Unsupported type for stub creation: $type"),
         };
     }
 
-    private function buildRandomArrayOf(string $typeName, array $visited): array
+    private function buildRandomArray(TArray $arrayType, array $visited): array
     {
         $minElements = 0;
         $maxElements = 50;
         $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
         $array = [];
         for ($i = 0; $i < $elementsCount; $i++) {
-            $array[] = $this->buildSingleRandomValue($typeName, $visited);
+            $array[] = $this->buildSingleRandomValue($arrayType->pickRandom(), $visited);
         }
         return $array;
     }
