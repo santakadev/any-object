@@ -126,6 +126,7 @@ class AnyObjectTest extends TestCase
         );
     }
 
+    // TODO: support of intersection types
     public function test_intersection_types_are_not_supported(): void
     {
         $this->expectException(Exception::class);

@@ -24,7 +24,7 @@ class AnyObject
         return $this->buildRecursive($class);
     }
 
-    public function buildRecursive(string $class, array $visited = []): object
+    private function buildRecursive(string $class, array $visited = []): object
     {
         $reflection = new ReflectionClass($class);
         // TODO: support of constructor arguments instead of properties
@@ -44,7 +44,7 @@ class AnyObject
     }
 
     // TODO: support of associative arrays
-    public function buildRandomValue(ReflectionProperty $reflectionProperty, array $visited): string|int|float|bool|object|array|null
+    private function buildRandomValue(ReflectionProperty $reflectionProperty, array $visited): string|int|float|bool|object|array|null
     {
         $type = $reflectionProperty->getType();
 
@@ -57,7 +57,6 @@ class AnyObject
             $pickedTypeName = $this->pickRandomType($unionTypeNames);
             return $this->buildSingleRandomValue($pickedTypeName, $visited);
         } else if ($type instanceof ReflectionIntersectionType) {
-            // TODO: support of intersection types
             throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionProperty->getName()));
         } else {
             if ($type->getName() === 'mixed') {
@@ -82,7 +81,7 @@ class AnyObject
         }
     }
 
-    public function buildSingleRandomValue(string $typeName, array $visited): string|int|float|bool|object|null
+    private function buildSingleRandomValue(string $typeName, array $visited): string|int|float|bool|object|null
     {
         return match (true) {
             $typeName === 'string' => $this->faker->text(),
@@ -96,7 +95,7 @@ class AnyObject
         };
     }
 
-    public function buildRandomArrayOf(string $typeName, array $visited): array
+    private function buildRandomArrayOf(string $typeName, array $visited): array
     {
         $minElements = 0;
         $maxElements = 50;
@@ -108,7 +107,7 @@ class AnyObject
         return $array;
     }
 
-    public function pickRandomType(array $unionTypeNames): mixed
+    private function pickRandomType(array $unionTypeNames): mixed
     {
         if (in_array('array', $unionTypeNames)) {
             throw new Exception("Unsupported type array in union types");
