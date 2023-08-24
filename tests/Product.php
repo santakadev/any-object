@@ -10,6 +10,7 @@ class Product
         public readonly int $price,
         public readonly float $tax,
         public readonly bool $available,
+        public readonly SubObject $subObject,
     ) {
     }
 }
