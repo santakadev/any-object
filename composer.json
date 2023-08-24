@@ -5,7 +5,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Santakadev\\AnyStub\\": "src/"
+            "Santakadev\\AnyStub\\": "src/",
+            "Santakadev\\AnyStub\\Tests\\": "tests/"
         }
     },
     "authors": [
@@ -14,5 +15,7 @@
             "email": "santaka87@gmail.com"
         }
     ],
-    "require": {}
+    "require-dev": {
+        "phpunit/phpunit": "^10.3"
+    }
 }
