@@ -19,12 +19,18 @@ class AnyStub
 
     public function of(string $class): object
     {
+        return $this->buildRecursive($class);
+    }
+
+    public function buildRecursive(string $class, array $visited = []): object
+    {
         $reflection = new ReflectionClass($class);
         // TODO: support of constructor arguments instead of properties
         $instance = $reflection->newInstanceWithoutConstructor();
+        $visited[$class] = $instance;
 
         foreach ($reflection->getProperties() as $reflectionProperty) {
-            $randomValue = $this->buildRandomValue($reflectionProperty);
+            $randomValue = $this->buildRandomValue($reflectionProperty, $visited);
 
             // Set the random value
             $reflectionProperty->setAccessible(true);
@@ -35,20 +41,20 @@ class AnyStub
         return $instance;
     }
 
-    public function buildRandomValue(ReflectionProperty $reflectionProperty): string|int|float|bool|object
+    public function buildRandomValue(ReflectionProperty $reflectionProperty, array $visited): string|int|float|bool|object
     {
         // TODO: support of nullable
         // TODO: support of array
         // TODO: support of union types
         // TODO: support of intersection types
-        // TODO: circular references for custom types
         $type = $reflectionProperty->getType()->getName();
         return match (true) {
             $type === 'string' => $this->faker->text(),
             $type === 'int' => $this->faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
             $type === 'float' => $this->faker->randomFloat(), // TODO: negative float values
             $type === 'bool' => $this->faker->boolean(),
-            class_exists($type) => $this->of($type),
+            // TODO: think the best way of handling circular references
+            class_exists($type) => $visited[$type] ?? $this->buildRecursive($type, $visited),
             default => throw new Exception("Unsupported type for stub creation: $type"),
         };
     }
