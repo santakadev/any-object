@@ -7,6 +7,7 @@ use Faker\Factory;
 use Faker\Generator;
 use ReflectionClass;
 use ReflectionProperty;
+use ReflectionUnionType;
 
 class AnyStub
 {
@@ -45,17 +46,30 @@ class AnyStub
     {
         // TODO: support of nullable
         // TODO: support of array
-        // TODO: support of union types
+        // TODO: support null on union types
         // TODO: support of intersection types
-        $type = $reflectionProperty->getType()->getName();
+        $type = $reflectionProperty->getType();
+        if ($type instanceof ReflectionUnionType) {
+            $unionTypeNames = array_map(fn ($x) => $x->getName(), $type->getTypes());
+            $randomArrayKey = array_rand($unionTypeNames);
+            $pickedTypeName = $unionTypeNames[$randomArrayKey];
+            return $this->buildSingleRandomValue($pickedTypeName, $visited);
+        } else {
+            $typeName = $type->getName();
+            return $this->buildSingleRandomValue($typeName, $visited);
+        }
+    }
+
+    public function buildSingleRandomValue(string $typeName, array $visited): string|int|float|bool|object
+    {
         return match (true) {
-            $type === 'string' => $this->faker->text(),
-            $type === 'int' => $this->faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
-            $type === 'float' => $this->faker->randomFloat(), // TODO: negative float values
-            $type === 'bool' => $this->faker->boolean(),
+            $typeName === 'string' => $this->faker->text(),
+            $typeName === 'int' => $this->faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
+            $typeName === 'float' => $this->faker->randomFloat(), // TODO: negative float values
+            $typeName === 'bool' => $this->faker->boolean(),
             // TODO: think the best way of handling circular references
-            class_exists($type) => $visited[$type] ?? $this->buildRecursive($type, $visited),
-            default => throw new Exception("Unsupported type for stub creation: $type"),
+            class_exists($typeName) => $visited[$typeName] ?? $this->buildRecursive($typeName, $visited),
+            default => throw new Exception("Unsupported type for stub creation: $typeName"),
         };
     }
 }

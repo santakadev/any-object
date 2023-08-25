@@ -10,6 +10,7 @@ use Santakadev\AnyStub\Tests\TestData\BasicTypes\IntObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\StringObject;
 use Santakadev\AnyStub\Tests\TestData\CustomTypes\ChildObject;
 use Santakadev\AnyStub\Tests\TestData\CustomTypes\ParentObject;
+use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionBasicTypes;
 
 class AnyStubTest extends TestCase
 {
@@ -61,5 +62,16 @@ class AnyStubTest extends TestCase
         $child = $parent->value;
         $this->assertInstanceOf(ChildObject::class, $child);
         $this->assertEquals($parent, $child->value);
+    }
+
+    public function test_union_basic_types(): void
+    {
+        $object = $this->any->of(UnionBasicTypes::class);
+        $this->assertTrue(
+            is_string($object->value) ||
+            is_int($object->value) ||
+            is_float($object->value) ||
+            is_bool($object->value)
+        );
     }
 }
