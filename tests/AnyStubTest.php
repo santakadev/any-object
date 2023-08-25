@@ -4,21 +4,62 @@ namespace Santakadev\AnyStub\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Santakadev\AnyStub\AnyStub;
+use Santakadev\AnyStub\Tests\TestData\BasicTypes\BoolObject;
+use Santakadev\AnyStub\Tests\TestData\BasicTypes\FloatObject;
+use Santakadev\AnyStub\Tests\TestData\BasicTypes\IntObject;
+use Santakadev\AnyStub\Tests\TestData\BasicTypes\StringObject;
+use Santakadev\AnyStub\Tests\TestData\CustomTypes\ChildObject;
+use Santakadev\AnyStub\Tests\TestData\CustomTypes\ParentObject;
 
 class AnyStubTest extends TestCase
 {
-    public function test(): void
+    private AnyStub $any;
+
+    protected function setUp(): void
     {
-        $any = new AnyStub();
+        $this->any = new AnyStub();
+    }
 
-        $product = $any->of(Product::class);
+    public function test_string(): void
+    {
+        $object = $this->any->of(StringObject::class);
+        $this->assertIsString($object->value);
+        $this->assertGreaterThan(0, strlen($object->value));
+    }
 
-        $this->assertIsString($product->name);
-        $this->assertGreaterThan(0, strlen($product->name));
-        $this->assertIsString($product->description);
-        $this->assertGreaterThan(0, strlen($product->description));
-        $this->assertIsInt($product->price);
-        $this->assertIsFloat($product->tax);
-        $this->assertIsBool($product->available);
+    public function test_int(): void
+    {
+        $object = $this->any->of(IntObject::class);
+        $this->assertIsInt($object->value);
+    }
+
+    public function test_float(): void
+    {
+        $object = $this->any->of(FloatObject::class);
+        $this->assertIsFloat($object->value);
+    }
+
+    public function test_bool(): void
+    {
+        $object = $this->any->of(BoolObject::class);
+        $this->assertIsBool($object->value);
+    }
+
+    public function test_custom(): void
+    {
+        $object = $this->any->of(ParentObject::class);
+        $this->assertInstanceOf(ChildObject::class, $object->value);
+    }
+
+    /**
+     * When a child object's property references a ancestor type
+     * it uses the already created ancestor object.
+     */
+    public function test_circular_references(): void
+    {
+        $parent = $this->any->of(ParentObject::class);
+        $child = $parent->value;
+        $this->assertInstanceOf(ChildObject::class, $child);
+        $this->assertEquals($parent, $child->value);
     }
 }
