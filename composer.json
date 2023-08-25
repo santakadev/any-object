@@ -19,6 +19,7 @@
         "phpunit/phpunit": "^10.0"
     },
     "require": {
+        "php": ">=8.1",
         "fakerphp/faker": "^1.10"
     }
 }
