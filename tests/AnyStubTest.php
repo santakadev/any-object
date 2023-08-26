@@ -13,6 +13,7 @@ use Santakadev\AnyStub\Tests\TestData\CustomTypes\ChildObject;
 use Santakadev\AnyStub\Tests\TestData\CustomTypes\ParentObject;
 use Santakadev\AnyStub\Tests\TestData\IntersectionTypes\IntersectionObject;
 use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionBasicTypes;
+use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionCustomTypes;
 
 class AnyStubTest extends TestCase
 {
@@ -74,6 +75,15 @@ class AnyStubTest extends TestCase
             is_int($object->value) ||
             is_float($object->value) ||
             is_bool($object->value)
+        );
+    }
+
+    public function test_union_custom_types(): void
+    {
+        $object = $this->any->of(UnionCustomTypes::class);
+        $this->assertTrue(
+            $object->value instanceof StringObject ||
+            $object->value instanceof IntObject
         );
     }
 
