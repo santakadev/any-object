@@ -16,6 +16,7 @@ use Santakadev\AnyStub\Tests\TestData\IntersectionTypes\IntersectionObject;
 use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionBasicTypes;
 use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionCustomTypes;
 use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionStringIntNull;
+use Santakadev\AnyStub\Tests\TestData\Untyped\UntypedObject;
 
 class AnyStubTest extends TestCase
 {
@@ -110,5 +111,12 @@ class AnyStubTest extends TestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Intersection types are not supported yet');
         $this->any->of(IntersectionObject::class);
+    }
+
+    public function test_untyped_properties_are_not_supported(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Untyped properties are not supported');
+        $this->any->of(UntypedObject::class);
     }
 }

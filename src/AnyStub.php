@@ -48,7 +48,10 @@ class AnyStub
         // TODO: support of array
         $type = $reflectionProperty->getType();
 
-        // TODO: handle $type null value
+        if ($type === null) {
+            // TODO: More detailed error message
+            throw new Exception('Untyped properties are not supported');
+        }
 
         if ($type instanceof ReflectionUnionType) {
             $unionTypeNames = array_map(fn($x) => $x->getName(), $type->getTypes());
