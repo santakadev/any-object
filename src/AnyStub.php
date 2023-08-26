@@ -60,6 +60,10 @@ class AnyStub
 
             $randomArrayKey = array_rand($unionTypeNames);
             $pickedTypeName = $unionTypeNames[$randomArrayKey];
+            if ($pickedTypeName === 'null') {
+                return null;
+            }
+
             return $this->buildSingleRandomValue($pickedTypeName, $visited);
         } else if ($type instanceof ReflectionIntersectionType) {
             // TODO: support of intersection types
@@ -81,14 +85,13 @@ class AnyStub
         }
     }
 
-    public function buildSingleRandomValue(string $typeName, array $visited): string|int|float|bool|object|null
+    public function buildSingleRandomValue(string $typeName, array $visited): string|int|float|bool|object
     {
         return match (true) {
             $typeName === 'string' => $this->faker->text(),
             $typeName === 'int' => $this->faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
             $typeName === 'float' => $this->faker->randomFloat(), // TODO: negative float values
             $typeName === 'bool' => $this->faker->boolean(),
-            $typeName === 'null' => null,
             // TODO: think the best way of handling circular references
             class_exists($typeName) => $visited[$typeName] ?? $this->buildRecursive($typeName, $visited),
             default => throw new Exception("Unsupported type for stub creation: $typeName"),
