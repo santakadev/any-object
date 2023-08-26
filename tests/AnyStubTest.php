@@ -15,6 +15,7 @@ use Santakadev\AnyStub\Tests\TestData\CustomTypes\ParentObject;
 use Santakadev\AnyStub\Tests\TestData\IntersectionTypes\IntersectionObject;
 use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionBasicTypes;
 use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionCustomTypes;
+use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionStringIntNull;
 
 class AnyStubTest extends TestCase
 {
@@ -82,6 +83,16 @@ class AnyStubTest extends TestCase
             is_int($object->value) ||
             is_float($object->value) ||
             is_bool($object->value)
+        );
+    }
+
+    public function test_nullable_union(): void
+    {
+        $object = $this->any->of(UnionStringIntNull::class);
+        $this->assertTrue(
+            is_string($object->value) ||
+            is_int($object->value) ||
+            is_null($object->value)
         );
     }
 

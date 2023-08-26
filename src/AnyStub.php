@@ -46,13 +46,11 @@ class AnyStub
     public function buildRandomValue(ReflectionProperty $reflectionProperty, array $visited): string|int|float|bool|object|null
     {
         // TODO: support of array
-        // TODO: support null on union types
         $type = $reflectionProperty->getType();
 
         // TODO: handle $type null value
 
         if ($type instanceof ReflectionUnionType) {
-            // TODO: support of nullable on union types
             $unionTypeNames = array_map(fn($x) => $x->getName(), $type->getTypes());
             $randomArrayKey = array_rand($unionTypeNames);
             $pickedTypeName = $unionTypeNames[$randomArrayKey];
@@ -70,13 +68,14 @@ class AnyStub
         }
     }
 
-    public function buildSingleRandomValue(string $typeName, array $visited): string|int|float|bool|object
+    public function buildSingleRandomValue(string $typeName, array $visited): string|int|float|bool|object|null
     {
         return match (true) {
             $typeName === 'string' => $this->faker->text(),
             $typeName === 'int' => $this->faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
             $typeName === 'float' => $this->faker->randomFloat(), // TODO: negative float values
             $typeName === 'bool' => $this->faker->boolean(),
+            $typeName === 'null' => null,
             // TODO: think the best way of handling circular references
             class_exists($typeName) => $visited[$typeName] ?? $this->buildRecursive($typeName, $visited),
             default => throw new Exception("Unsupported type for stub creation: $typeName"),
