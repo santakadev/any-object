@@ -116,7 +116,7 @@ class AnyStubTest extends TestCase
     public function test_untyped_properties_are_not_supported(): void
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Untyped properties are not supported');
+        $this->expectExceptionMessage('Missing type declaration for property "value"');
         $this->any->of(UntypedObject::class);
     }
 }

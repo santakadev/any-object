@@ -49,8 +49,7 @@ class AnyStub
         $type = $reflectionProperty->getType();
 
         if ($type === null) {
-            // TODO: More detailed error message
-            throw new Exception('Untyped properties are not supported');
+            throw new Exception(sprintf('Missing type declaration for property "%s"', $reflectionProperty->getName()));
         }
 
         if ($type instanceof ReflectionUnionType) {
