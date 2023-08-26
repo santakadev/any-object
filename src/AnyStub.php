@@ -59,7 +59,7 @@ class AnyStub
             return $this->buildSingleRandomValue($pickedTypeName, $visited);
         } else if ($type instanceof ReflectionIntersectionType) {
             // TODO: support of intersection types
-            throw new Exception('Intersection types are not supported yet');
+            throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionProperty->getName()));
         } else {
             $nullFrequency = 0.5;
             if ($type->allowsNull() && $this->faker->boolean($nullFrequency * 100)) {

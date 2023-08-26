@@ -109,7 +109,7 @@ class AnyStubTest extends TestCase
     public function test_intersection_types_are_not_supported(): void
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Intersection types are not supported yet');
+        $this->expectExceptionMessage('Intersection type found in property "value" are not supported');
         $this->any->of(IntersectionObject::class);
     }
 
