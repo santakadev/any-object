@@ -16,6 +16,7 @@ use Santakadev\AnyStub\Tests\TestData\IntersectionTypes\IntersectionObject;
 use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionBasicTypes;
 use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionCustomTypes;
 use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionStringIntNull;
+use Santakadev\AnyStub\Tests\TestData\Untyped\MixedObject;
 use Santakadev\AnyStub\Tests\TestData\Untyped\UntypedObject;
 
 class AnyStubTest extends TestCase
@@ -118,5 +119,12 @@ class AnyStubTest extends TestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Missing type declaration for property "value"');
         $this->any->of(UntypedObject::class);
+    }
+
+    public function test_mixed_properties_are_not_supported(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Unsupported type for stub creation: mixed');
+        $this->any->of(MixedObject::class);
     }
 }

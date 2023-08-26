@@ -61,6 +61,10 @@ class AnyStub
             // TODO: support of intersection types
             throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionProperty->getName()));
         } else {
+            if ($type->getName() === 'mixed') {
+                throw new Exception("Unsupported type for stub creation: mixed");
+            }
+
             $nullFrequency = 0.5;
             if ($type->allowsNull() && $this->faker->boolean($nullFrequency * 100)) {
                 return null;
