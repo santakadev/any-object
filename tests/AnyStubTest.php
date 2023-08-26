@@ -2,6 +2,7 @@
 
 namespace Santakadev\AnyStub\Tests;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Santakadev\AnyStub\AnyStub;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\BoolObject;
@@ -10,6 +11,7 @@ use Santakadev\AnyStub\Tests\TestData\BasicTypes\IntObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\StringObject;
 use Santakadev\AnyStub\Tests\TestData\CustomTypes\ChildObject;
 use Santakadev\AnyStub\Tests\TestData\CustomTypes\ParentObject;
+use Santakadev\AnyStub\Tests\TestData\IntersectionTypes\IntersectionObject;
 use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionBasicTypes;
 
 class AnyStubTest extends TestCase
@@ -73,5 +75,12 @@ class AnyStubTest extends TestCase
             is_float($object->value) ||
             is_bool($object->value)
         );
+    }
+
+    public function test_intersection_types_are_not_supported(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Intersection types are not supported yet');
+        $this->any->of(IntersectionObject::class);
     }
 }

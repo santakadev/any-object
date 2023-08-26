@@ -6,6 +6,7 @@ use Exception;
 use Faker\Factory;
 use Faker\Generator;
 use ReflectionClass;
+use ReflectionIntersectionType;
 use ReflectionProperty;
 use ReflectionUnionType;
 
@@ -47,14 +48,16 @@ class AnyStub
         // TODO: support of nullable
         // TODO: support of array
         // TODO: support null on union types
-        // TODO: support of intersection types
         $type = $reflectionProperty->getType();
         if ($type instanceof ReflectionUnionType) {
             $unionTypeNames = array_map(fn ($x) => $x->getName(), $type->getTypes());
             $randomArrayKey = array_rand($unionTypeNames);
             $pickedTypeName = $unionTypeNames[$randomArrayKey];
             return $this->buildSingleRandomValue($pickedTypeName, $visited);
-        } else {
+        } else if ($type instanceof ReflectionIntersectionType) {
+            // TODO: support of intersection types
+            throw new Exception('Intersection types are not supported yet');
+        } {
             $typeName = $type->getName();
             return $this->buildSingleRandomValue($typeName, $visited);
         }
