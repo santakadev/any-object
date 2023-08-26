@@ -5,14 +5,17 @@ namespace Santakadev\AnyStub\Tests;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Santakadev\AnyStub\AnyStub;
+use Santakadev\AnyStub\Tests\TestData\BasicTypes\ArrayObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\BoolObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\FloatObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\IntObject;
+use Santakadev\AnyStub\Tests\TestData\BasicTypes\NullableArrayObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\NullableStringObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\StringObject;
 use Santakadev\AnyStub\Tests\TestData\CustomTypes\ChildObject;
 use Santakadev\AnyStub\Tests\TestData\CustomTypes\ParentObject;
 use Santakadev\AnyStub\Tests\TestData\IntersectionTypes\IntersectionObject;
+use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionArrayIntObject;
 use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionBasicTypes;
 use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionCustomTypes;
 use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionStringIntNull;
@@ -126,5 +129,26 @@ class AnyStubTest extends TestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Unsupported type for stub creation: mixed');
         $this->any->of(MixedObject::class);
+    }
+
+    public function test_array_properties_are_not_supported(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Unsupported type for stub creation: array');
+        $this->any->of(ArrayObject::class);
+    }
+
+    public function test_nullable_array_properties_are_not_supported(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Unsupported type for stub creation: array');
+        $this->any->of(NullableArrayObject::class);
+    }
+
+    public function test_union_with_array_properties_are_not_supported(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Unsupported type for stub creation: array');
+        $this->any->of(UnionArrayIntObject::class);
     }
 }

@@ -43,9 +43,9 @@ class AnyStub
         return $instance;
     }
 
+    // TODO: support of array
     public function buildRandomValue(ReflectionProperty $reflectionProperty, array $visited): string|int|float|bool|object|null
     {
-        // TODO: support of array
         $type = $reflectionProperty->getType();
 
         if ($type === null) {
@@ -54,6 +54,10 @@ class AnyStub
 
         if ($type instanceof ReflectionUnionType) {
             $unionTypeNames = array_map(fn($x) => $x->getName(), $type->getTypes());
+            if (in_array('array', $unionTypeNames)) {
+                throw new Exception("Unsupported type for stub creation: array");
+            }
+
             $randomArrayKey = array_rand($unionTypeNames);
             $pickedTypeName = $unionTypeNames[$randomArrayKey];
             return $this->buildSingleRandomValue($pickedTypeName, $visited);
@@ -63,6 +67,9 @@ class AnyStub
         } else {
             if ($type->getName() === 'mixed') {
                 throw new Exception("Unsupported type for stub creation: mixed");
+            }
+            if ($type->getName() === 'array') {
+                throw new Exception("Unsupported type for stub creation: array");
             }
 
             $nullFrequency = 0.5;
