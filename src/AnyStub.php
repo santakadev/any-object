@@ -43,23 +43,30 @@ class AnyStub
         return $instance;
     }
 
-    public function buildRandomValue(ReflectionProperty $reflectionProperty, array $visited): string|int|float|bool|object
+    public function buildRandomValue(ReflectionProperty $reflectionProperty, array $visited): string|int|float|bool|object|null
     {
-        // TODO: support of nullable
         // TODO: support of array
         // TODO: support null on union types
         $type = $reflectionProperty->getType();
+
+        // TODO: handle $type null value
+
         if ($type instanceof ReflectionUnionType) {
-            $unionTypeNames = array_map(fn ($x) => $x->getName(), $type->getTypes());
+            // TODO: support of nullable on union types
+            $unionTypeNames = array_map(fn($x) => $x->getName(), $type->getTypes());
             $randomArrayKey = array_rand($unionTypeNames);
             $pickedTypeName = $unionTypeNames[$randomArrayKey];
             return $this->buildSingleRandomValue($pickedTypeName, $visited);
         } else if ($type instanceof ReflectionIntersectionType) {
             // TODO: support of intersection types
             throw new Exception('Intersection types are not supported yet');
-        } {
-            $typeName = $type->getName();
-            return $this->buildSingleRandomValue($typeName, $visited);
+        } else {
+            $nullFrequency = 0.5;
+            if ($type->allowsNull() && $this->faker->boolean($nullFrequency * 100)) {
+                return null;
+            }
+
+            return $this->buildSingleRandomValue($type->getName(), $visited);
         }
     }
 

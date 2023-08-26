@@ -8,6 +8,7 @@ use Santakadev\AnyStub\AnyStub;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\BoolObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\FloatObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\IntObject;
+use Santakadev\AnyStub\Tests\TestData\BasicTypes\NullableStringObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\StringObject;
 use Santakadev\AnyStub\Tests\TestData\CustomTypes\ChildObject;
 use Santakadev\AnyStub\Tests\TestData\CustomTypes\ParentObject;
@@ -47,6 +48,12 @@ class AnyStubTest extends TestCase
     {
         $object = $this->any->of(BoolObject::class);
         $this->assertIsBool($object->value);
+    }
+
+    public function test_nullable_basic_type(): void
+    {
+        $object = $this->any->of(NullableStringObject::class);
+        $this->assertTrue(is_string($object->value) || is_null($object->value));
     }
 
     public function test_custom(): void
