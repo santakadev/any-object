@@ -79,25 +79,15 @@ class AnyStub
             }
             if ($type->getName() === 'array') {
                 $docblock = $reflectionProperty->getDocComment();
-                $basicTypes = ['string', 'int', 'float', 'bool'];
 
                 if (preg_match('/@var\s+array<([^\s]+)>/', $docblock, $matches) === 1 ) {
-                    $typeName = $matches[1];
-                    if (!in_array($typeName, $basicTypes)) {
-                        $uses = $this->buildClassNameToFQCNMap($reflectionProperty);
-                        // TODO: use the namespace when the custom type is in the same namespace
-                        $typeName = $uses[$typeName] ?? $typeName;
-                    }
-
-                    return $this->buildRandomArray($typeName, $visited);
+                    $rawType = $matches[1];
+                    $typeName = $this->parsePhpdocArrayType($rawType, $reflectionProperty);
+                    return $this->buildRandomArrayOf($typeName, $visited);
                 } else if (preg_match('/@var\s+([^\s]+)\[]/', $docblock, $matches) === 1 ) {
-                    $typeName = $matches[1];
-                    if (!in_array($typeName, $basicTypes)) {
-                        $uses = $this->buildClassNameToFQCNMap($reflectionProperty);
-                        $typeName = $uses[$typeName] ?? $typeName;
-                    }
-
-                    return $this->buildRandomArray($typeName, $visited);
+                    $rawType = $matches[1];
+                    $typeName = $this->parsePhpdocArrayType($rawType, $reflectionProperty);
+                    return $this->buildRandomArrayOf($typeName, $visited);
                 }
 
                 throw new Exception("Unsupported type for stub creation: array");
@@ -125,7 +115,7 @@ class AnyStub
         };
     }
 
-    public function buildRandomArray(string $typeName, array $visited): array
+    public function buildRandomArrayOf(string $typeName, array $visited): array
     {
         $minElements = 0;
         $maxElements = 50;
@@ -167,6 +157,19 @@ class AnyStub
         $traverser->addVisitor($useVisitor);
         $traverser->traverse($stmts);
 
-        return $useVisitor->uses;
+
+        return [$useVisitor->namespace, $useVisitor->uses];
+    }
+
+    public function parsePhpdocArrayType($rawType, ReflectionProperty $reflectionProperty): string
+    {
+        $basicTypes = ['string', 'int', 'float', 'bool'];
+        if (!in_array($rawType, $basicTypes)) {
+            if (!str_starts_with($rawType, '\\')) {
+                [$namespace, $uses] = $this->buildClassNameToFQCNMap($reflectionProperty);
+                $rawType = $uses[$rawType] ?? $namespace . '\\' . $rawType;
+            }
+        }
+        return $rawType;
     }
 }

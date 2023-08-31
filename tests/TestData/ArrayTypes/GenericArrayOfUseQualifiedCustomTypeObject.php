@@ -4,7 +4,7 @@ namespace Santakadev\AnyStub\Tests\TestData\ArrayTypes;
 
 use Santakadev\AnyStub\Tests\TestData\CustomTypes\ParentObject;
 
-class GenericArrayOfUseQualifierCustomTypeObject
+class GenericArrayOfUseQualifiedCustomTypeObject
 {
     public function __construct(
         /** @var array<ParentObject> */
