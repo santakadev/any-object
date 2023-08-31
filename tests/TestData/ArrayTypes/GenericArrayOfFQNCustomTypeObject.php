@@ -2,7 +2,7 @@
 
 namespace Santakadev\AnyStub\Tests\TestData\ArrayTypes;
 
-class GenericArrayOfCustomFQNTypeObject
+class GenericArrayOfFQNCustomTypeObject
 {
     public function __construct(
         /** @var array<\Santakadev\AnyStub\Tests\TestData\CustomTypes\ParentObject> */
