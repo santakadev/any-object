@@ -48,7 +48,7 @@ class AnyStub
         return $instance;
     }
 
-    // TODO: support of array
+    // TODO: support of associative arrays
     public function buildRandomValue(ReflectionProperty $reflectionProperty, array $visited): string|int|float|bool|object|array|null
     {
         $type = $reflectionProperty->getType();
@@ -85,6 +85,7 @@ class AnyStub
                     $typeName = $matches[1];
                     if (!in_array($typeName, $basicTypes)) {
                         $uses = $this->buildClassNameToFQCNMap($reflectionProperty);
+                        // TODO: use the namespace when the custom type is in the same namespace
                         $typeName = $uses[$typeName] ?? $typeName;
                     }
 
@@ -143,6 +144,7 @@ class AnyStub
 
         $useVisitor = new class extends NodeVisitorAbstract {
             public array $uses = [];
+            public string $namespace;
 
             public function enterNode(Node $node)
             {
@@ -153,6 +155,10 @@ class AnyStub
                         $className = end($useValueParts);
                         $this->uses[$className] = $useValue;
                     }
+                }
+
+                if ($node instanceof Node\Stmt\Namespace_) {
+                    $this->namespace = $node->name->toString();
                 }
             }
         };

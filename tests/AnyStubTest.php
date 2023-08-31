@@ -6,13 +6,13 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use Santakadev\AnyStub\AnyStub;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfBoolObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfCustomTypeObject;
+use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfUseQualifierCustomTypeObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfFloatObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfFQNCustomTypeObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfIntObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfBoolObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfCustomTypeObject;
+use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfUseQualifierCustomTypeObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfFloatObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfFQNCustomTypeObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfIntObject;
@@ -253,9 +253,9 @@ class AnyStubTest extends TestCase
         }
     }
 
-    public function test_generic_array_of_custom_type(): void
+    public function test_generic_array_of_use_qualifier_custom_type(): void
     {
-        $object = $this->any->of(GenericArrayOfCustomTypeObject::class);
+        $object = $this->any->of(GenericArrayOfUseQualifierCustomTypeObject::class);
         $this->assertIsArray($object->value);
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));
@@ -264,9 +264,9 @@ class AnyStubTest extends TestCase
         }
     }
 
-    public function test_phpdoc_array_of_custom_type(): void
+    public function test_phpdoc_array_of_use_qualifier_custom_type(): void
     {
-        $object = $this->any->of(PhpdocArrayOfCustomTypeObject::class);
+        $object = $this->any->of(PhpdocArrayOfUseQualifierCustomTypeObject::class);
         $this->assertIsArray($object->value);
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));
