@@ -5,8 +5,12 @@ namespace Santakadev\AnyStub\Tests;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Santakadev\AnyStub\AnyStub;
+use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfBoolObject;
+use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfFloatObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfIntObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
+use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfBoolObject;
+use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfFloatObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfIntObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfStringObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\ArrayObject;
@@ -176,6 +180,50 @@ class AnyStubTest extends TestCase
         $this->assertLessThanOrEqual(50, count($object->value));
         if (count($object->value) > 0) {
             $this->assertIsInt($object->value[0]);
+        }
+    }
+
+    public function test_generic_array_of_float(): void
+    {
+        $object = $this->any->of(GenericArrayOfFloatObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        if (count($object->value) > 0) {
+            $this->assertIsFloat($object->value[0]);
+        }
+    }
+
+    public function test_phpdoc_array_of_float(): void
+    {
+        $object = $this->any->of(PhpdocArrayOfFloatObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        if (count($object->value) > 0) {
+            $this->assertIsFloat($object->value[0]);
+        }
+    }
+
+    public function test_generic_array_of_bool(): void
+    {
+        $object = $this->any->of(GenericArrayOfBoolObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        if (count($object->value) > 0) {
+            $this->assertIsBool($object->value[0]);
+        }
+    }
+
+    public function test_phpdoc_array_of_bool(): void
+    {
+        $object = $this->any->of(PhpdocArrayOfBoolObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        if (count($object->value) > 0) {
+            $this->assertIsBool($object->value[0]);
         }
     }
 
