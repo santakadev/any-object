@@ -75,14 +75,10 @@ class AnyStub
             if ($type->getName() === 'array') {
                 $docblock = $reflectionProperty->getDocComment();
 
-                if (str_contains($docblock, 'array<string>') || str_contains($docblock, 'string[]')) {
-                    $typeName = 'string';
-                    return $this->buildRandomArray($typeName, $visited);
-                }
-
-                if (str_contains($docblock, 'array<int>') || str_contains($docblock, 'int[]')) {
-                    $typeName = 'int';
-                    return $this->buildRandomArray($typeName, $visited);
+                if (preg_match('/@var\s+array<([^\s]+)>/', $docblock, $matches) === 1 ) {
+                    return $this->buildRandomArray($matches[1], $visited);
+                } else if (preg_match('/@var\s+([^\s]+)\[]/', $docblock, $matches) === 1 ) {
+                    return $this->buildRandomArray($matches[1], $visited);
                 }
 
                 throw new Exception("Unsupported type for stub creation: array");
