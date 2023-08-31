@@ -5,6 +5,12 @@ namespace Santakadev\AnyStub;
 use Exception;
 use Faker\Factory;
 use Faker\Generator;
+use PhpParser\Node;
+use PhpParser\Node\Stmt\Use_;
+use PhpParser\NodeDumper;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitorAbstract;
+use PhpParser\ParserFactory;
 use ReflectionClass;
 use ReflectionIntersectionType;
 use ReflectionProperty;
@@ -74,9 +80,16 @@ class AnyStub
             }
             if ($type->getName() === 'array') {
                 $docblock = $reflectionProperty->getDocComment();
+                $basicTypes = ['string', 'int', 'float', 'bool'];
 
                 if (preg_match('/@var\s+array<([^\s]+)>/', $docblock, $matches) === 1 ) {
-                    return $this->buildRandomArray($matches[1], $visited);
+                    $typeName = $matches[1];
+                    if (!in_array($typeName, $basicTypes)) {
+                        $uses = $this->buildClassNameToFQCNMap($reflectionProperty);
+                        $typeName = $uses[$typeName] ?? $typeName;
+                    }
+
+                    return $this->buildRandomArray($typeName, $visited);
                 } else if (preg_match('/@var\s+([^\s]+)\[]/', $docblock, $matches) === 1 ) {
                     return $this->buildRandomArray($matches[1], $visited);
                 }
@@ -116,5 +129,33 @@ class AnyStub
             $array[] = $this->buildSingleRandomValue($typeName, $visited);
         }
         return $array;
+    }
+
+    public function buildClassNameToFQCNMap(ReflectionProperty $reflectionProperty): array
+    {
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $stmts = $parser->parse(file_get_contents($reflectionProperty->getDeclaringClass()->getFileName()));
+
+        $useVisitor = new class extends NodeVisitorAbstract {
+            public array $uses = [];
+
+            public function enterNode(Node $node)
+            {
+                if ($node instanceof Use_) {
+                    foreach ($node->uses as $use) {
+                        $useValue = $use->name->toString();
+                        $useValueParts = explode('\\', $useValue);
+                        $className = end($useValueParts);
+                        $this->uses[$className] = $useValue;
+                    }
+                }
+            }
+        };
+
+        $traverser = new NodeTraverser();
+        $traverser->addVisitor($useVisitor);
+        $traverser->traverse($stmts);
+
+        return $useVisitor->uses;
     }
 }

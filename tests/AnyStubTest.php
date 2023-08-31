@@ -6,6 +6,7 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use Santakadev\AnyStub\AnyStub;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfBoolObject;
+use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfCustomTypeObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfFloatObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfFQNCustomTypeObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfIntObject;
@@ -243,6 +244,17 @@ class AnyStubTest extends TestCase
     public function test_phpdoc_array_of_fqn_custom_type(): void
     {
         $object = $this->any->of(PhpdocArrayOfFQNCustomTypeObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        foreach ($object->value as $item) {
+            $this->assertInstanceOf(ParentObject::class, $item);
+        }
+    }
+
+    public function test_generic_array_of_custom_type(): void
+    {
+        $object = $this->any->of(GenericArrayOfCustomTypeObject::class);
         $this->assertIsArray($object->value);
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));
