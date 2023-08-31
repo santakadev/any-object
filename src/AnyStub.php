@@ -81,7 +81,18 @@ class AnyStub
                     $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
                     $array = [];
                     for ($i = 0; $i < $elementsCount; $i++) {
-                        $array[] = $this->faker->text();
+                        $array[] = $this->buildSingleRandomValue('string', $visited);
+                    }
+                    return $array;
+                }
+
+                if (str_contains($docblock, 'array<int>') || str_contains($docblock, 'int[]')) {
+                    $minElements = 0;
+                    $maxElements = 50;
+                    $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
+                    $array = [];
+                    for ($i = 0; $i < $elementsCount; $i++) {
+                        $array[] = $this->buildSingleRandomValue('int', $visited);
                     }
                     return $array;
                 }

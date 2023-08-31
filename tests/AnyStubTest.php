@@ -5,7 +5,9 @@ namespace Santakadev\AnyStub\Tests;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Santakadev\AnyStub\AnyStub;
+use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfIntObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
+use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfIntObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfStringObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\ArrayObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\BoolObject;
@@ -152,6 +154,28 @@ class AnyStubTest extends TestCase
         $this->assertLessThanOrEqual(50, count($object->value));
         if (count($object->value) > 0) {
             $this->assertIsString($object->value[0]);
+        }
+    }
+
+    public function test_generic_array_of_int(): void
+    {
+        $object = $this->any->of(GenericArrayOfIntObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        if (count($object->value) > 0) {
+            $this->assertIsInt($object->value[0]);
+        }
+    }
+
+    public function test_phpdoc_array_of_int(): void
+    {
+        $object = $this->any->of(PhpdocArrayOfIntObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        if (count($object->value) > 0) {
+            $this->assertIsInt($object->value[0]);
         }
     }
 
