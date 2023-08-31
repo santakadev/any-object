@@ -6,6 +6,7 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use Santakadev\AnyStub\AnyStub;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfBoolObject;
+use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfCustomFQNTypeObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfFloatObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfIntObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
@@ -145,8 +146,8 @@ class AnyStubTest extends TestCase
         $this->assertIsArray($object->value);
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));
-        if (count($object->value) > 0) {
-            $this->assertIsString($object->value[0]);
+        foreach ($object->value as $item) {
+            $this->assertIsString($item);
         }
     }
 
@@ -156,8 +157,8 @@ class AnyStubTest extends TestCase
         $this->assertIsArray($object->value);
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));
-        if (count($object->value) > 0) {
-            $this->assertIsString($object->value[0]);
+        foreach ($object->value as $item) {
+            $this->assertIsString($item);
         }
     }
 
@@ -167,8 +168,8 @@ class AnyStubTest extends TestCase
         $this->assertIsArray($object->value);
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));
-        if (count($object->value) > 0) {
-            $this->assertIsInt($object->value[0]);
+        foreach ($object->value as $item) {
+            $this->assertIsInt($item);
         }
     }
 
@@ -178,8 +179,8 @@ class AnyStubTest extends TestCase
         $this->assertIsArray($object->value);
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));
-        if (count($object->value) > 0) {
-            $this->assertIsInt($object->value[0]);
+        foreach ($object->value as $item) {
+            $this->assertIsInt($item);
         }
     }
 
@@ -189,8 +190,8 @@ class AnyStubTest extends TestCase
         $this->assertIsArray($object->value);
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));
-        if (count($object->value) > 0) {
-            $this->assertIsFloat($object->value[0]);
+        foreach ($object->value as $item) {
+            $this->assertIsFloat($item);
         }
     }
 
@@ -200,8 +201,8 @@ class AnyStubTest extends TestCase
         $this->assertIsArray($object->value);
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));
-        if (count($object->value) > 0) {
-            $this->assertIsFloat($object->value[0]);
+        foreach ($object->value as $item) {
+            $this->assertIsFloat($item);
         }
     }
 
@@ -211,8 +212,8 @@ class AnyStubTest extends TestCase
         $this->assertIsArray($object->value);
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));
-        if (count($object->value) > 0) {
-            $this->assertIsBool($object->value[0]);
+        foreach ($object->value as $item) {
+            $this->assertIsBool($item);
         }
     }
 
@@ -222,8 +223,19 @@ class AnyStubTest extends TestCase
         $this->assertIsArray($object->value);
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));
-        if (count($object->value) > 0) {
-            $this->assertIsBool($object->value[0]);
+        foreach ($object->value as $item) {
+            $this->assertIsBool($item);
+        }
+    }
+
+    public function test_generic_array_of_custom_type(): void
+    {
+        $object = $this->any->of(GenericArrayOfCustomFQNTypeObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        foreach ($object->value as $item) {
+            $this->assertInstanceOf(ParentObject::class, $item);
         }
     }
 
