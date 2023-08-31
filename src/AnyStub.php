@@ -76,25 +76,13 @@ class AnyStub
                 $docblock = $reflectionProperty->getDocComment();
 
                 if (str_contains($docblock, 'array<string>') || str_contains($docblock, 'string[]')) {
-                    $minElements = 0;
-                    $maxElements = 50;
-                    $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
-                    $array = [];
-                    for ($i = 0; $i < $elementsCount; $i++) {
-                        $array[] = $this->buildSingleRandomValue('string', $visited);
-                    }
-                    return $array;
+                    $typeName = 'string';
+                    return $this->buildRandomArray($typeName, $visited);
                 }
 
                 if (str_contains($docblock, 'array<int>') || str_contains($docblock, 'int[]')) {
-                    $minElements = 0;
-                    $maxElements = 50;
-                    $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
-                    $array = [];
-                    for ($i = 0; $i < $elementsCount; $i++) {
-                        $array[] = $this->buildSingleRandomValue('int', $visited);
-                    }
-                    return $array;
+                    $typeName = 'int';
+                    return $this->buildRandomArray($typeName, $visited);
                 }
 
                 throw new Exception("Unsupported type for stub creation: array");
@@ -120,5 +108,17 @@ class AnyStub
             class_exists($typeName) => $visited[$typeName] ?? $this->buildRecursive($typeName, $visited),
             default => throw new Exception("Unsupported type for stub creation: $typeName"),
         };
+    }
+
+    public function buildRandomArray(string $typeName, array $visited): array
+    {
+        $minElements = 0;
+        $maxElements = 50;
+        $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
+        $array = [];
+        for ($i = 0; $i < $elementsCount; $i++) {
+            $array[] = $this->buildSingleRandomValue($typeName, $visited);
+        }
+        return $array;
     }
 }
