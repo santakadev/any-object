@@ -6,6 +6,7 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use Santakadev\AnyStub\AnyStub;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
+use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfStringObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\ArrayObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\BoolObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\FloatObject;
@@ -135,6 +136,17 @@ class AnyStubTest extends TestCase
     public function test_generic_array_of_string(): void
     {
         $object = $this->any->of(GenericArrayOfStringObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        if (count($object->value) > 0) {
+            $this->assertIsString($object->value[0]);
+        }
+    }
+
+    public function test_phpdoc_array_of_string(): void
+    {
+        $object = $this->any->of(PhpdocArrayOfStringObject::class);
         $this->assertIsArray($object->value);
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));

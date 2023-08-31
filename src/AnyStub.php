@@ -75,7 +75,7 @@ class AnyStub
             if ($type->getName() === 'array') {
                 $docblock = $reflectionProperty->getDocComment();
 
-                if (str_contains($docblock, 'array<string>')) {
+                if (str_contains($docblock, 'array<string>') || str_contains($docblock, 'string[]')) {
                     $minElements = 0;
                     $maxElements = 50;
                     $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
