@@ -44,7 +44,7 @@ class AnyStub
     }
 
     // TODO: support of array
-    public function buildRandomValue(ReflectionProperty $reflectionProperty, array $visited): string|int|float|bool|object|null
+    public function buildRandomValue(ReflectionProperty $reflectionProperty, array $visited): string|int|float|bool|object|array|null
     {
         $type = $reflectionProperty->getType();
 
@@ -73,6 +73,19 @@ class AnyStub
                 throw new Exception("Unsupported type for stub creation: mixed");
             }
             if ($type->getName() === 'array') {
+                $docblock = $reflectionProperty->getDocComment();
+
+                if (str_contains($docblock, 'array<string>')) {
+                    $minElements = 0;
+                    $maxElements = 50;
+                    $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
+                    $array = [];
+                    for ($i = 0; $i < $elementsCount; $i++) {
+                        $array[] = $this->faker->text();
+                    }
+                    return $array;
+                }
+
                 throw new Exception("Unsupported type for stub creation: array");
             }
 

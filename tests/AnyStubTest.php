@@ -5,6 +5,7 @@ namespace Santakadev\AnyStub\Tests;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Santakadev\AnyStub\AnyStub;
+use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\ArrayObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\BoolObject;
 use Santakadev\AnyStub\Tests\TestData\BasicTypes\FloatObject;
@@ -129,6 +130,17 @@ class AnyStubTest extends TestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Unsupported type for stub creation: mixed');
         $this->any->of(MixedObject::class);
+    }
+
+    public function test_generic_array_of_string(): void
+    {
+        $object = $this->any->of(GenericArrayOfStringObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        if (count($object->value) > 0) {
+            $this->assertIsString($object->value[0]);
+        }
     }
 
     public function test_array_properties_are_not_supported(): void
