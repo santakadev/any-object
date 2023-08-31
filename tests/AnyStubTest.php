@@ -12,6 +12,7 @@ use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfFQNCustomTypeObje
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfIntObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfBoolObject;
+use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfCustomTypeObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfFloatObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfFQNCustomTypeObject;
 use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfIntObject;
@@ -255,6 +256,17 @@ class AnyStubTest extends TestCase
     public function test_generic_array_of_custom_type(): void
     {
         $object = $this->any->of(GenericArrayOfCustomTypeObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        foreach ($object->value as $item) {
+            $this->assertInstanceOf(ParentObject::class, $item);
+        }
+    }
+
+    public function test_phpdoc_array_of_custom_type(): void
+    {
+        $object = $this->any->of(PhpdocArrayOfCustomTypeObject::class);
         $this->assertIsArray($object->value);
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));

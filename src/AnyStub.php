@@ -7,7 +7,6 @@ use Faker\Factory;
 use Faker\Generator;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Use_;
-use PhpParser\NodeDumper;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\ParserFactory;
@@ -91,7 +90,13 @@ class AnyStub
 
                     return $this->buildRandomArray($typeName, $visited);
                 } else if (preg_match('/@var\s+([^\s]+)\[]/', $docblock, $matches) === 1 ) {
-                    return $this->buildRandomArray($matches[1], $visited);
+                    $typeName = $matches[1];
+                    if (!in_array($typeName, $basicTypes)) {
+                        $uses = $this->buildClassNameToFQCNMap($reflectionProperty);
+                        $typeName = $uses[$typeName] ?? $typeName;
+                    }
+
+                    return $this->buildRandomArray($typeName, $visited);
                 }
 
                 throw new Exception("Unsupported type for stub creation: array");
