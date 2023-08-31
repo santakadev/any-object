@@ -21,6 +21,6 @@
     "require": {
         "php": ">=8.1",
         "fakerphp/faker": "^1.10",
-        "nikic/php-parser": "^4.17"
+        "nikic/php-parser": "^4.14"
     }
 }
