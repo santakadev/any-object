@@ -11,7 +11,10 @@ use ReflectionProperty;
 
 class PhpdocParser
 {
-    public function parseArrayType(ReflectionProperty $reflectionProperty): string|false
+    /**
+     * @return string[]|false
+     */
+    public function parseArrayType(ReflectionProperty $reflectionProperty): array|false
     {
         $docblock = $reflectionProperty->getDocComment();
 
@@ -22,7 +25,7 @@ class PhpdocParser
 
         // TODO: support for union types like array<int|string>
         foreach ($arrayPatterns as $arrayPattern) {
-            if (preg_match($arrayPattern, $docblock, $matches) === 1 ) {
+            if (preg_match($arrayPattern, $docblock, $matches) === 1) {
                 return $this->parsePhpdocArrayType($matches[1], $reflectionProperty);
             }
         }
@@ -30,16 +33,30 @@ class PhpdocParser
         return false;
     }
 
-    private function parsePhpdocArrayType($rawType, ReflectionProperty $reflectionProperty): string
+    /**
+     * @return string[]
+     */
+    private function parsePhpdocArrayType($rawType, ReflectionProperty $reflectionProperty): array
     {
-        $basicTypes = ['string', 'int', 'float', 'bool'];
-        if (!in_array($rawType, $basicTypes)) {
-            if (!str_starts_with($rawType, '\\')) {
-                [$namespace, $uses] = $this->buildClassNameToFQCNMap($reflectionProperty);
-                $rawType = $uses[$rawType] ?? $namespace . '\\' . $rawType;
+        $unionTypes = [];
+
+        $rawTypes = explode('|', $rawType);
+
+        foreach ($rawTypes as $typeName) {
+            $basicTypes = ['string', 'int', 'float', 'bool'];
+            if (!in_array($typeName, $basicTypes)) {
+                if (!str_starts_with($typeName, '\\')) {
+                    [$namespace, $uses] = $this->buildClassNameToFQCNMap($reflectionProperty);
+                    $unionTypes[] = $uses[$typeName] ?? $namespace . '\\' . $typeName;
+                } else {
+                    $unionTypes[] = $typeName;
+                }
+            } else {
+                $unionTypes[] = $typeName;
             }
         }
-        return $rawType;
+
+        return $unionTypes;
     }
 
     private function buildClassNameToFQCNMap(ReflectionProperty $reflectionProperty): array

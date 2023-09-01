@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Santakadev\AnyObject\AnyObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfBoolObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfNonQualifiedCustomTypeObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfUnionBasicTypesObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfUseQualifiedCustomTypeObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfFloatObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfFQNCustomTypeObject;
@@ -277,6 +278,7 @@ class AnyObjectTest extends TestCase
             $this->assertInstanceOf(NonQualifiedObject::class, $item);
         }
     }
+
     public function test_generic_array_of_non_qualified_custom_type(): void
     {
         $object = $this->any->of(GenericArrayOfNonQualifiedCustomTypeObject::class);
@@ -296,6 +298,22 @@ class AnyObjectTest extends TestCase
         $this->assertLessThanOrEqual(50, count($object->value));
         foreach ($object->value as $item) {
             $this->assertInstanceOf(ParentObject::class, $item);
+        }
+    }
+
+    public function test_generic_array_of_union_basic_types(): void
+    {
+        $object = $this->any->of(GenericArrayOfUnionBasicTypesObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        foreach ($object->value as $item) {
+            $this->assertTrue(
+                is_string($item) ||
+                is_int($item) ||
+                is_float($item) ||
+                is_bool($item)
+            );
         }
     }
 

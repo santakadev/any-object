@@ -59,16 +59,7 @@ class AnyObject
 
         if ($type instanceof ReflectionUnionType) {
             $unionTypeNames = array_map(fn($x) => $x->getName(), $type->getTypes());
-            if (in_array('array', $unionTypeNames)) {
-                throw new Exception("Unsupported type array in union types");
-            }
-
-            $randomArrayKey = array_rand($unionTypeNames);
-            $pickedTypeName = $unionTypeNames[$randomArrayKey];
-            if ($pickedTypeName === 'null') {
-                return null;
-            }
-
+            $pickedTypeName = $this->pickRandomType($unionTypeNames);
             return $this->buildSingleRandomValue($pickedTypeName, $visited);
         } else if ($type instanceof ReflectionIntersectionType) {
             // TODO: support of intersection types
@@ -79,11 +70,12 @@ class AnyObject
             }
             if ($type->getName() === 'array') {
                 $phpdocParser = new PhpdocParser();
-                $typeName = $phpdocParser->parseArrayType($reflectionProperty);
-                if (false === $typeName) {
+                $unionTypeNames = $phpdocParser->parseArrayType($reflectionProperty);
+                if (false === $unionTypeNames) {
                     throw new Exception(sprintf("Untyped array in %s::%s. Add type Phpdoc typed array comment.", $reflectionProperty->getDeclaringClass()->getName(), $reflectionProperty->getName()));
                 }
-                return $this->buildRandomArrayOf($typeName, $visited);
+                $pickedTypeName = $this->pickRandomType($unionTypeNames);
+                return $this->buildRandomArrayOf($pickedTypeName, $visited);
             }
 
             $nullFrequency = 0.5;
@@ -95,13 +87,14 @@ class AnyObject
         }
     }
 
-    public function buildSingleRandomValue(string $typeName, array $visited): string|int|float|bool|object
+    public function buildSingleRandomValue(string $typeName, array $visited): string|int|float|bool|object|null
     {
         return match (true) {
             $typeName === 'string' => $this->faker->text(),
             $typeName === 'int' => $this->faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
             $typeName === 'float' => $this->faker->randomFloat(), // TODO: negative float values
             $typeName === 'bool' => $this->faker->boolean(),
+            $typeName === 'null' => null,
             // TODO: think the best way of handling circular references
             class_exists($typeName) => $visited[$typeName] ?? $this->buildRecursive($typeName, $visited),
             default => throw new Exception("Unsupported type for stub creation: $typeName"),
@@ -118,5 +111,16 @@ class AnyObject
             $array[] = $this->buildSingleRandomValue($typeName, $visited);
         }
         return $array;
+    }
+
+    public function pickRandomType(array $unionTypeNames): mixed
+    {
+        if (in_array('array', $unionTypeNames)) {
+            throw new Exception("Unsupported type array in union types");
+        }
+
+        $randomArrayKey = array_rand($unionTypeNames);
+        $pickedTypeName = $unionTypeNames[$randomArrayKey];
+        return $pickedTypeName;
     }
 }
