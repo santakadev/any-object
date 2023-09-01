@@ -1,6 +1,6 @@
 <?php
 
-namespace Santakadev\AnyStub\Tests\TestData\UnionTypes;
+namespace Santakadev\AnyObject\Tests\TestData\UnionTypes;
 
 class UnionArrayIntObject
 {

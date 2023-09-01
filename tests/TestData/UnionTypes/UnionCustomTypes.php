@@ -1,9 +1,9 @@
 <?php
 
-namespace Santakadev\AnyStub\Tests\TestData\UnionTypes;
+namespace Santakadev\AnyObject\Tests\TestData\UnionTypes;
 
-use Santakadev\AnyStub\Tests\TestData\BasicTypes\IntObject;
-use Santakadev\AnyStub\Tests\TestData\BasicTypes\StringObject;
+use Santakadev\AnyObject\Tests\TestData\BasicTypes\IntObject;
+use Santakadev\AnyObject\Tests\TestData\BasicTypes\StringObject;
 
 class UnionCustomTypes
 {

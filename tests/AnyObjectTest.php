@@ -1,49 +1,49 @@
 <?php
 
-namespace Santakadev\AnyStub\Tests;
+namespace Santakadev\AnyObject\Tests;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
-use Santakadev\AnyStub\AnyStub;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfBoolObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfNonQualifiedCustomTypeObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfUseQualifiedCustomTypeObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfFloatObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfFQNCustomTypeObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfIntObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\NonQualifiedObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfBoolObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfNonQualifiedCustomTypeObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfUseQualifiedCustomTypeObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfFloatObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfFQNCustomTypeObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfIntObject;
-use Santakadev\AnyStub\Tests\TestData\ArrayTypes\PhpdocArrayOfStringObject;
-use Santakadev\AnyStub\Tests\TestData\BasicTypes\ArrayObject;
-use Santakadev\AnyStub\Tests\TestData\BasicTypes\BoolObject;
-use Santakadev\AnyStub\Tests\TestData\BasicTypes\FloatObject;
-use Santakadev\AnyStub\Tests\TestData\BasicTypes\IntObject;
-use Santakadev\AnyStub\Tests\TestData\BasicTypes\NullableArrayObject;
-use Santakadev\AnyStub\Tests\TestData\BasicTypes\NullableStringObject;
-use Santakadev\AnyStub\Tests\TestData\BasicTypes\StringObject;
-use Santakadev\AnyStub\Tests\TestData\CustomTypes\ChildObject;
-use Santakadev\AnyStub\Tests\TestData\CustomTypes\ParentObject;
-use Santakadev\AnyStub\Tests\TestData\IntersectionTypes\IntersectionObject;
-use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionArrayIntObject;
-use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionBasicTypes;
-use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionCustomTypes;
-use Santakadev\AnyStub\Tests\TestData\UnionTypes\UnionStringIntNull;
-use Santakadev\AnyStub\Tests\TestData\Untyped\MixedObject;
-use Santakadev\AnyStub\Tests\TestData\Untyped\UntypedObject;
+use Santakadev\AnyObject\AnyObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfBoolObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfNonQualifiedCustomTypeObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfUseQualifiedCustomTypeObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfFloatObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfFQNCustomTypeObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfIntObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\NonQualifiedObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\PhpdocArrayOfBoolObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\PhpdocArrayOfNonQualifiedCustomTypeObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\PhpdocArrayOfUseQualifiedCustomTypeObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\PhpdocArrayOfFloatObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\PhpdocArrayOfFQNCustomTypeObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\PhpdocArrayOfIntObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\PhpdocArrayOfStringObject;
+use Santakadev\AnyObject\Tests\TestData\BasicTypes\ArrayObject;
+use Santakadev\AnyObject\Tests\TestData\BasicTypes\BoolObject;
+use Santakadev\AnyObject\Tests\TestData\BasicTypes\FloatObject;
+use Santakadev\AnyObject\Tests\TestData\BasicTypes\IntObject;
+use Santakadev\AnyObject\Tests\TestData\BasicTypes\NullableArrayObject;
+use Santakadev\AnyObject\Tests\TestData\BasicTypes\NullableStringObject;
+use Santakadev\AnyObject\Tests\TestData\BasicTypes\StringObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\ChildObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\ParentObject;
+use Santakadev\AnyObject\Tests\TestData\IntersectionTypes\IntersectionObject;
+use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionArrayIntObject;
+use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionBasicTypes;
+use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionCustomTypes;
+use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionStringIntNull;
+use Santakadev\AnyObject\Tests\TestData\Untyped\MixedObject;
+use Santakadev\AnyObject\Tests\TestData\Untyped\UntypedObject;
 
-class AnyStubTest extends TestCase
+class AnyObjectTest extends TestCase
 {
-    private AnyStub $any;
+    private AnyObject $any;
 
     protected function setUp(): void
     {
-        $this->any = new AnyStub();
+        $this->any = new AnyObject();
     }
 
     public function test_string(): void
@@ -299,17 +299,17 @@ class AnyStubTest extends TestCase
         }
     }
 
-    public function test_array_properties_are_not_supported(): void
+    public function test_untyped_array_properties_are_not_supported(): void
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Unsupported type for stub creation: array');
+        $this->expectExceptionMessage('Untyped array in Santakadev\AnyObject\Tests\TestData\BasicTypes\ArrayObject::value. Add type Phpdoc typed array comment');
         $this->any->of(ArrayObject::class);
     }
 
-    public function test_nullable_array_properties_are_not_supported(): void
+    public function test_untyped_nullable_array_properties_are_not_supported(): void
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Unsupported type for stub creation: array');
+        $this->expectExceptionMessage('Untyped array in Santakadev\AnyObject\Tests\TestData\BasicTypes\NullableArrayObject::value. Add type Phpdoc typed array comment');
         $this->any->of(NullableArrayObject::class);
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Santakadev\AnyStub\Tests\TestData\CustomTypes;
+namespace Santakadev\AnyObject\Tests\TestData\CustomTypes;
 
 class ChildObject
 {

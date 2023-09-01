@@ -1,6 +1,6 @@
 <?php
 
-namespace Santakadev\AnyStub\Tests\TestData\BasicTypes;
+namespace Santakadev\AnyObject\Tests\TestData\BasicTypes;
 
 class BoolObject
 {

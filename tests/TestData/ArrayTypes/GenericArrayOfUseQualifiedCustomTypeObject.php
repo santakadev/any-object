@@ -1,8 +1,8 @@
 <?php
 
-namespace Santakadev\AnyStub\Tests\TestData\ArrayTypes;
+namespace Santakadev\AnyObject\Tests\TestData\ArrayTypes;
 
-use Santakadev\AnyStub\Tests\TestData\CustomTypes\ParentObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\ParentObject;
 
 class GenericArrayOfUseQualifiedCustomTypeObject
 {

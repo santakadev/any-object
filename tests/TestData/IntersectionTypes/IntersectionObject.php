@@ -1,6 +1,6 @@
 <?php
 
-namespace Santakadev\AnyStub\Tests\TestData\IntersectionTypes;
+namespace Santakadev\AnyObject\Tests\TestData\IntersectionTypes;
 
 use Countable;
 use Iterator;

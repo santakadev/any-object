@@ -1,11 +1,11 @@
 <?php
 
-namespace Santakadev\AnyStub\Tests\TestData\ArrayTypes;
+namespace Santakadev\AnyObject\Tests\TestData\ArrayTypes;
 
 class PhpdocArrayOfFQNCustomTypeObject
 {
     public function __construct(
-        /** @var \Santakadev\AnyStub\Tests\TestData\CustomTypes\ParentObject[] */
+        /** @var \Santakadev\AnyObject\Tests\TestData\CustomTypes\ParentObject[] */
         public readonly array $value
     ) {
     }

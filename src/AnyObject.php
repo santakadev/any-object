@@ -1,6 +1,6 @@
 <?php
 
-namespace Santakadev\AnyStub;
+namespace Santakadev\AnyObject;
 
 use Exception;
 use Faker\Factory;
@@ -15,7 +15,7 @@ use ReflectionIntersectionType;
 use ReflectionProperty;
 use ReflectionUnionType;
 
-class AnyStub
+class AnyObject
 {
     private Generator $faker;
 
@@ -78,22 +78,12 @@ class AnyStub
                 throw new Exception("Unsupported type for stub creation: mixed");
             }
             if ($type->getName() === 'array') {
-                $docblock = $reflectionProperty->getDocComment();
-
-                $arrayPatterns = [
-                    '/@var\s+array<([^\s]+)>/',
-                    '/@var\s+([^\s]+)\[]/',
-                ];
-
-                foreach ($arrayPatterns as $arrayPattern) {
-                    if (preg_match($arrayPattern, $docblock, $matches) === 1 ) {
-                        $rawType = $matches[1];
-                        $typeName = $this->parsePhpdocArrayType($rawType, $reflectionProperty);
-                        return $this->buildRandomArrayOf($typeName, $visited);
-                    }
+                $phpdocParser = new PhpdocParser();
+                $typeName = $phpdocParser->parseArrayType($reflectionProperty);
+                if (false === $typeName) {
+                    throw new Exception(sprintf("Untyped array in %s::%s. Add type Phpdoc typed array comment.", $reflectionProperty->getDeclaringClass()->getName(), $reflectionProperty->getName()));
                 }
-
-                throw new Exception("Unsupported type for stub creation: array");
+                return $this->buildRandomArrayOf($typeName, $visited);
             }
 
             $nullFrequency = 0.5;
@@ -128,51 +118,5 @@ class AnyStub
             $array[] = $this->buildSingleRandomValue($typeName, $visited);
         }
         return $array;
-    }
-
-    public function buildClassNameToFQCNMap(ReflectionProperty $reflectionProperty): array
-    {
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
-        $stmts = $parser->parse(file_get_contents($reflectionProperty->getDeclaringClass()->getFileName()));
-
-        $useVisitor = new class extends NodeVisitorAbstract {
-            public array $uses = [];
-            public string $namespace;
-
-            public function enterNode(Node $node)
-            {
-                if ($node instanceof Use_) {
-                    foreach ($node->uses as $use) {
-                        $useValue = $use->name->toString();
-                        $useValueParts = explode('\\', $useValue);
-                        $className = end($useValueParts);
-                        $this->uses[$className] = $useValue;
-                    }
-                }
-
-                if ($node instanceof Node\Stmt\Namespace_) {
-                    $this->namespace = $node->name->toString();
-                }
-            }
-        };
-
-        $traverser = new NodeTraverser();
-        $traverser->addVisitor($useVisitor);
-        $traverser->traverse($stmts);
-
-
-        return [$useVisitor->namespace, $useVisitor->uses];
-    }
-
-    public function parsePhpdocArrayType($rawType, ReflectionProperty $reflectionProperty): string
-    {
-        $basicTypes = ['string', 'int', 'float', 'bool'];
-        if (!in_array($rawType, $basicTypes)) {
-            if (!str_starts_with($rawType, '\\')) {
-                [$namespace, $uses] = $this->buildClassNameToFQCNMap($reflectionProperty);
-                $rawType = $uses[$rawType] ?? $namespace . '\\' . $rawType;
-            }
-        }
-        return $rawType;
     }
 }

@@ -1,12 +1,12 @@
 {
-    "name": "santakadev/any-stub",
-    "description": "Random stub generator for PHP",
+    "name": "santakadev/any-object",
+    "description": "PHP random object generator",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Santakadev\\AnyStub\\": "src/",
-            "Santakadev\\AnyStub\\Tests\\": "tests/"
+            "Santakadev\\AnyObject\\": "src/",
+            "Santakadev\\AnyObject\\Tests\\": "tests/"
         }
     },
     "authors": [
