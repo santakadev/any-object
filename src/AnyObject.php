@@ -60,7 +60,7 @@ class AnyObject
         if ($type instanceof ReflectionUnionType) {
             $unionTypeNames = array_map(fn($x) => $x->getName(), $type->getTypes());
             if (in_array('array', $unionTypeNames)) {
-                throw new Exception("Unsupported type for stub creation: array");
+                throw new Exception("Unsupported type array in union types");
             }
 
             $randomArrayKey = array_rand($unionTypeNames);

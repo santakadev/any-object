@@ -316,7 +316,7 @@ class AnyObjectTest extends TestCase
     public function test_union_with_array_properties_are_not_supported(): void
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Unsupported type for stub creation: array');
+        $this->expectExceptionMessage('Unsupported type array in union types');
         $this->any->of(UnionArrayIntObject::class);
     }
 }
