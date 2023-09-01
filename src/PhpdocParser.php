@@ -23,7 +23,6 @@ class PhpdocParser
             '/@var\s+([^\s]+)\[]/',
         ];
 
-        // TODO: support for union types like array<int|string>
         foreach ($arrayPatterns as $arrayPattern) {
             if (preg_match($arrayPattern, $docblock, $matches) === 1) {
                 return $this->parsePhpdocArrayType($matches[1], $reflectionProperty);
@@ -42,17 +41,13 @@ class PhpdocParser
 
         $rawTypes = explode('|', $rawType);
 
+        $basicTypes = ['string', 'int', 'float', 'bool'];
         foreach ($rawTypes as $typeName) {
-            $basicTypes = ['string', 'int', 'float', 'bool'];
-            if (!in_array($typeName, $basicTypes)) {
-                if (!str_starts_with($typeName, '\\')) {
-                    [$namespace, $uses] = $this->buildClassNameToFQCNMap($reflectionProperty);
-                    $unionTypes[] = $uses[$typeName] ?? $namespace . '\\' . $typeName;
-                } else {
-                    $unionTypes[] = $typeName;
-                }
-            } else {
+            if (in_array($typeName, $basicTypes) || str_starts_with($typeName, '\\')) {
                 $unionTypes[] = $typeName;
+            } else {
+                [$namespace, $uses] = $this->buildClassNameToFQCNMap($reflectionProperty);
+                $unionTypes[] = $uses[$typeName] ?? $namespace . '\\' . $typeName;
             }
         }
 
