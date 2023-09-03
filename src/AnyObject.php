@@ -23,12 +23,12 @@ class AnyObject
         $this->phpdocParser = new PhpdocParser();
     }
 
-    public function of(string $class): object
+    public function of(string $class, array $with = []): object
     {
-        return $this->buildRecursive($class);
+        return $this->buildRecursive($class, $with, []);
     }
 
-    private function buildRecursive(string $class, array $visited = []): object
+    private function buildRecursive(string $class, array $with = [], array $visited = []): object
     {
         $reflection = new ReflectionClass($class);
         // TODO: support of constructor arguments instead of properties
@@ -36,11 +36,12 @@ class AnyObject
         $visited[$class] = $instance;
 
         foreach ($reflection->getProperties() as $reflectionProperty) {
-            $randomValue = $this->buildRandomValue($reflectionProperty, $visited);
+            // TODO: check the type of the property in $with
+            $value = $with[$reflectionProperty->getName()] ?? $this->buildRandomValue($reflectionProperty, $visited);
 
             // Set the random value
             $reflectionProperty->setAccessible(true);
-            $reflectionProperty->setValue($instance, $randomValue);
+            $reflectionProperty->setValue($instance, $value);
             $reflectionProperty->setAccessible(false);
         }
 
@@ -71,7 +72,7 @@ class AnyObject
             $type === 'bool' => $this->faker->boolean(),
             $type === 'null' => null,
             // TODO: think the best way of handling circular references
-            class_exists($type) => $visited[$type] ?? $this->buildRecursive($type, $visited),
+            class_exists($type) => $visited[$type] ?? $this->buildRecursive($type, [], $visited),
             default => throw new Exception("Unsupported type for stub creation: $type"),
         };
     }

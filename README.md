@@ -11,9 +11,18 @@ composer require --dev santakadev/any-object
 
 ## Usage
 
+Generate a random object:
+
 ```php
 $any = new AnyObject();
 $object = $any->of(Product::class);
+```
+
+Fix some properties and use a random value for the rest
+
+```php
+$any = new AnyObject();
+$object = $any->of(class: Product::class, with: ['name' => 'My Product']);
 ```
 
 ## License

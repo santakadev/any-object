@@ -338,4 +338,10 @@ class AnyObjectTest extends TestCase
         $this->expectExceptionMessage('Unsupported type array in union types');
         $this->any->of(UnionArrayIntObject::class);
     }
+
+    public function test_with_fixed_data(): void
+    {
+        $object = $this->any->of(class: StringObject::class, with: ['value' => 'foo']);
+        $this->assertEquals('foo', $object->value);
+    }
 }
