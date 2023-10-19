@@ -8,16 +8,14 @@ use PhpParser\Node\Stmt\Use_;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\ParserFactory;
+use ReflectionParameter;
 use ReflectionProperty;
 use Santakadev\AnyObject\Types\TArray;
 use Santakadev\AnyObject\Types\TUnion;
 
 class PhpdocParser
 {
-    /**
-     * @return string[]|false
-     */
-    public function parseArrayType(ReflectionProperty $reflectionProperty): TArray|false
+    public function parsePropertyArrayType(ReflectionProperty $reflectionProperty): TArray|false
     {
         $docblock = $reflectionProperty->getDocComment();
 
@@ -35,7 +33,23 @@ class PhpdocParser
         throw new Exception(sprintf("Untyped array in %s::%s. Add type Phpdoc typed array comment.", $reflectionProperty->getDeclaringClass()->getName(), $reflectionProperty->getName()));
     }
 
-    private function parsePhpdocArrayType($rawType, ReflectionProperty $reflectionProperty): TArray
+    public function parseParameterArrayType(ReflectionParameter $reflectionParameter, string $methodDocComment): TArray|false
+    {
+        $arrayPatterns = [
+            '/@param\s+array<([^\s]+)>/',
+            '/@param\s+([^\s]+)\[]/',
+        ];
+
+        foreach ($arrayPatterns as $arrayPattern) {
+            if (preg_match($arrayPattern, $methodDocComment, $matches) === 1) {
+                return $this->parsePhpdocArrayType($matches[1], $reflectionParameter);
+            }
+        }
+
+        throw new Exception(sprintf("Untyped array in %s::%s. Add type Phpdoc typed array comment.", $reflectionParameter->getDeclaringClass()->getName(), $reflectionParameter->getName()));
+    }
+
+    private function parsePhpdocArrayType($rawType, ReflectionProperty|ReflectionParameter $reflectionPropertyOrParameter): TArray
     {
         $unionTypes = [];
 
@@ -46,7 +60,7 @@ class PhpdocParser
             if (in_array($typeName, $basicTypes) || str_starts_with($typeName, '\\')) {
                 $unionTypes[] = $typeName;
             } else {
-                [$namespace, $uses] = $this->buildClassNameToFQCNMap($reflectionProperty);
+                [$namespace, $uses] = $this->buildClassNameToFQCNMap($reflectionPropertyOrParameter);
                 $unionTypes[] = $uses[$typeName] ?? $namespace . '\\' . $typeName;
             }
         }
@@ -54,10 +68,10 @@ class PhpdocParser
         return new TArray(new TUnion($unionTypes));
     }
 
-    private function buildClassNameToFQCNMap(ReflectionProperty $reflectionProperty): array
+    private function buildClassNameToFQCNMap(ReflectionProperty|ReflectionParameter $reflectionPropertyOrParameter): array
     {
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
-        $stmts = $parser->parse(file_get_contents($reflectionProperty->getDeclaringClass()->getFileName()));
+        $stmts = $parser->parse(file_get_contents($reflectionPropertyOrParameter->getDeclaringClass()->getFileName()));
 
         $useVisitor = new class extends NodeVisitorAbstract {
             public array $uses = [];
