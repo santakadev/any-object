@@ -76,7 +76,6 @@ class AnyObject
 
         return $instance;
     }
-    // TODO: support enums
 
     private function buildSingleRandomValue(string|TArray|TUnion $type, array $visited = []): string|int|float|bool|object|array|null
     {
@@ -86,6 +85,15 @@ class AnyObject
 
         if ($type instanceof TUnion) {
             return $this->buildSingleRandomValue($type->pickRandom(), $visited);
+        }
+
+        // TODO: refactor this
+        if (class_exists($type)) {
+            $reflectionClass = new ReflectionClass($type);
+            if ($reflectionClass->isEnum()) {
+                $constants = $reflectionClass->getConstants();
+                return $constants[array_rand($constants)];
+            }
         }
 
         return match (true) {

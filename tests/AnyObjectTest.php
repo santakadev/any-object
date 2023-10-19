@@ -31,6 +31,8 @@ use Santakadev\AnyObject\Tests\TestData\BasicTypes\StringObject;
 use Santakadev\AnyObject\Tests\TestData\Constructor\NonPromotedConstructor;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\ChildObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\ParentObject;
+use Santakadev\AnyObject\Tests\TestData\EnumTypes\EnumType;
+use Santakadev\AnyObject\Tests\TestData\EnumTypes\EnumTypeObject;
 use Santakadev\AnyObject\Tests\TestData\IntersectionTypes\IntersectionObject;
 use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionArrayIntObject;
 use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionBasicTypes;
@@ -338,6 +340,13 @@ class AnyObjectTest extends TestCase
                 is_bool($item)
             );
         }
+    }
+
+    /** @dataProvider anyProvider */
+    public function test_enum_types(AnyObject $any): void
+    {
+        $object = $any->of(EnumTypeObject::class);
+        $this->assertContains($object->enum, [EnumType::A, EnumType::B, EnumType::C]);
     }
 
     /** @dataProvider anyProvider */
