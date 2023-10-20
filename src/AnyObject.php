@@ -49,10 +49,10 @@ class AnyObject
             // TODO: check if there is a property with the same name and get the type from there? It could be a configuration?
             if ($parameter->isPromoted()) {
                 $reflectionProperty = $reflection->getProperty($parameter->getName());
-                $type = $this->typeFromReflectionProperty($reflectionProperty);
+                $type = $this->typeFromReflection($reflectionProperty);
                 $arguments[] = $with[$reflectionProperty->getName()] ?? $this->buildSingleRandomValue($type, $visited);
             } else {
-                $type = $this->typeFromReflectionParameter($parameter, $constructor->getDocComment());
+                $type = $this->typeFromReflection($parameter, $constructor->getDocComment());
                 $arguments[] = $this->buildSingleRandomValue($type);
             }
         }
@@ -70,7 +70,7 @@ class AnyObject
 
         foreach ($reflection->getProperties() as $reflectionProperty) {
             // TODO: check the type of the property in $with
-            $type = $this->typeFromReflectionProperty($reflectionProperty);
+            $type = $this->typeFromReflection($reflectionProperty);
             $value = $with[$reflectionProperty->getName()] ?? $this->buildSingleRandomValue($type, $visited);
 
             // Set the random value
@@ -125,18 +125,18 @@ class AnyObject
         return $array;
     }
 
-    private function typeFromReflectionProperty(ReflectionProperty $reflectionProperty): TUnion|TArray|TEnum|TScalar|string
+    private function typeFromReflection(ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, string $methodDocComment = null): TUnion|TArray|TEnum|TScalar|string
     {
-        $reflectionType = $reflectionProperty->getType();
+        $reflectionType = $reflectionParameterOrProperty->getType();
 
         if ($reflectionType === null) {
-            throw new Exception(sprintf('Missing type declaration for property "%s"', $reflectionProperty->getName()));
+            throw new Exception(sprintf('Missing type declaration for property "%s"', $reflectionParameterOrProperty->getName()));
         }
 
         if ($reflectionType instanceof ReflectionUnionType) {
             return TUnion::fromReflection($reflectionType);
         } else if ($reflectionType instanceof ReflectionIntersectionType) {
-            throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionProperty->getName()));
+            throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionParameterOrProperty->getName()));
         } else {
             $typeName = $reflectionType->getName();
             if ($typeName === 'mixed') {
@@ -146,57 +146,11 @@ class AnyObject
             if ($typeName === 'array') {
                 // TODO: support of associative arrays
                 // TODO: array could support null
-                return $this->phpdocParser->parsePropertyArrayType($reflectionProperty);
-            }
-
-            if (enum_exists($typeName)) {
-                // TODO: enum could allow null
-                $reflectionEnum = new ReflectionEnum($typeName);
-                $reflectionCases = $reflectionEnum->getCases();
-                // TODO: Is there any difference with backed enums?
-                $cases = array_map(fn (ReflectionEnumUnitCase|ReflectionEnumPureCase $reflectionCase) => $reflectionCase->getValue(), $reflectionCases);
-                return new TEnum($cases);
-            }
-
-            if (class_exists($typeName)) {
-                // TODO: class could allow null
-                return $typeName;
-            }
-
-            if (in_array($typeName, ['string', 'int', 'bool', 'float'])) {
-                if ($reflectionType->allowsNull()) {
-                    return new TUnion([TScalar::from($typeName), 'null']);
-                } else {
-                    return TScalar::from($typeName);
+                if ($reflectionParameterOrProperty instanceof ReflectionProperty)
+                    return $this->phpdocParser->parsePropertyArrayType($reflectionParameterOrProperty);
+                else {
+                    return $this->phpdocParser->parseParameterArrayType($reflectionParameterOrProperty, $methodDocComment);
                 }
-            }
-
-            throw new Exception("Unsupported type for stub creation: $typeName");
-        }
-    }
-
-    private function typeFromReflectionParameter(ReflectionParameter $reflectionParameter, string $methodDocComment): TUnion|TArray|TEnum|TScalar|string
-    {
-        $reflectionType = $reflectionParameter->getType();
-
-        if ($reflectionType === null) {
-            throw new Exception(sprintf('Missing type declaration for property "%s"', $reflectionParameter->getName()));
-        }
-
-        if ($reflectionType instanceof ReflectionUnionType) {
-            return TUnion::fromReflection($reflectionType);
-        } else if ($reflectionType instanceof ReflectionIntersectionType) {
-            throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionParameter->getName()));
-        } else {
-            $typeName = $reflectionType->getName();
-            if ($typeName === 'mixed') {
-                throw new Exception("Unsupported type for stub creation: mixed");
-            }
-
-            if ($typeName === 'array') {
-                // TODO: support of associative arrays
-                // TODO: array could support null
-                return $this->phpdocParser->parseParameterArrayType($reflectionParameter, $methodDocComment);
             }
 
             if (enum_exists($typeName)) {

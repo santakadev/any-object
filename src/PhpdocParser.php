@@ -19,36 +19,40 @@ class PhpdocParser
 {
     public function parsePropertyArrayType(ReflectionProperty $reflectionProperty): TArray|false
     {
-        $docblock = $reflectionProperty->getDocComment();
-
-        $arrayPatterns = [
-            '/@var\s+array<([^\s]+)>/',
-            '/@var\s+([^\s]+)\[]/',
-        ];
-
-        foreach ($arrayPatterns as $arrayPattern) {
-            if (preg_match($arrayPattern, $docblock, $matches) === 1) {
-                return $this->parsePhpdocArrayType($matches[1], $reflectionProperty);
-            }
-        }
-
-        throw new Exception(sprintf("Untyped array in %s::%s. Add type Phpdoc typed array comment.", $reflectionProperty->getDeclaringClass()->getName(), $reflectionProperty->getName()));
+        return $this->parseArrayType($reflectionProperty, $reflectionProperty->getDocComment());
     }
 
     public function parseParameterArrayType(ReflectionParameter $reflectionParameter, string $methodDocComment): TArray|false
     {
-        $arrayPatterns = [
-            '/@param\s+array<([^\s]+)>/',
-            '/@param\s+([^\s]+)\[]/',
-        ];
+        return $this->parseArrayType($reflectionParameter, $methodDocComment);
+    }
+
+    private function parseArrayType(ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, string $associatedDocComment)
+    {
+        $arrayPatterns = $this->docPatternsFromReflectionType($reflectionParameterOrProperty);
 
         foreach ($arrayPatterns as $arrayPattern) {
-            if (preg_match($arrayPattern, $methodDocComment, $matches) === 1) {
-                return $this->parsePhpdocArrayType($matches[1], $reflectionParameter);
+            if (preg_match($arrayPattern, $associatedDocComment, $matches) === 1) {
+                return $this->parsePhpdocArrayType($matches[1], $reflectionParameterOrProperty);
             }
         }
 
-        throw new Exception(sprintf("Untyped array in %s::%s. Add type Phpdoc typed array comment.", $reflectionParameter->getDeclaringClass()->getName(), $reflectionParameter->getName()));
+        throw new Exception(sprintf("Untyped array in %s::%s. Add type Phpdoc typed array comment.", $reflectionParameterOrProperty->getDeclaringClass()->getName(), $reflectionParameterOrProperty->getName()));
+    }
+
+    private function docPatternsFromReflectionType(ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty): array
+    {
+        if ($reflectionParameterOrProperty instanceof ReflectionProperty) {
+            return [
+                '/@var\s+array<([^\s]+)>/',
+                '/@var\s+([^\s]+)\[]/',
+            ];
+        } else {
+            return [
+                '/@param\s+array<([^\s]+)>/',
+                '/@param\s+([^\s]+)\[]/',
+            ];
+        }
     }
 
     private function parsePhpdocArrayType($rawType, ReflectionProperty|ReflectionParameter $reflectionPropertyOrParameter): TArray
