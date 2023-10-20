@@ -12,7 +12,7 @@ use ReflectionUnionType;
 class TUnion
 {
     public function __construct(
-        /** @var array<TScalar|TEnum|TArray|string> */
+        /** @var array<TScalar|TEnum|TArray|TNull|string> */
         private readonly array $types
     ) {
         if (in_array('array', $types)) {
@@ -27,7 +27,7 @@ class TUnion
         return new self($types);
     }
 
-    public static function typeFromReflectionType(ReflectionNamedType $reflectionType): string|TEnum|TScalar
+    public static function typeFromReflectionType(ReflectionNamedType $reflectionType): string|TEnum|TScalar|TNull
     {
         $typeName = $reflectionType->getName();
         if ($typeName === 'mixed') {
@@ -51,7 +51,7 @@ class TUnion
         }
 
         if ($typeName === 'null') {
-            return 'null';
+            return new TNull();
         }
 
         if ($typeName === 'array') {
@@ -61,7 +61,7 @@ class TUnion
         throw new Exception("Unsupported type for stub creation: $typeName");
     }
 
-    public function pickRandom(): TScalar|TEnum|TArray|string
+    public function pickRandom(): TScalar|TEnum|TArray|TNull|string
     {
         return $this->types[array_rand($this->types)];
     }

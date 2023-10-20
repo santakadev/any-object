@@ -15,6 +15,7 @@ use ReflectionProperty;
 use ReflectionUnionType;
 use Santakadev\AnyObject\Types\TArray;
 use Santakadev\AnyObject\Types\TEnum;
+use Santakadev\AnyObject\Types\TNull;
 use Santakadev\AnyObject\Types\TScalar;
 use Santakadev\AnyObject\Types\TUnion;
 
@@ -82,7 +83,7 @@ class AnyObject
         return $instance;
     }
 
-    private function buildSingleRandomValue(string|TArray|TUnion|TEnum|TScalar $type, array $visited = []): string|int|float|bool|object|array|null
+    private function buildSingleRandomValue(string|TArray|TUnion|TEnum|TScalar|TNull $type, array $visited = []): string|int|float|bool|object|array|null
     {
         if ($type instanceof TArray) {
             return $this->buildRandomArray($type, $visited);
@@ -96,6 +97,10 @@ class AnyObject
             return $type->pickRandom();
         }
 
+        if ($type instanceof TNull) {
+            return null;
+        }
+
         if ($type instanceof TScalar) {
             return match ($type) {
                 TScalar::string => $this->faker->text(),
@@ -106,7 +111,6 @@ class AnyObject
         }
 
         return match (true) {
-            $type === 'null' => null,
             // TODO: think the best way of handling circular references
             class_exists($type) => $visited[$type] ?? $this->buildFromProperties($type, [], $visited), // TODO: it could be built from constructor
             default => throw new Exception("Unsupported type for stub creation: $type"),
@@ -169,7 +173,7 @@ class AnyObject
 
             if (in_array($typeName, ['string', 'int', 'bool', 'float'])) {
                 if ($reflectionType->allowsNull()) {
-                    return new TUnion([TScalar::from($typeName), 'null']);
+                    return new TUnion([TScalar::from($typeName), new TNull()]);
                 } else {
                     return TScalar::from($typeName);
                 }
