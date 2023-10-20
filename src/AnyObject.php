@@ -6,11 +6,16 @@ use Exception;
 use Faker\Factory;
 use Faker\Generator;
 use ReflectionClass;
+use ReflectionEnum;
+use ReflectionEnumBackedCase;
+use ReflectionEnumPureCase;
+use ReflectionEnumUnitCase;
 use ReflectionIntersectionType;
 use ReflectionParameter;
 use ReflectionProperty;
 use ReflectionUnionType;
 use Santakadev\AnyObject\Types\TArray;
+use Santakadev\AnyObject\Types\TEnum;
 use Santakadev\AnyObject\Types\TUnion;
 
 class AnyObject
@@ -77,7 +82,7 @@ class AnyObject
         return $instance;
     }
 
-    private function buildSingleRandomValue(string|TArray|TUnion $type, array $visited = []): string|int|float|bool|object|array|null
+    private function buildSingleRandomValue(string|TArray|TUnion|TEnum $type, array $visited = []): string|int|float|bool|object|array|null
     {
         if ($type instanceof TArray) {
             return $this->buildRandomArray($type, $visited);
@@ -87,13 +92,8 @@ class AnyObject
             return $this->buildSingleRandomValue($type->pickRandom(), $visited);
         }
 
-        // TODO: refactor this
-        if (class_exists($type)) {
-            $reflectionClass = new ReflectionClass($type);
-            if ($reflectionClass->isEnum()) {
-                $constants = $reflectionClass->getConstants();
-                return $constants[array_rand($constants)];
-            }
+        if ($type instanceof TEnum) {
+            return $type->pickRandom();
         }
 
         return match (true) {
@@ -120,7 +120,7 @@ class AnyObject
         return $array;
     }
 
-    private function typeFromReflectionProperty(ReflectionProperty $reflectionProperty): TUnion|TArray|string
+    private function typeFromReflectionProperty(ReflectionProperty $reflectionProperty): TUnion|TArray|TEnum|string
     {
         $reflectionType = $reflectionProperty->getType();
 
@@ -133,20 +133,37 @@ class AnyObject
         } else if ($reflectionType instanceof ReflectionIntersectionType) {
             throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionProperty->getName()));
         } else {
-            if ($reflectionType->getName() === 'mixed') {
+            $typeName = $reflectionType->getName();
+            if ($typeName === 'mixed') {
                 throw new Exception("Unsupported type for stub creation: mixed");
             }
 
-            if ($reflectionType->getName() === 'array') {
+            if ($typeName === 'array') {
                 // TODO: support of associative arrays
                 return $this->phpdocParser->parsePropertyArrayType($reflectionProperty);
             }
 
             if ($reflectionType->allowsNull()) {
-                return new TUnion([$reflectionType->getName(), 'null']);
+                return new TUnion([$typeName, 'null']);
             }
 
-            return $reflectionType->getName();
+            if (enum_exists($typeName)) {
+                $reflectionEnum = new ReflectionEnum($typeName);
+                $reflectionCases = $reflectionEnum->getCases();
+                // TODO: Is there any difference with backed enums?
+                $cases = array_map(fn (ReflectionEnumUnitCase|ReflectionEnumPureCase $reflectionCase) => $reflectionCase->getValue(), $reflectionCases);
+                return new TEnum($cases);
+            }
+
+            if (class_exists($typeName)) {
+                return $typeName;
+            }
+
+            if (in_array($typeName, ['string', 'int', 'bool', 'float'])) {
+                return $typeName;
+            }
+
+            throw new Exception("Unsupported type for stub creation: $typeName");
         }
     }
 
