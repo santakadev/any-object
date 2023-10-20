@@ -11,7 +11,9 @@ use PhpParser\ParserFactory;
 use ReflectionParameter;
 use ReflectionProperty;
 use Santakadev\AnyObject\Types\TArray;
+use Santakadev\AnyObject\Types\TScalar;
 use Santakadev\AnyObject\Types\TUnion;
+use UnitEnum;
 
 class PhpdocParser
 {
@@ -55,9 +57,11 @@ class PhpdocParser
 
         $rawTypes = explode('|', $rawType);
 
-        $basicTypes = ['string', 'int', 'float', 'bool'];
+        $scalarTypes = array_map(fn (UnitEnum $e) => $e->name, TScalar::cases());
         foreach ($rawTypes as $typeName) {
-            if (in_array($typeName, $basicTypes) || str_starts_with($typeName, '\\')) {
+            if (in_array($typeName, $scalarTypes)) {
+                $unionTypes[] = TScalar::from($typeName);
+            } else if (str_starts_with($typeName, '\\')) {
                 $unionTypes[] = $typeName;
             } else {
                 [$namespace, $uses] = $this->buildClassNameToFQCNMap($reflectionPropertyOrParameter);

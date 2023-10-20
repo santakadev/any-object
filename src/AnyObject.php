@@ -7,7 +7,6 @@ use Faker\Factory;
 use Faker\Generator;
 use ReflectionClass;
 use ReflectionEnum;
-use ReflectionEnumBackedCase;
 use ReflectionEnumPureCase;
 use ReflectionEnumUnitCase;
 use ReflectionIntersectionType;
@@ -16,6 +15,7 @@ use ReflectionProperty;
 use ReflectionUnionType;
 use Santakadev\AnyObject\Types\TArray;
 use Santakadev\AnyObject\Types\TEnum;
+use Santakadev\AnyObject\Types\TScalar;
 use Santakadev\AnyObject\Types\TUnion;
 
 class AnyObject
@@ -82,7 +82,7 @@ class AnyObject
         return $instance;
     }
 
-    private function buildSingleRandomValue(string|TArray|TUnion|TEnum $type, array $visited = []): string|int|float|bool|object|array|null
+    private function buildSingleRandomValue(string|TArray|TUnion|TEnum|TScalar $type, array $visited = []): string|int|float|bool|object|array|null
     {
         if ($type instanceof TArray) {
             return $this->buildRandomArray($type, $visited);
@@ -96,14 +96,19 @@ class AnyObject
             return $type->pickRandom();
         }
 
+        if ($type instanceof TScalar) {
+            return match ($type) {
+                TScalar::string => $this->faker->text(),
+                TScalar::int => $this->faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
+                TScalar::float => $this->faker->randomFloat(), // TODO: negative float values
+                TScalar::bool => $this->faker->boolean(),
+            };
+        }
+
         return match (true) {
-            $type === 'string' => $this->faker->text(),
-            $type === 'int' => $this->faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
-            $type === 'float' => $this->faker->randomFloat(), // TODO: negative float values
-            $type === 'bool' => $this->faker->boolean(),
             $type === 'null' => null,
             // TODO: think the best way of handling circular references
-            class_exists($type) => $visited[$type] ?? $this->buildFromProperties($type, [], $visited),
+            class_exists($type) => $visited[$type] ?? $this->buildFromProperties($type, [], $visited), // TODO: it could be built from constructor
             default => throw new Exception("Unsupported type for stub creation: $type"),
         };
     }
@@ -120,7 +125,7 @@ class AnyObject
         return $array;
     }
 
-    private function typeFromReflectionProperty(ReflectionProperty $reflectionProperty): TUnion|TArray|TEnum|string
+    private function typeFromReflectionProperty(ReflectionProperty $reflectionProperty): TUnion|TArray|TEnum|TScalar|string
     {
         $reflectionType = $reflectionProperty->getType();
 
@@ -140,14 +145,12 @@ class AnyObject
 
             if ($typeName === 'array') {
                 // TODO: support of associative arrays
+                // TODO: array could support null
                 return $this->phpdocParser->parsePropertyArrayType($reflectionProperty);
             }
 
-            if ($reflectionType->allowsNull()) {
-                return new TUnion([$typeName, 'null']);
-            }
-
             if (enum_exists($typeName)) {
+                // TODO: enum could allow null
                 $reflectionEnum = new ReflectionEnum($typeName);
                 $reflectionCases = $reflectionEnum->getCases();
                 // TODO: Is there any difference with backed enums?
@@ -156,18 +159,23 @@ class AnyObject
             }
 
             if (class_exists($typeName)) {
+                // TODO: class could allow null
                 return $typeName;
             }
 
             if (in_array($typeName, ['string', 'int', 'bool', 'float'])) {
-                return $typeName;
+                if ($reflectionType->allowsNull()) {
+                    return new TUnion([TScalar::from($typeName), 'null']);
+                } else {
+                    return TScalar::from($typeName);
+                }
             }
 
             throw new Exception("Unsupported type for stub creation: $typeName");
         }
     }
 
-    private function typeFromReflectionParameter(ReflectionParameter $reflectionParameter, string $methodDocComment): TUnion|TArray|string
+    private function typeFromReflectionParameter(ReflectionParameter $reflectionParameter, string $methodDocComment): TUnion|TArray|TEnum|TScalar|string
     {
         $reflectionType = $reflectionParameter->getType();
 
@@ -180,20 +188,40 @@ class AnyObject
         } else if ($reflectionType instanceof ReflectionIntersectionType) {
             throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionParameter->getName()));
         } else {
-            if ($reflectionType->getName() === 'mixed') {
+            $typeName = $reflectionType->getName();
+            if ($typeName === 'mixed') {
                 throw new Exception("Unsupported type for stub creation: mixed");
             }
 
-            if ($reflectionType->getName() === 'array') {
+            if ($typeName === 'array') {
                 // TODO: support of associative arrays
+                // TODO: array could support null
                 return $this->phpdocParser->parseParameterArrayType($reflectionParameter, $methodDocComment);
             }
 
-            if ($reflectionType->allowsNull()) {
-                return new TUnion([$reflectionType->getName(), 'null']);
+            if (enum_exists($typeName)) {
+                // TODO: enum could allow null
+                $reflectionEnum = new ReflectionEnum($typeName);
+                $reflectionCases = $reflectionEnum->getCases();
+                // TODO: Is there any difference with backed enums?
+                $cases = array_map(fn (ReflectionEnumUnitCase|ReflectionEnumPureCase $reflectionCase) => $reflectionCase->getValue(), $reflectionCases);
+                return new TEnum($cases);
             }
 
-            return $reflectionType->getName();
+            if (class_exists($typeName)) {
+                // TODO: class could allow null
+                return $typeName;
+            }
+
+            if (in_array($typeName, ['string', 'int', 'bool', 'float'])) {
+                if ($reflectionType->allowsNull()) {
+                    return new TUnion([TScalar::from($typeName), 'null']);
+                } else {
+                    return TScalar::from($typeName);
+                }
+            }
+
+            throw new Exception("Unsupported type for stub creation: $typeName");
         }
     }
 }
