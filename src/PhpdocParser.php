@@ -11,23 +11,24 @@ use PhpParser\ParserFactory;
 use ReflectionParameter;
 use ReflectionProperty;
 use Santakadev\AnyObject\Types\TArray;
+use Santakadev\AnyObject\Types\TClass;
 use Santakadev\AnyObject\Types\TScalar;
 use Santakadev\AnyObject\Types\TUnion;
 use UnitEnum;
 
 class PhpdocParser
 {
-    public function parsePropertyArrayType(ReflectionProperty $reflectionProperty): TArray|false
+    public function parsePropertyArrayType(ReflectionProperty $reflectionProperty): TArray
     {
         return $this->parseArrayType($reflectionProperty, $reflectionProperty->getDocComment());
     }
 
-    public function parseParameterArrayType(ReflectionParameter $reflectionParameter, string $methodDocComment): TArray|false
+    public function parseParameterArrayType(ReflectionParameter $reflectionParameter, string $methodDocComment): TArray
     {
         return $this->parseArrayType($reflectionParameter, $methodDocComment);
     }
 
-    private function parseArrayType(ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, string $associatedDocComment)
+    private function parseArrayType(ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, string $associatedDocComment): TArray
     {
         $arrayPatterns = $this->docPatternsFromReflectionType($reflectionParameterOrProperty);
 
@@ -66,10 +67,10 @@ class PhpdocParser
             if (in_array($typeName, $scalarTypes)) {
                 $unionTypes[] = TScalar::from($typeName);
             } else if (str_starts_with($typeName, '\\')) {
-                $unionTypes[] = $typeName;
+                $unionTypes[] = new TClass($typeName);
             } else {
                 [$namespace, $uses] = $this->buildClassNameToFQCNMap($reflectionPropertyOrParameter);
-                $unionTypes[] = $uses[$typeName] ?? $namespace . '\\' . $typeName;
+                $unionTypes[] = $uses[$typeName] ? new TClass($uses[$typeName]) : new TClass($namespace . '\\' . $typeName);
             }
         }
 

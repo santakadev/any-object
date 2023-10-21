@@ -9,7 +9,7 @@ class TArray
     ) {
     }
 
-    public function pickRandom(): TScalar|TEnum|TArray|string
+    public function pickRandom(): TScalar|TEnum|TArray|TClass
     {
         return $this->union->pickRandom();
     }

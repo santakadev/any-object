@@ -14,6 +14,7 @@ use ReflectionParameter;
 use ReflectionProperty;
 use ReflectionUnionType;
 use Santakadev\AnyObject\Types\TArray;
+use Santakadev\AnyObject\Types\TClass;
 use Santakadev\AnyObject\Types\TEnum;
 use Santakadev\AnyObject\Types\TNull;
 use Santakadev\AnyObject\Types\TScalar;
@@ -83,7 +84,7 @@ class AnyObject
         return $instance;
     }
 
-    private function buildSingleRandomValue(string|TArray|TUnion|TEnum|TScalar|TNull $type, array $visited = []): string|int|float|bool|object|array|null
+    private function buildSingleRandomValue(TClass|TArray|TUnion|TEnum|TScalar|TNull $type, array $visited = []): string|int|float|bool|object|array|null
     {
         if ($type instanceof TArray) {
             return $this->buildRandomArray($type, $visited);
@@ -110,11 +111,12 @@ class AnyObject
             };
         }
 
-        return match (true) {
+        if ($type instanceof TClass) {
             // TODO: think the best way of handling circular references
-            class_exists($type) => $visited[$type] ?? $this->buildFromProperties($type, [], $visited), // TODO: it could be built from constructor
-            default => throw new Exception("Unsupported type for stub creation: $type"),
-        };
+            return $visited[$type->class] ?? $this->buildFromProperties($type->class, [], $visited); // TODO: it could be built from constructor
+        }
+
+        throw new Exception("Unreachable code");
     }
 
     private function buildRandomArray(TArray $arrayType, array $visited): array
@@ -129,7 +131,7 @@ class AnyObject
         return $array;
     }
 
-    private function typeFromReflection(ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, string $methodDocComment = null): TUnion|TArray|TEnum|TScalar|string
+    private function typeFromReflection(ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, string $methodDocComment = null): TUnion|TArray|TEnum|TScalar|TClass
     {
         $reflectionType = $reflectionParameterOrProperty->getType();
 
@@ -168,7 +170,7 @@ class AnyObject
 
             if (class_exists($typeName)) {
                 // TODO: class could allow null
-                return $typeName;
+                return new TClass($typeName);
             }
 
             if (in_array($typeName, ['string', 'int', 'bool', 'float'])) {
