@@ -151,7 +151,7 @@ class AnyObject
 
             if ($typeName === 'array') {
                 // TODO: support of associative arrays
-                // TODO: array could support null
+                // TODO: array could allow null
                 if ($reflectionParameterOrProperty instanceof ReflectionProperty)
                     return $this->phpdocParser->parsePropertyArrayType($reflectionParameterOrProperty);
                 else {
@@ -161,11 +161,7 @@ class AnyObject
 
             if (enum_exists($typeName)) {
                 // TODO: enum could allow null
-                $reflectionEnum = new ReflectionEnum($typeName);
-                $reflectionCases = $reflectionEnum->getCases();
-                // TODO: Is there any difference with backed enums?
-                $cases = array_map(fn (ReflectionEnumUnitCase|ReflectionEnumPureCase $reflectionCase) => $reflectionCase->getValue(), $reflectionCases);
-                return new TEnum($cases);
+                return TEnum::fromEnumReference($typeName);
             }
 
             if (class_exists($typeName)) {
