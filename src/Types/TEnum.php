@@ -12,7 +12,7 @@ class TEnum
     {
     }
 
-    public static function fromEnumReference(string $enumReference): static
+    public static function fromEnumReference(string $enumReference): self
     {
         $reflectionEnum = new ReflectionEnum($enumReference);
         $reflectionCases = $reflectionEnum->getCases();

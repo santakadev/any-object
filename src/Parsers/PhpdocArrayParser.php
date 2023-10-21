@@ -84,7 +84,7 @@ class PhpdocArrayParser
             public array $uses = [];
             public string $namespace;
 
-            public function enterNode(Node $node)
+            public function enterNode(Node $node): int|Node|null
             {
                 if ($node instanceof Use_) {
                     foreach ($node->uses as $use) {
@@ -98,6 +98,8 @@ class PhpdocArrayParser
                 if ($node instanceof Node\Stmt\Namespace_) {
                     $this->namespace = $node->name->toString();
                 }
+
+                return null;
             }
         };
 

@@ -7,6 +7,7 @@ use Faker\Factory;
 use Faker\Generator;
 use ReflectionClass;
 use ReflectionIntersectionType;
+use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionProperty;
 use ReflectionUnionType;
@@ -38,7 +39,7 @@ class AnyObject
         }
     }
 
-    public function buildFromConstructor(string $class, array $with = [], array $visited = []): object
+    private function buildFromConstructor(string $class, array $with = [], array $visited = []): object
     {
         $reflection = new ReflectionClass($class);
         $constructor = $reflection->getConstructor(); // TODO: test an object without constructor. Fallback to properties?
@@ -119,46 +120,48 @@ class AnyObject
         if ($reflectionType === null) {
             throw new Exception(sprintf('Missing type declaration for property "%s"', $reflectionParameterOrProperty->getName()));
         }
+        return match (get_class($reflectionType)) {
+            ReflectionUnionType::class => TUnion::fromReflection($reflectionType),
+            ReflectionIntersectionType::class => throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionParameterOrProperty->getName())),
+            ReflectionNamedType::class => $this->typeFromReflectionNamedType($reflectionType, $reflectionParameterOrProperty, $methodDocComment),
+        };
+    }
 
-        if ($reflectionType instanceof ReflectionUnionType) {
-            return TUnion::fromReflection($reflectionType);
-        } else if ($reflectionType instanceof ReflectionIntersectionType) {
-            throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionParameterOrProperty->getName()));
-        } else {
-            $typeName = $reflectionType->getName();
-            if ($typeName === 'mixed') {
-                throw new Exception("Unsupported type for stub creation: mixed");
-            }
-
-            if ($typeName === 'array') {
-                // TODO: support of associative arrays
-                // TODO: array could allow null
-                if ($reflectionParameterOrProperty instanceof ReflectionProperty)
-                    return $this->phpdocParser->parsePropertyArrayType($reflectionParameterOrProperty);
-                else {
-                    return $this->phpdocParser->parseParameterArrayType($reflectionParameterOrProperty, $methodDocComment);
-                }
-            }
-
-            if (enum_exists($typeName)) {
-                // TODO: enum could allow null
-                return TEnum::fromEnumReference($typeName);
-            }
-
-            if (class_exists($typeName)) {
-                // TODO: class could allow null
-                return new TClass($typeName);
-            }
-
-            if (in_array($typeName, TScalar::values())) {
-                if ($reflectionType->allowsNull()) {
-                    return new TUnion([TScalar::from($typeName), new TNull()]);
-                } else {
-                    return TScalar::from($typeName);
-                }
-            }
-
-            throw new Exception("Unsupported type for stub creation: $typeName");
+    private function typeFromReflectionNamedType(ReflectionNamedType $reflectionType, ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, ?string $methodDocComment): TUnion|TScalar|TArray|TEnum|TClass
+    {
+        $typeName = $reflectionType->getName();
+        if ($typeName === 'mixed') {
+            throw new Exception("Unsupported type for stub creation: mixed");
         }
+
+        if ($typeName === 'array') {
+            // TODO: support of associative arrays
+            // TODO: array could allow null
+            if ($reflectionParameterOrProperty instanceof ReflectionProperty)
+                return $this->phpdocParser->parsePropertyArrayType($reflectionParameterOrProperty);
+            else {
+                return $this->phpdocParser->parseParameterArrayType($reflectionParameterOrProperty, $methodDocComment);
+            }
+        }
+
+        if (enum_exists($typeName)) {
+            // TODO: enum could allow null
+            return TEnum::fromEnumReference($typeName);
+        }
+
+        if (class_exists($typeName)) {
+            // TODO: class could allow null
+            return new TClass($typeName);
+        }
+
+        if (in_array($typeName, TScalar::values())) {
+            if ($reflectionType->allowsNull()) {
+                return new TUnion([TScalar::from($typeName), new TNull()]);
+            } else {
+                return TScalar::from($typeName);
+            }
+        }
+
+        throw new Exception("Unsupported type for stub creation: $typeName");
     }
 }
