@@ -8,4 +8,10 @@ enum TScalar: string
     case int = 'int';
     case float = 'float';
     case bool = 'bool';
+
+
+    public static function values(): array
+    {
+        return array_map(fn (self $e) => $e->name, TScalar::cases());
+    }
 }

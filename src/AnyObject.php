@@ -6,9 +6,6 @@ use Exception;
 use Faker\Factory;
 use Faker\Generator;
 use ReflectionClass;
-use ReflectionEnum;
-use ReflectionEnumPureCase;
-use ReflectionEnumUnitCase;
 use ReflectionIntersectionType;
 use ReflectionParameter;
 use ReflectionProperty;
@@ -152,7 +149,7 @@ class AnyObject
                 return new TClass($typeName);
             }
 
-            if (in_array($typeName, ['string', 'int', 'bool', 'float'])) {
+            if (in_array($typeName, TScalar::values())) {
                 if ($reflectionType->allowsNull()) {
                     return new TUnion([TScalar::from($typeName), new TNull()]);
                 } else {

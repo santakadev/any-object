@@ -46,7 +46,7 @@ class TUnion
             return new TClass($typeName);
         }
 
-        if (in_array($typeName, ['string', 'int', 'bool', 'float'])) {
+        if (in_array($typeName, TScalar::values())) {
             return TScalar::from($typeName);
         }
 

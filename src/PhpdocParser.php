@@ -14,7 +14,6 @@ use Santakadev\AnyObject\Types\TArray;
 use Santakadev\AnyObject\Types\TClass;
 use Santakadev\AnyObject\Types\TScalar;
 use Santakadev\AnyObject\Types\TUnion;
-use UnitEnum;
 
 class PhpdocParser
 {
@@ -62,9 +61,8 @@ class PhpdocParser
 
         $rawTypes = explode('|', $rawType);
 
-        $scalarTypes = array_map(fn (UnitEnum $e) => $e->name, TScalar::cases());
         foreach ($rawTypes as $typeName) {
-            if (in_array($typeName, $scalarTypes)) {
+            if (in_array($typeName, TScalar::values())) {
                 $unionTypes[] = TScalar::from($typeName);
             } else if (str_starts_with($typeName, '\\')) {
                 $unionTypes[] = new TClass($typeName);
