@@ -9,7 +9,9 @@ enum TScalar: string
     case float = 'float';
     case bool = 'bool';
 
-
+    /**
+     * @return array<string>
+     */
     public static function values(): array
     {
         return array_map(fn (self $e) => $e->name, TScalar::cases());

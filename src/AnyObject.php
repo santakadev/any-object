@@ -2,16 +2,10 @@
 
 namespace Santakadev\AnyObject;
 
-use Exception;
 use Faker\Factory;
 use Faker\Generator;
 use ReflectionClass;
-use ReflectionIntersectionType;
-use ReflectionNamedType;
-use ReflectionParameter;
-use ReflectionProperty;
-use ReflectionUnionType;
-use Santakadev\AnyObject\Parsers\PhpdocArrayParser;
+use Santakadev\AnyObject\Parsers\Parser;
 use Santakadev\AnyObject\Types\TArray;
 use Santakadev\AnyObject\Types\TClass;
 use Santakadev\AnyObject\Types\TEnum;
@@ -22,12 +16,12 @@ use Santakadev\AnyObject\Types\TUnion;
 class AnyObject
 {
     private readonly Generator $faker;
-    private readonly PhpdocArrayParser $phpdocParser;
+    private readonly Parser $parser;
 
     public function __construct(private readonly bool $useConstructor = false)
     {
         $this->faker = Factory::create();
-        $this->phpdocParser = new PhpdocArrayParser();
+        $this->parser = new Parser();
     }
 
     public function of(string $class, array $with = []): object
@@ -50,10 +44,10 @@ class AnyObject
             // TODO: check if there is a property with the same name and get the type from there? It could be a configuration?
             if ($parameter->isPromoted()) {
                 $reflectionProperty = $reflection->getProperty($parameter->getName());
-                $type = $this->typeFromReflection($reflectionProperty);
+                $type = $this->parser->typeFromReflection($reflectionProperty);
                 $arguments[] = $with[$reflectionProperty->getName()] ?? $this->buildSingleRandomValue($type, $visited);
             } else {
-                $type = $this->typeFromReflection($parameter, $constructor->getDocComment());
+                $type = $this->parser->typeFromReflection($parameter, $constructor->getDocComment());
                 $arguments[] = $this->buildSingleRandomValue($type);
             }
         }
@@ -71,7 +65,7 @@ class AnyObject
 
         foreach ($reflection->getProperties() as $reflectionProperty) {
             // TODO: check the type of the property in $with
-            $type = $this->typeFromReflection($reflectionProperty);
+            $type = $this->parser->typeFromReflection($reflectionProperty);
             $value = $with[$reflectionProperty->getName()] ?? $this->buildSingleRandomValue($type, $visited);
 
             // Set the random value
@@ -87,8 +81,8 @@ class AnyObject
     {
         return match (get_class($type)) {
             TArray::class => $this->buildRandomArray($type, $visited),
-            TUnion::class => $this->buildSingleRandomValue($type->pickRandom(), $visited),
-            TEnum::class => $type->pickRandom(),
+            TUnion::class => $this->buildSingleRandomValue($this->pickRandomUnionType($type), $visited),
+            TEnum::class => $this->pickRandomEnumCase($type),
             TNull::class => null,
             TScalar::class => match ($type) {
                 TScalar::string => $this->faker->text(),
@@ -108,60 +102,23 @@ class AnyObject
         $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
         $array = [];
         for ($i = 0; $i < $elementsCount; $i++) {
-            $array[] = $this->buildSingleRandomValue($arrayType->pickRandom(), $visited);
+            $array[] = $this->buildSingleRandomValue($this->pickRandomArrayType($arrayType), $visited);
         }
         return $array;
     }
 
-    private function typeFromReflection(ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, string $methodDocComment = null): TUnion|TArray|TEnum|TScalar|TClass
+    private function pickRandomArrayType(TArray $array): TClass|TArray|TUnion|TEnum|TScalar|TNull // TODO: Can this return TUnion?
     {
-        $reflectionType = $reflectionParameterOrProperty->getType();
-
-        if ($reflectionType === null) {
-            throw new Exception(sprintf('Missing type declaration for property "%s"', $reflectionParameterOrProperty->getName()));
-        }
-        return match (get_class($reflectionType)) {
-            ReflectionUnionType::class => TUnion::fromReflection($reflectionType),
-            ReflectionIntersectionType::class => throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionParameterOrProperty->getName())),
-            ReflectionNamedType::class => $this->typeFromReflectionNamedType($reflectionType, $reflectionParameterOrProperty, $methodDocComment),
-        };
+        return $this->pickRandomUnionType($array->union);
     }
 
-    private function typeFromReflectionNamedType(ReflectionNamedType $reflectionType, ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, ?string $methodDocComment): TUnion|TScalar|TArray|TEnum|TClass
+    private function pickRandomUnionType(TUnion $union): TScalar|TEnum|TArray|TNull|TClass
     {
-        $typeName = $reflectionType->getName();
-        if ($typeName === 'mixed') {
-            throw new Exception("Unsupported type for stub creation: mixed");
-        }
+        return $union->types[array_rand($union->types)];
+    }
 
-        if ($typeName === 'array') {
-            // TODO: support of associative arrays
-            // TODO: array could allow null
-            if ($reflectionParameterOrProperty instanceof ReflectionProperty)
-                return $this->phpdocParser->parsePropertyArrayType($reflectionParameterOrProperty);
-            else {
-                return $this->phpdocParser->parseParameterArrayType($reflectionParameterOrProperty, $methodDocComment);
-            }
-        }
-
-        if (enum_exists($typeName)) {
-            // TODO: enum could allow null
-            return TEnum::fromEnumReference($typeName);
-        }
-
-        if (class_exists($typeName)) {
-            // TODO: class could allow null
-            return new TClass($typeName);
-        }
-
-        if (in_array($typeName, TScalar::values())) {
-            if ($reflectionType->allowsNull()) {
-                return new TUnion([TScalar::from($typeName), new TNull()]);
-            } else {
-                return TScalar::from($typeName);
-            }
-        }
-
-        throw new Exception("Unsupported type for stub creation: $typeName");
+    private function pickRandomEnumCase(TEnum $enum): mixed
+    {
+        return $enum->values[array_rand($enum->values)];
     }
 }

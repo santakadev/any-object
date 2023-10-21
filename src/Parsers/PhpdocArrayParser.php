@@ -107,7 +107,6 @@ class PhpdocArrayParser
         $traverser->addVisitor($useVisitor);
         $traverser->traverse($stmts);
 
-
         return [$useVisitor->namespace, $useVisitor->uses];
     }
 }
