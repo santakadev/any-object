@@ -86,37 +86,20 @@ class AnyObject
 
     private function buildSingleRandomValue(TClass|TArray|TUnion|TEnum|TScalar|TNull $type, array $visited = []): string|int|float|bool|object|array|null
     {
-        if ($type instanceof TArray) {
-            return $this->buildRandomArray($type, $visited);
-        }
-
-        if ($type instanceof TUnion) {
-            return $this->buildSingleRandomValue($type->pickRandom(), $visited);
-        }
-
-        if ($type instanceof TEnum) {
-            return $type->pickRandom();
-        }
-
-        if ($type instanceof TNull) {
-            return null;
-        }
-
-        if ($type instanceof TScalar) {
-            return match ($type) {
+        return match (get_class($type)) {
+            TArray::class => $this->buildRandomArray($type, $visited),
+            TUnion::class => $this->buildSingleRandomValue($type->pickRandom(), $visited),
+            TEnum::class => $type->pickRandom(),
+            TNull::class => null,
+            TScalar::class => match ($type) {
                 TScalar::string => $this->faker->text(),
                 TScalar::int => $this->faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
                 TScalar::float => $this->faker->randomFloat(), // TODO: negative float values
                 TScalar::bool => $this->faker->boolean(),
-            };
-        }
-
-        if ($type instanceof TClass) {
+            },
             // TODO: think the best way of handling circular references
-            return $visited[$type->class] ?? $this->buildFromProperties($type->class, [], $visited); // TODO: it could be built from constructor
-        }
-
-        throw new Exception("Unreachable code");
+            TClass::class => $visited[$type->class] ?? $this->buildFromProperties($type->class, [], $visited), // TODO: it could be built from constructor
+        };
     }
 
     private function buildRandomArray(TArray $arrayType, array $visited): array
