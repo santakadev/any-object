@@ -1,6 +1,6 @@
 <?php
 
-namespace Santakadev\AnyObject;
+namespace Santakadev\AnyObject\Parsers;
 
 use Exception;
 use PhpParser\Node;
@@ -15,7 +15,7 @@ use Santakadev\AnyObject\Types\TClass;
 use Santakadev\AnyObject\Types\TScalar;
 use Santakadev\AnyObject\Types\TUnion;
 
-class PhpdocParser
+class PhpdocArrayParser
 {
     public function parsePropertyArrayType(ReflectionProperty $reflectionProperty): TArray
     {

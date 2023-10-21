@@ -10,6 +10,7 @@ use ReflectionIntersectionType;
 use ReflectionParameter;
 use ReflectionProperty;
 use ReflectionUnionType;
+use Santakadev\AnyObject\Parsers\PhpdocArrayParser;
 use Santakadev\AnyObject\Types\TArray;
 use Santakadev\AnyObject\Types\TClass;
 use Santakadev\AnyObject\Types\TEnum;
@@ -20,12 +21,12 @@ use Santakadev\AnyObject\Types\TUnion;
 class AnyObject
 {
     private readonly Generator $faker;
-    private readonly PhpdocParser $phpdocParser;
+    private readonly PhpdocArrayParser $phpdocParser;
 
     public function __construct(private readonly bool $useConstructor = false)
     {
         $this->faker = Factory::create();
-        $this->phpdocParser = new PhpdocParser();
+        $this->phpdocParser = new PhpdocArrayParser();
     }
 
     public function of(string $class, array $with = []): object
