@@ -5,7 +5,7 @@ namespace Santakadev\AnyObject;
 use Faker\Factory;
 use Faker\Generator;
 use ReflectionClass;
-use Santakadev\AnyObject\Parsers\Parser;
+use Santakadev\AnyObject\Parser\Parser;
 use Santakadev\AnyObject\Types\TArray;
 use Santakadev\AnyObject\Types\TClass;
 use Santakadev\AnyObject\Types\TEnum;

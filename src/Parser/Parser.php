@@ -1,8 +1,9 @@
 <?php
 
-namespace Santakadev\AnyObject\Parsers;
+namespace Santakadev\AnyObject\Parser;
 
 use Exception;
+use ReflectionClass;
 use ReflectionEnum;
 use ReflectionEnumPureCase;
 use ReflectionEnumUnitCase;
@@ -28,6 +29,44 @@ class Parser
         $this->phpdocArrayParser = new PhpdocArrayParser();
     }
 
+    public function parseThroughConstructor(string $class, $visited = []): GraphNode
+    {
+        if (!class_exists($class)) {
+            throw new Exception("Class $class does not exist");
+        }
+
+        $reflection = new ReflectionClass($class);
+        $constructor = $reflection->getConstructor(); // TODO: test an object without constructor. Fallback to properties?
+        $constructorParameters = $constructor->getParameters();
+
+        $current = new GraphNode(new TClass($class));
+
+        $visited[$class] = $current;
+
+        foreach ($constructorParameters as $parameter) {
+            // TODO: check if there is a property with the same name and get the type from there? It could be a configuration?
+            if ($parameter->isPromoted()) {
+                $reflectionProperty = $reflection->getProperty($parameter->getName());
+                $type = $this->typeFromReflection($reflectionProperty);
+            } else {
+                $type = $this->typeFromReflection($parameter, $constructor->getDocComment());
+            }
+
+            if ($type instanceof TClass) {
+                if (!isset($visited[$type->class])) {
+                    $current->addEdge($this->parseThroughConstructor($type->class, $visited));
+                } else {
+                    $current->addEdge($visited[$type->class]);
+                }
+            } else {
+                $current->addEdge(new GraphNode($type));
+            }
+        }
+
+        return $current;
+    }
+
+    // TODO: make private after parser parallel implementation
     public function typeFromReflection(ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, string $methodDocComment = null): TUnion|TArray|TEnum|TScalar|TClass
     {
         $reflectionType = $reflectionParameterOrProperty->getType();

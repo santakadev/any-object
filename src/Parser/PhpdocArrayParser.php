@@ -1,6 +1,6 @@
 <?php
 
-namespace Santakadev\AnyObject\Parsers;
+namespace Santakadev\AnyObject\Parser;
 
 use Exception;
 use PhpParser\Node;
