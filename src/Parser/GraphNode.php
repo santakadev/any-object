@@ -13,8 +13,9 @@ class GraphNode
 {
     public function __construct(
         public readonly TClass|TEnum|TArray|TUnion|TScalar|TNull $type,
+        public readonly ?string $name = '',
         /** @var array<GraphNode> */
-        private array $adjacencyList = []
+        public array $adjacencyList = []
     ) {
     }
 

@@ -52,6 +52,7 @@ class Parser
                 $type = $this->typeFromReflection($parameter, $constructor->getDocComment());
             }
 
+            // TODO: disallow circular dependencies through constructor
             if ($type instanceof TClass) {
                 if (!isset($visited[$type->class])) {
                     $current->addEdge($this->parseThroughConstructor($type->class, $visited));
@@ -59,7 +60,7 @@ class Parser
                     $current->addEdge($visited[$type->class]);
                 }
             } else {
-                $current->addEdge(new GraphNode($type));
+                $current->addEdge(new GraphNode($type, $parameter->getName()));
             }
         }
 

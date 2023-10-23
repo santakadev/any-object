@@ -30,6 +30,8 @@ use Santakadev\AnyObject\Tests\TestData\BasicTypes\NullableStringObject;
 use Santakadev\AnyObject\Tests\TestData\BasicTypes\StringObject;
 use Santakadev\AnyObject\Tests\TestData\Constructor\NonPromotedConstructor;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\ChildObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomSubObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\ParentObject;
 use Santakadev\AnyObject\Tests\TestData\EnumTypes\EnumType;
 use Santakadev\AnyObject\Tests\TestData\EnumTypes\EnumTypeObject;
@@ -82,18 +84,19 @@ class AnyObjectTest extends TestCase
     /** @dataProvider anyProvider */
     public function test_custom(AnyObject $any): void
     {
-        $object = $any->of(ParentObject::class);
-        $this->assertInstanceOf(ChildObject::class, $object->value);
+        $object = $any->of(CustomObject::class);
+        $this->assertInstanceOf(CustomSubObject::class, $object->value);
     }
 
     /**
      * When a child object's property references an ancestor type
      * it uses the already created ancestor object.
-     * @dataProvider anyProvider
+     *
+     * For now, it is not possible through constructor TODO: add a test for this
      */
-    public function test_circular_references(AnyObject $any): void
+    public function test_circular_references_through_properties(): void
     {
-        $parent = $any->of(ParentObject::class);
+        $parent = (new AnyObject())->of(ParentObject::class);
         $child = $parent->value;
         $this->assertInstanceOf(ChildObject::class, $child);
         $this->assertEquals($parent, $child->value);

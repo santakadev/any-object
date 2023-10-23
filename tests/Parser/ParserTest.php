@@ -11,7 +11,7 @@ use Santakadev\AnyObject\Types\TClass;
 
 class ParserTest extends TestCase
 {
-    public function test_circular_reference(): void
+    public function test_constructor_circular_reference(): void
     {
         $parser = new Parser();
 

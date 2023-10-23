@@ -5,6 +5,7 @@ namespace Santakadev\AnyObject;
 use Faker\Factory;
 use Faker\Generator;
 use ReflectionClass;
+use Santakadev\AnyObject\Parser\GraphNode;
 use Santakadev\AnyObject\Parser\Parser;
 use Santakadev\AnyObject\Types\TArray;
 use Santakadev\AnyObject\Types\TClass;
@@ -33,27 +34,40 @@ class AnyObject
         }
     }
 
-    private function buildFromConstructor(string $class, array $with = [], array $visited = []): object
+    private function buildFromConstructor(string $class, array $with = []): object
     {
-        $reflection = new ReflectionClass($class);
-        $constructor = $reflection->getConstructor(); // TODO: test an object without constructor. Fallback to properties?
-        $constructorParameters = $constructor->getParameters();
-        $arguments = [];
+        $root = $this->parser->parseThroughConstructor($class);
+        return $this->buildRecursivelyThroughConstructor($root, $with);
+    }
 
-        foreach ($constructorParameters as $parameter) {
-            // TODO: check if there is a property with the same name and get the type from there? It could be a configuration?
-            if ($parameter->isPromoted()) {
-                $reflectionProperty = $reflection->getProperty($parameter->getName());
-                $type = $this->parser->typeFromReflection($reflectionProperty);
-                $arguments[] = $with[$reflectionProperty->getName()] ?? $this->buildSingleRandomValue($type, $visited);
-            } else {
-                $type = $this->parser->typeFromReflection($parameter, $constructor->getDocComment());
-                $arguments[] = $this->buildSingleRandomValue($type);
+    private function buildRecursivelyThroughConstructor(GraphNode $node, array $with, array $visited = [])
+    {
+        if (isset($with[$node->name])) { // TODO: this could lead to strange results, as with can modify nested classes properties
+            return $with[$node->name];
+        }
+
+        // DFS
+        if (!$node->type instanceof TClass) {
+            return $this->buildSingleRandomValue($node->type);
+        }
+
+        $arguments = [];
+        foreach ($node->adjacencyList as $adj) {
+            if ($adj->type instanceof TClass && isset($visited[$adj->type->class])) {
+                $arguments[] = $visited[$adj->type->class];
+                continue;
             }
+
+            $value = $this->buildRecursivelyThroughConstructor($adj, $with, $visited);
+            if ($value instanceof TClass) {
+                $visited[$adj->type->class] = $value;
+            }
+
+            $arguments[] = $value; // TODO: Reuse built objects
         }
 
         // TODO: constructor could be private/protected
-        return new $class(...$arguments);
+        return new $node->type->class(...$arguments);
     }
 
     private function buildFromProperties(string $class, array $with = [], array $visited = []): object
