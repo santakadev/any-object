@@ -2,12 +2,12 @@
 
 namespace Santakadev\AnyObject\Tests\TestData\ArrayTypes;
 
-use Santakadev\AnyObject\Tests\TestData\CustomTypes\ParentObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
 
 class PhpdocArrayOfNonQualifiedCustomTypeObject
 {
     public function __construct(
-        /** @var ParentObject[] */
+        /** @var CustomObject[] */
         public readonly array $value
     ) {
     }

@@ -27,6 +27,7 @@ class AnyObject
 
     public function of(string $class, array $with = []): object
     {
+        // TODO: think the best way of handling circular references
         if ($this->useConstructor) {
             return $this->buildFromConstructor($class, $with);
         } else {
@@ -42,6 +43,21 @@ class AnyObject
 
     private function buildRecursivelyThroughConstructor(GraphNode $node, array $with, array $visited = [])
     {
+        if ($node->type instanceof TUnion) {
+            return $this->buildRecursivelyThroughConstructor($node->adjacencyList[array_rand($node->adjacencyList)], $with, $visited);
+        }
+
+        if ($node->type instanceof TArray) {
+            $minElements = 0;
+            $maxElements = 50;
+            $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
+            $array = [];
+            for ($i = 0; $i < $elementsCount; $i++) {
+                $array[] = $this->buildRecursivelyThroughConstructor($node->pickRandomBranch(), $visited);
+            }
+            return $array;
+        }
+
         if (!$node->type instanceof TClass) {
             return $this->buildSingleRandomValue($node->type);
         }
@@ -78,6 +94,21 @@ class AnyObject
 
     private function buildRecursivelyThroughProperties(GraphNode $node, array $with, array $visited = [])
     {
+        if ($node->type instanceof TUnion) {
+            return $this->buildRecursivelyThroughConstructor($node->adjacencyList[array_rand($node->adjacencyList)], $with, $visited);
+        }
+
+        if ($node->type instanceof TArray) {
+            $minElements = 0;
+            $maxElements = 50;
+            $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
+            $array = [];
+            for ($i = 0; $i < $elementsCount; $i++) {
+                $array[] = $this->buildRecursivelyThroughConstructor($node->pickRandomBranch(), $visited);
+            }
+            return $array;
+        }
+
         if (!$node->type instanceof TClass) {
             return $this->buildSingleRandomValue($node->type);
         }
@@ -115,12 +146,10 @@ class AnyObject
         return $instance;
     }
 
-    private function buildSingleRandomValue(TClass|TArray|TUnion|TEnum|TScalar|TNull $type, array $visited = []): string|int|float|bool|object|array|null
+    private function buildSingleRandomValue(TClass|TArray|TUnion|TEnum|TScalar|TNull $type): string|int|float|bool|object|array|null
     {
         return match (get_class($type)) {
-            TArray::class => $this->buildRandomArray($type, $visited),
-            TUnion::class => $this->buildSingleRandomValue($this->pickRandomUnionType($type), $visited), // TODO: The inner call can return a TClass
-            TEnum::class => $this->pickRandomEnumCase($type),
+            TEnum::class => $type->pickRandomCase(),
             TNull::class => null,
             TScalar::class => match ($type) {
                 TScalar::string => $this->faker->text(),
@@ -128,35 +157,6 @@ class AnyObject
                 TScalar::float => $this->faker->randomFloat(), // TODO: negative float values
                 TScalar::bool => $this->faker->boolean(),
             },
-            // TODO: think the best way of handling circular references
-            TClass::class => $visited[$type->class] ?? $this->buildFromProperties($type->class, [], $visited), // TODO: it could be built from constructor
         };
-    }
-
-    private function buildRandomArray(TArray $arrayType, array $visited): array
-    {
-        $minElements = 0;
-        $maxElements = 50;
-        $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
-        $array = [];
-        for ($i = 0; $i < $elementsCount; $i++) {
-            $array[] = $this->buildSingleRandomValue($this->pickRandomArrayType($arrayType), $visited);
-        }
-        return $array;
-    }
-
-    private function pickRandomArrayType(TArray $array): TClass|TArray|TUnion|TEnum|TScalar|TNull // TODO: Can this return TUnion?
-    {
-        return $this->pickRandomUnionType($array->union);
-    }
-
-    private function pickRandomUnionType(TUnion $union): TScalar|TEnum|TArray|TNull|TClass
-    {
-        return $union->types[array_rand($union->types)];
-    }
-
-    private function pickRandomEnumCase(TEnum $enum): mixed
-    {
-        return $enum->values[array_rand($enum->values)];
     }
 }

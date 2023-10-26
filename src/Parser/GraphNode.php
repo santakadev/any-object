@@ -18,10 +18,26 @@ class GraphNode
     ) {
     }
 
-    public function addEdge(GraphNode $node, string $name): void
+    public function addEdge(GraphNode $node): void
+    {
+        if (!in_array($node, $this->adjacencyList)) {
+            $this->adjacencyList[] = $node;
+        }
+    }
+
+    public function addNamedEdge(GraphNode $node, string $name): void
     {
         if (!in_array($node, $this->adjacencyList)) {
             $this->adjacencyList[$name] = $node;
         }
+    }
+
+    public function pickRandomBranch(): ?GraphNode
+    {
+        if (empty($this->adjacencyList)) {
+            return null;
+        }
+
+        return $this->adjacencyList[array_rand($this->adjacencyList)];
     }
 }

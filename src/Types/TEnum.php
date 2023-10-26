@@ -8,4 +8,9 @@ class TEnum
     public function __construct(public readonly array $values)
     {
     }
+
+    public function pickRandomCase(): mixed
+    {
+        return $this->values[array_rand($this->values)];
+    }
 }

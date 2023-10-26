@@ -265,7 +265,7 @@ class AnyObjectTest extends TestCase
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));
         foreach ($object->value as $item) {
-            $this->assertInstanceOf(ParentObject::class, $item);
+            $this->assertInstanceOf(CustomObject::class, $item);
         }
     }
 
@@ -277,7 +277,7 @@ class AnyObjectTest extends TestCase
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));
         foreach ($object->value as $item) {
-            $this->assertInstanceOf(ParentObject::class, $item);
+            $this->assertInstanceOf(CustomObject::class, $item);
         }
     }
 
@@ -289,7 +289,7 @@ class AnyObjectTest extends TestCase
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));
         foreach ($object->value as $item) {
-            $this->assertInstanceOf(ParentObject::class, $item);
+            $this->assertInstanceOf(CustomObject::class, $item);
         }
     }
 
@@ -325,7 +325,7 @@ class AnyObjectTest extends TestCase
         $this->assertGreaterThanOrEqual(0, count($object->value));
         $this->assertLessThanOrEqual(50, count($object->value));
         foreach ($object->value as $item) {
-            $this->assertInstanceOf(ParentObject::class, $item);
+            $this->assertInstanceOf(CustomObject::class, $item);
         }
     }
 

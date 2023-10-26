@@ -56,12 +56,32 @@ class Parser
             // TODO: disallow circular dependencies through constructor
             if ($type instanceof TClass) {
                 if (!isset($visited[$type->class])) {
-                    $current->addEdge($this->parseThroughConstructor($type->class, $visited), $parameterName);
+                    $current->addNamedEdge($this->parseThroughConstructor($type->class, $visited), $parameterName);
                 } else {
-                    $current->addEdge($visited[$type->class], $parameterName);
+                    $current->addNamedEdge($visited[$type->class], $parameterName);
                 }
+            } elseif ($type instanceof TUnion) {
+                $enumNode = new GraphNode($type);
+                foreach ($type->types as $type) {
+                    if ($type instanceof TClass) {
+                        $enumNode->addEdge($this->parseThroughConstructor($type->class, $visited));
+                    } else {
+                        $enumNode->addEdge(new GraphNode($type));
+                    }
+                }
+                $current->addNamedEdge($enumNode, $parameterName);
+            } elseif ($type instanceof TArray) {
+                $enumNode = new GraphNode($type);
+                foreach ($type->union->types as $type) {
+                    if ($type instanceof TClass) {
+                        $enumNode->addEdge($this->parseThroughConstructor($type->class, $visited));
+                    } else {
+                        $enumNode->addEdge(new GraphNode($type));
+                    }
+                }
+                $current->addNamedEdge($enumNode, $parameterName);
             } else {
-                $current->addEdge(new GraphNode($type), $parameterName);
+                $current->addNamedEdge(new GraphNode($type), $parameterName);
             }
         }
 
@@ -84,12 +104,32 @@ class Parser
             $propertyName = $reflectionProperty->getName();
             if ($type instanceof TClass) {
                 if (!isset($visited[$type->class])) {
-                    $current->addEdge($this->parseThroughProperties($type->class, $visited), $propertyName);
+                    $current->addNamedEdge($this->parseThroughProperties($type->class, $visited), $propertyName);
                 } else {
-                    $current->addEdge($visited[$type->class], $propertyName);
+                    $current->addNamedEdge($visited[$type->class], $propertyName);
                 }
+            } elseif ($type instanceof TUnion) {
+                $enumNode = new GraphNode($type);
+                foreach ($type->types as $type) {
+                    if ($type instanceof TClass) {
+                        $enumNode->addEdge($this->parseThroughProperties($type->class, $visited));
+                    } else {
+                        $enumNode->addEdge(new GraphNode($type));
+                    }
+                }
+                $current->addNamedEdge($enumNode, $propertyName);
+            } elseif ($type instanceof TArray) {
+                $enumNode = new GraphNode($type);
+                foreach ($type->union->types as $type) {
+                    if ($type instanceof TClass) {
+                        $enumNode->addEdge($this->parseThroughProperties($type->class, $visited));
+                    } else {
+                        $enumNode->addEdge(new GraphNode($type));
+                    }
+                }
+                $current->addNamedEdge($enumNode, $propertyName);
             } else {
-                $current->addEdge(new GraphNode($type), $propertyName);
+                $current->addNamedEdge(new GraphNode($type), $propertyName);
             }
         }
 

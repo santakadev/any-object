@@ -19,8 +19,8 @@ class ParserTest extends TestCase
 
         $parent = new GraphNode(new TClass(ParentObject::class));
         $child = new GraphNode(new TClass(ChildObject::class));
-        $parent->addEdge($child, 'value');
-        $child->addEdge($parent, 'value');
+        $parent->addNamedEdge($child, 'value');
+        $child->addNamedEdge($parent, 'value');
 
         $this->assertEquals(
             $parent,
