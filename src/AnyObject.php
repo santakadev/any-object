@@ -42,17 +42,17 @@ class AnyObject
 
     private function buildRecursivelyThroughConstructor(GraphNode $node, array $with, array $visited = [])
     {
-        if (isset($with[$node->name])) { // TODO: this could lead to strange results, as with can modify nested classes properties
-            return $with[$node->name];
-        }
-
         // DFS
         if (!$node->type instanceof TClass) {
             return $this->buildSingleRandomValue($node->type);
         }
 
         $arguments = [];
-        foreach ($node->adjacencyList as $adj) {
+        foreach ($node->adjacencyList as $paramName => $adj) {
+            if (isset($with[$paramName])) { // TODO: this could lead to strange results, as with can modify nested classes properties
+                $arguments[] = $with[$paramName];
+            }
+
             if ($adj->type instanceof TClass && isset($visited[$adj->type->class])) {
                 $arguments[] = $visited[$adj->type->class];
                 continue;
@@ -66,7 +66,7 @@ class AnyObject
             $arguments[] = $value; // TODO: Reuse built objects
         }
 
-        // TODO: constructor could be private/protected
+        // TODO: constructor could be private/protected. Use named constructor instead
         return new $node->type->class(...$arguments);
     }
 
@@ -95,7 +95,7 @@ class AnyObject
     {
         return match (get_class($type)) {
             TArray::class => $this->buildRandomArray($type, $visited),
-            TUnion::class => $this->buildSingleRandomValue($this->pickRandomUnionType($type), $visited),
+            TUnion::class => $this->buildSingleRandomValue($this->pickRandomUnionType($type), $visited), // TODO: The inner call can return a TClass
             TEnum::class => $this->pickRandomEnumCase($type),
             TNull::class => null,
             TScalar::class => match ($type) {

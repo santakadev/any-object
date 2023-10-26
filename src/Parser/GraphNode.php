@@ -13,16 +13,16 @@ class GraphNode
 {
     public function __construct(
         public readonly TClass|TEnum|TArray|TUnion|TScalar|TNull $type,
-        public readonly ?string $name = '',
+        public readonly ?string $name = null,
         /** @var array<GraphNode> */
         public array $adjacencyList = []
     ) {
     }
 
-    public function addEdge(GraphNode $node): void
+    public function addEdge(GraphNode $node, string $name): void
     {
         if (!in_array($node, $this->adjacencyList)) {
-            $this->adjacencyList[] = $node;
+            $this->adjacencyList[$name] = $node;
         }
     }
 }
