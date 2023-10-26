@@ -86,14 +86,14 @@ class AnyObject
         $instance = $reflectionClass->newInstanceWithoutConstructor();
         $visited[$node->type->class] = $instance;
         $values = [];
-        foreach ($node->adjacencyList as $paramName => $adj) {
-            if (isset($with[$paramName])) { // TODO: this could lead to strange results, as with can modify nested classes properties
-                $values[$paramName] = $with[$paramName];
+        foreach ($node->adjacencyList as $propertyName => $adj) {
+            if (isset($with[$propertyName])) { // TODO: this could lead to strange results, as with can modify nested classes properties
+                $values[$propertyName] = $with[$propertyName];
                 continue;
             }
 
             if ($adj->type instanceof TClass && isset($visited[$adj->type->class])) {
-                $values[$paramName] = $visited[$adj->type->class];
+                $values[$propertyName] = $visited[$adj->type->class];
                 continue;
             }
 
@@ -102,11 +102,11 @@ class AnyObject
                 $visited[$adj->type->class] = $value;
             }
 
-            $values[$paramName] = $value; // TODO: Reuse built objects
+            $values[$propertyName] = $value; // TODO: Reuse built objects
         }
 
-        foreach ($values as $paramName => $value) {
-            $reflectionProperty = $reflectionClass->getProperty($paramName);
+        foreach ($values as $propertyName => $value) {
+            $reflectionProperty = $reflectionClass->getProperty($propertyName);
             $reflectionProperty->setAccessible(true);
             $reflectionProperty->setValue($instance, $value);
             $reflectionProperty->setAccessible(false);
