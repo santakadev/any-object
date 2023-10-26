@@ -42,7 +42,6 @@ class AnyObject
 
     private function buildRecursivelyThroughConstructor(GraphNode $node, array $with, array $visited = [])
     {
-        // DFS
         if (!$node->type instanceof TClass) {
             return $this->buildSingleRandomValue($node->type);
         }
@@ -70,19 +69,44 @@ class AnyObject
         return new $node->type->class(...$arguments);
     }
 
-    private function buildFromProperties(string $class, array $with = [], array $visited = []): object
+    private function buildFromProperties(string $class, array $with = []): object
     {
-        $reflection = new ReflectionClass($class);
-        // TODO: support of constructor arguments instead of properties
-        $instance = $reflection->newInstanceWithoutConstructor();
-        $visited[$class] = $instance;
+        $root = $this->parser->parseThroughProperties($class);
+        return $this->buildRecursivelyThroughProperties($root, $with);
+    }
 
-        foreach ($reflection->getProperties() as $reflectionProperty) {
-            // TODO: check the type of the property in $with
-            $type = $this->parser->typeFromReflection($reflectionProperty);
-            $value = $with[$reflectionProperty->getName()] ?? $this->buildSingleRandomValue($type, $visited);
 
-            // Set the random value
+    private function buildRecursivelyThroughProperties(GraphNode $node, array $with, array $visited = [])
+    {
+        if (!$node->type instanceof TClass) {
+            return $this->buildSingleRandomValue($node->type);
+        }
+
+        $reflectionClass = new ReflectionClass($node->type->class);
+        $instance = $reflectionClass->newInstanceWithoutConstructor();
+        $visited[$node->type->class] = $instance;
+        $values = [];
+        foreach ($node->adjacencyList as $paramName => $adj) {
+            if (isset($with[$paramName])) { // TODO: this could lead to strange results, as with can modify nested classes properties
+                $values[$paramName] = $with[$paramName];
+                continue;
+            }
+
+            if ($adj->type instanceof TClass && isset($visited[$adj->type->class])) {
+                $values[$paramName] = $visited[$adj->type->class];
+                continue;
+            }
+
+            $value = $this->buildRecursivelyThroughProperties($adj, $with, $visited);
+            if ($value instanceof TClass) {
+                $visited[$adj->type->class] = $value;
+            }
+
+            $values[$paramName] = $value; // TODO: Reuse built objects
+        }
+
+        foreach ($values as $paramName => $value) {
+            $reflectionProperty = $reflectionClass->getProperty($paramName);
             $reflectionProperty->setAccessible(true);
             $reflectionProperty->setValue($instance, $value);
             $reflectionProperty->setAccessible(false);

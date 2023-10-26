@@ -68,6 +68,34 @@ class Parser
         return $current;
     }
 
+    public function parseThroughProperties(string $class, $visited = []): GraphNode
+    {
+        if (!class_exists($class)) {
+            throw new Exception("Class $class does not exist");
+        }
+
+        $current = new GraphNode(new TClass($class));
+        $visited[$class] = $current;
+        $reflection = new ReflectionClass($class);
+
+        foreach ($reflection->getProperties() as $reflectionProperty) {
+            $type = $this->typeFromReflection($reflectionProperty);
+
+            $propertyName = $reflectionProperty->getName();
+            if ($type instanceof TClass) {
+                if (!isset($visited[$type->class])) {
+                    $current->addEdge($this->parseThroughProperties($type->class, $visited), $propertyName);
+                } else {
+                    $current->addEdge($visited[$type->class], $propertyName);
+                }
+            } else {
+                $current->addEdge(new GraphNode($type, $propertyName), $propertyName);
+            }
+        }
+
+        return $current;
+    }
+
     // TODO: make private after parser parallel implementation
     public function typeFromReflection(ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, string $methodDocComment = null): TUnion|TArray|TEnum|TScalar|TClass
     {
