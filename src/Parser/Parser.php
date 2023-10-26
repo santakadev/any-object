@@ -61,7 +61,7 @@ class Parser
                     $current->addEdge($visited[$type->class], $parameterName);
                 }
             } else {
-                $current->addEdge(new GraphNode($type, $parameter->getName()), $parameterName);
+                $current->addEdge(new GraphNode($type), $parameterName);
             }
         }
 
@@ -89,7 +89,7 @@ class Parser
                     $current->addEdge($visited[$type->class], $propertyName);
                 }
             } else {
-                $current->addEdge(new GraphNode($type, $propertyName), $propertyName);
+                $current->addEdge(new GraphNode($type), $propertyName);
             }
         }
 
