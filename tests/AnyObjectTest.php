@@ -96,7 +96,8 @@ class AnyObjectTest extends TestCase
      */
     public function test_circular_references_through_properties(): void
     {
-        $parent = (new AnyObject())->of(ParentObject::class);
+        $any = new AnyObject(useConstructor: false);
+        $parent = ($any)->of(ParentObject::class);
         $child = $parent->value;
         $this->assertInstanceOf(ChildObject::class, $child);
         $this->assertEquals($parent, $child->value);

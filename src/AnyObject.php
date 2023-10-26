@@ -19,7 +19,7 @@ class AnyObject
     private readonly Generator $faker;
     private readonly Parser $parser;
 
-    public function __construct(private readonly bool $useConstructor = false)
+    public function __construct(private readonly bool $useConstructor = true)
     {
         $this->faker = Factory::create();
         $this->parser = new Parser();
