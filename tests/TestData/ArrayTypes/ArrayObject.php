@@ -1,6 +1,6 @@
 <?php
 
-namespace Santakadev\AnyObject\Tests\TestData\BasicTypes;
+namespace Santakadev\AnyObject\Tests\TestData\ArrayTypes;
 
 class ArrayObject
 {

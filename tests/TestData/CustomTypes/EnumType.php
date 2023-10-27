@@ -1,6 +1,6 @@
 <?php
 
-namespace Santakadev\AnyObject\Tests\TestData\EnumTypes;
+namespace Santakadev\AnyObject\Tests\TestData\CustomTypes;
 
 enum EnumType
 {

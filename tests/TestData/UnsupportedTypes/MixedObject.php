@@ -1,6 +1,6 @@
 <?php
 
-namespace Santakadev\AnyObject\Tests\TestData\Untyped;
+namespace Santakadev\AnyObject\Tests\TestData\UnsupportedTypes;
 
 class MixedObject
 {

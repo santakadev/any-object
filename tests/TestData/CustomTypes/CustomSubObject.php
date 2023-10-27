@@ -2,11 +2,14 @@
 
 namespace Santakadev\AnyObject\Tests\TestData\CustomTypes;
 
-use Santakadev\AnyObject\Tests\TestData\BasicTypes\StringObject;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
 
 class CustomSubObject
 {
-    public function __construct(public readonly StringObject $value)
+    public readonly StringObject $value;
+
+    public function __construct(StringObject $value)
     {
+        $this->value = $value;
     }
 }

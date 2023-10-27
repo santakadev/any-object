@@ -4,7 +4,10 @@ namespace Santakadev\AnyObject\Tests\TestData\CustomTypes;
 
 class ParentObject
 {
-    public function __construct(public readonly ChildObject $value)
+    public readonly ChildObject $value;
+
+    public function __construct(ChildObject $value)
     {
+        $this->value = $value;
     }
 }

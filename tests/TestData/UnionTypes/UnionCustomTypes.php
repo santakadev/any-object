@@ -2,8 +2,8 @@
 
 namespace Santakadev\AnyObject\Tests\TestData\UnionTypes;
 
-use Santakadev\AnyObject\Tests\TestData\BasicTypes\IntObject;
-use Santakadev\AnyObject\Tests\TestData\BasicTypes\StringObject;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\IntObject;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
 
 class UnionCustomTypes
 {

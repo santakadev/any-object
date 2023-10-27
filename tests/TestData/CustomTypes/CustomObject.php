@@ -4,7 +4,10 @@ namespace Santakadev\AnyObject\Tests\TestData\CustomTypes;
 
 class CustomObject
 {
-    public function __construct(public readonly CustomSubObject $value)
+    public readonly CustomSubObject $value;
+
+    public function __construct(CustomSubObject $value)
     {
+        $this->value = $value;
     }
 }
