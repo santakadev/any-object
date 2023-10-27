@@ -136,8 +136,7 @@ class Parser
         return $current;
     }
 
-    // TODO: make private after parser parallel implementation
-    public function typeFromReflection(ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, string $methodDocComment = null): TUnion|TArray|TEnum|TScalar|TClass
+    private function typeFromReflection(ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, string $methodDocComment = null): TUnion|TArray|TEnum|TScalar|TClass
     {
         $reflectionType = $reflectionParameterOrProperty->getType();
 
