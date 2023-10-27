@@ -91,11 +91,10 @@ class AnyObject
         return $this->buildRecursivelyThroughProperties($root, $with);
     }
 
-
     private function buildRecursivelyThroughProperties(GraphNode $node, array $with, array $visited = [])
     {
         if ($node->type instanceof TUnion) {
-            return $this->buildRecursivelyThroughConstructor($node->adjacencyList[array_rand($node->adjacencyList)], $with, $visited);
+            return $this->buildRecursivelyThroughProperties($node->adjacencyList[array_rand($node->adjacencyList)], $with, $visited);
         }
 
         if ($node->type instanceof TArray) {
@@ -104,7 +103,7 @@ class AnyObject
             $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
             $array = [];
             for ($i = 0; $i < $elementsCount; $i++) {
-                $array[] = $this->buildRecursivelyThroughConstructor($node->pickRandomBranch(), $visited);
+                $array[] = $this->buildRecursivelyThroughProperties($node->pickRandomBranch(), $visited);
             }
             return $array;
         }
@@ -153,8 +152,8 @@ class AnyObject
             TNull::class => null,
             TScalar::class => match ($type) {
                 TScalar::string => $this->faker->text(),
-                TScalar::int => $this->faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
-                TScalar::float => $this->faker->randomFloat(), // TODO: negative float values
+                TScalar::int => $this->faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX), // TODO: Use Randomizer if PHP>=8.2
+                TScalar::float =>  $this->faker->randomFloat(), // TODO: negative float values
                 TScalar::bool => $this->faker->boolean(),
             },
         };
