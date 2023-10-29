@@ -2,7 +2,6 @@
 
 namespace Santakadev\AnyObject\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Santakadev\AnyObject\AnyObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\IntObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
@@ -10,40 +9,37 @@ use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionBasicTypes;
 use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionCustomTypes;
 use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionStringIntNull;
 
-class UnionTypesTest extends TestCase
+class UnionTypesTest extends AnyObjectTestCase
 {
     use AnyObjectDataProvider;
 
     /** @dataProvider anyProvider */
     public function test_union_basic_types(AnyObject $any): void
     {
-        $object = $any->of(UnionBasicTypes::class);
-        $this->assertTrue(
-            is_string($object->value) ||
-            is_int($object->value) ||
-            is_float($object->value) ||
-            is_bool($object->value)
+        $this->assertAll(
+            fn () => ($any->of(UnionBasicTypes::class))->value,
+            ['is_string', 'is_int', 'is_float', 'is_bool']
         );
     }
 
     /** @dataProvider anyProvider */
     public function test_nullable_union(AnyObject $any): void
     {
-        $object = $any->of(UnionStringIntNull::class);
-        $this->assertTrue(
-            is_string($object->value) ||
-            is_int($object->value) ||
-            is_null($object->value)
+        $this->assertAll(
+            fn () => ($any->of(UnionStringIntNull::class))->value,
+            ['is_string', 'is_int', 'is_null']
         );
     }
 
     /** @dataProvider anyProvider */
     public function test_union_custom_types(AnyObject $any): void
     {
-        $object = $any->of(UnionCustomTypes::class);
-        $this->assertTrue(
-            $object->value instanceof StringObject ||
-            $object->value instanceof IntObject
+        $this->assertAll(
+            fn () => ($any->of(UnionCustomTypes::class))->value,
+            assertions: [
+                fn ($value) => $value instanceof StringObject,
+                fn ($value) => $value instanceof IntObject
+            ]
         );
     }
 }

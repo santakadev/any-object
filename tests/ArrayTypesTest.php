@@ -3,7 +3,6 @@
 namespace Santakadev\AnyObject\Tests;
 
 use Exception;
-use PHPUnit\Framework\TestCase;
 use Santakadev\AnyObject\AnyObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\ArrayObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfBoolObject;
@@ -26,7 +25,7 @@ use Santakadev\AnyObject\Tests\TestData\ArrayTypes\PhpdocArrayOfUseQualifiedCust
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
 use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionArrayIntObject;
 
-class ArrayTypesTest extends TestCase
+class ArrayTypesTest extends AnyObjectTestCase
 {
     use AnyObjectDataProvider;
 

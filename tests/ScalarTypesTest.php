@@ -2,7 +2,6 @@
 
 namespace Santakadev\AnyObject\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Santakadev\AnyObject\AnyObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\BoolObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\FloatObject;
@@ -13,7 +12,7 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableIntObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableStringObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
 
-class ScalarTypesTest extends TestCase
+class ScalarTypesTest extends AnyObjectTestCase
 {
     use AnyObjectDataProvider;
 
@@ -49,28 +48,36 @@ class ScalarTypesTest extends TestCase
     /** @dataProvider anyProvider */
     public function test_nullable_string(AnyObject $any): void
     {
-        $object = $any->of(NullableStringObject::class);
-        $this->assertTrue(is_string($object->value) || is_null($object->value));
+        $this->assertAll(
+            fn () => ($any->of(NullableStringObject::class))->value,
+            ['is_string', 'is_null']
+        );
     }
 
     /** @dataProvider anyProvider */
     public function test_nullable_int(AnyObject $any): void
     {
-        $object = $any->of(NullableIntObject::class);
-        $this->assertTrue(is_int($object->value) || is_null($object->value));
+        $this->assertAll(
+            fn () => ($any->of(NullableIntObject::class))->value,
+            ['is_int', 'is_null']
+        );
     }
 
     /** @dataProvider anyProvider */
     public function test_nullable_float(AnyObject $any): void
     {
-        $object = $any->of(NullableFloatObject::class);
-        $this->assertTrue(is_float($object->value) || is_null($object->value));
+        $this->assertAll(
+            fn () => ($any->of(NullableFloatObject::class))->value,
+            ['is_float', 'is_null']
+        );
     }
 
     /** @dataProvider anyProvider */
     public function test_nullable_bool(AnyObject $any): void
     {
-        $object = $any->of(NullableBoolObject::class);
-        $this->assertTrue(is_bool($object->value) || is_null($object->value));
+        $this->assertAll(
+            fn () => ($any->of(NullableBoolObject::class))->value,
+            ['is_bool', 'is_null']
+        );
     }
 }
