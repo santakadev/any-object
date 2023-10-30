@@ -12,6 +12,7 @@ use ReflectionParameter;
 use ReflectionProperty;
 use Santakadev\AnyObject\Types\TArray;
 use Santakadev\AnyObject\Types\TClass;
+use Santakadev\AnyObject\Types\TNull;
 use Santakadev\AnyObject\Types\TScalar;
 use Santakadev\AnyObject\Types\TUnion;
 
@@ -33,7 +34,8 @@ class PhpdocArrayParser
 
         foreach ($arrayPatterns as $arrayPattern) {
             if (preg_match($arrayPattern, $associatedDocComment, $matches) === 1) {
-                return $this->parsePhpdocArrayType($matches[1], $reflectionParameterOrProperty);
+                $allowsNull = $matches[1] === '?';
+                return $this->parsePhpdocArrayType($matches[2], $allowsNull, $reflectionParameterOrProperty);
             }
         }
 
@@ -44,18 +46,18 @@ class PhpdocArrayParser
     {
         if ($reflectionParameterOrProperty instanceof ReflectionProperty) {
             return [
-                '/@var\s+array<([^\s]+)>/',
-                '/@var\s+([^\s]+)\[]/',
+                '/@var\s+(\??)array<([^\s]+)>/',
+                '/@var\s+(\??)([^\s]+)\[]/',
             ];
         } else {
             return [
-                '/@param\s+array<([^\s]+)>/',
-                '/@param\s+([^\s]+)\[]/',
+                '/@param\s+(\??)array<([^\s]+)>/',
+                '/@param\s+(\??)([^\s]+)\[]/',
             ];
         }
     }
 
-    private function parsePhpdocArrayType($rawType, ReflectionProperty|ReflectionParameter $reflectionPropertyOrParameter): TArray
+    private function parsePhpdocArrayType($rawType, bool $allowNulls, ReflectionProperty|ReflectionParameter $reflectionPropertyOrParameter): TArray
     {
         $unionTypes = [];
 
@@ -70,6 +72,10 @@ class PhpdocArrayParser
                 [$namespace, $uses] = $this->buildClassNameToFQCNMap($reflectionPropertyOrParameter);
                 $unionTypes[] = $uses[$typeName] ? new TClass($uses[$typeName]) : new TClass($namespace . '\\' . $typeName);
             }
+        }
+
+        if ($allowNulls) {
+            $unionTypes[] = new TNull();
         }
 
         return new TArray(new TUnion($unionTypes));

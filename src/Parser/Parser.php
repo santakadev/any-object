@@ -159,7 +159,6 @@ class Parser
 
         if ($typeName === 'array') {
             // TODO: support of associative arrays
-            // TODO: array could allow null
             if ($reflectionParameterOrProperty instanceof ReflectionProperty)
                 return $this->phpdocArrayParser->parsePropertyArrayType($reflectionParameterOrProperty);
             else {
