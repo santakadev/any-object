@@ -51,7 +51,7 @@ class AnyObjectTestCase extends TestCase
             // TODO: display all failed assertions
             $firstFail = array_search(false, $seen);
             $assertion = $assertions[$firstFail];
-            $this->assertTrue($assertion($callable()), "Assertion '$assertion' never matched.");
+            $this->assertTrue($assertion($callable()), "Assertion '$assertion' never matched."); // TODO: assertion could be a closure, that could not be able to convert to string
         }
     }
 }

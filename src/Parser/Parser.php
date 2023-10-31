@@ -176,8 +176,11 @@ class Parser
         }
 
         if (class_exists($typeName)) {
-            // TODO: class could allow null
-            return new TClass($typeName);
+            if ($reflectionType->allowsNull()) {
+                return new TUnion([new TClass($typeName), new TNull()]);
+            } else {
+                return new TClass($typeName);
+            }
         }
 
         if (in_array($typeName, TScalar::values())) {

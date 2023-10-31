@@ -9,9 +9,11 @@ use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomSubObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\EnumType;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\EnumTypeObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\NullableCustomObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\ParentObject;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableStringObject;
 
-class CustomTypesTest extends TestCase
+class CustomTypesTest extends AnyObjectTestCase
 {
     use AnyObjectDataProvider;
 
@@ -20,6 +22,15 @@ class CustomTypesTest extends TestCase
     {
         $object = $any->of(CustomObject::class);
         $this->assertInstanceOf(CustomSubObject::class, $object->value);
+    }
+
+    /** @dataProvider anyProvider */
+    public function test_nullable_custom_class(AnyObject $any): void
+    {
+        $this->assertAll(
+            fn () => $any->of(NullableCustomObject::class)->value,
+            [fn ($value) => $value instanceof CustomSubObject, 'is_null']
+        );
     }
 
     /**
