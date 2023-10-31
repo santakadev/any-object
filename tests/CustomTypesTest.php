@@ -10,6 +10,7 @@ use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomSubObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\EnumType;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\EnumTypeObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\NullableCustomObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\NullableEnumTypeObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\ParentObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableStringObject;
 
@@ -29,7 +30,10 @@ class CustomTypesTest extends AnyObjectTestCase
     {
         $this->assertAll(
             fn () => $any->of(NullableCustomObject::class)->value,
-            [fn ($value) => $value instanceof CustomSubObject, 'is_null']
+            [
+                fn ($value) => $value instanceof CustomSubObject,
+                'is_null'
+            ]
         );
     }
 
@@ -53,5 +57,17 @@ class CustomTypesTest extends AnyObjectTestCase
     {
         $object = $any->of(EnumTypeObject::class);
         $this->assertContains($object->enum, [EnumType::A, EnumType::B, EnumType::C]);
+    }
+
+    /** @dataProvider anyProvider */
+    public function test_nullable_enum_types(AnyObject $any): void
+    {
+        $this->assertAll(
+            fn () => $any->of(NullableEnumTypeObject::class)->enum,
+            [
+                fn ($value) => in_array($value, [EnumType::A, EnumType::B, EnumType::C]),
+                'is_null'
+            ]
+        );
     }
 }

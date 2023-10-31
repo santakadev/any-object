@@ -167,12 +167,16 @@ class Parser
         }
 
         if (enum_exists($typeName)) {
-            // TODO: enum could allow null
             $reflectionEnum = new ReflectionEnum($typeName);
             $reflectionCases = $reflectionEnum->getCases();
             // TODO: Is there any difference with backed enums?
             $cases = array_map(fn(ReflectionEnumUnitCase|ReflectionEnumPureCase $reflectionCase) => $reflectionCase->getValue(), $reflectionCases);
-            return new TEnum($cases);
+
+            if ($reflectionType->allowsNull()) {
+                return new TUnion([new TEnum($cases), new TNull()]);
+            } else {
+                return new TEnum($cases);
+            }
         }
 
         if (class_exists($typeName)) {
