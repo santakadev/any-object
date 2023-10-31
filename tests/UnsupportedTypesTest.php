@@ -61,7 +61,7 @@ class UnsupportedTypesTest extends TestCase
     public function test_union_with_array_properties_are_not_supported(AnyObject $any): void
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Unsupported type array in union types');
+        $this->expectExceptionMessage('Unsupported type for stub creation in union types: array');
         $any->of(UnionArrayIntObject::class);
     }
 }

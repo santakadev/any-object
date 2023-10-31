@@ -153,12 +153,10 @@ class Parser
     private function typeFromReflectionNamedType(ReflectionNamedType $reflectionType, ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, ?string $methodDocComment): TUnion|TScalar|TArray|TEnum|TClass
     {
         $typeName = $reflectionType->getName();
-        if ($typeName === 'mixed') {
-            throw new Exception("Unsupported type for stub creation: mixed");
-        }
 
         if ($typeName === 'array') {
             // TODO: support of associative arrays
+            // I dont' like that we only use the 2nd and 3rd parameter for this part of the code (arrays)
             if ($reflectionParameterOrProperty instanceof ReflectionProperty)
                 return $this->phpdocArrayParser->parsePropertyArrayType($reflectionParameterOrProperty);
             else {
@@ -167,31 +165,18 @@ class Parser
         }
 
         if (enum_exists($typeName)) {
-            $reflectionEnum = new ReflectionEnum($typeName);
-            $reflectionCases = $reflectionEnum->getCases();
-            $cases = array_map(fn(ReflectionEnumUnitCase|ReflectionEnumPureCase $reflectionCase) => $reflectionCase->getValue(), $reflectionCases);
-
-            if ($reflectionType->allowsNull()) {
-                return new TUnion([new TEnum($cases), new TNull()]);
-            } else {
-                return new TEnum($cases);
-            }
+            $enum = $this->buildEnumFromTypeName($typeName);
+            return $reflectionType->allowsNull() ? new TUnion([$enum, new TNull()]) : $enum;
         }
 
         if (class_exists($typeName)) {
-            if ($reflectionType->allowsNull()) {
-                return new TUnion([new TClass($typeName), new TNull()]);
-            } else {
-                return new TClass($typeName);
-            }
+            $class = new TClass($typeName);
+            return $reflectionType->allowsNull() ? new TUnion([$class, new TNull()]) : $class;
         }
 
         if (in_array($typeName, TScalar::values())) {
-            if ($reflectionType->allowsNull()) {
-                return new TUnion([TScalar::from($typeName), new TNull()]);
-            } else {
-                return TScalar::from($typeName);
-            }
+            $scalar = TScalar::from($typeName);
+            return $reflectionType->allowsNull() ? new TUnion([$scalar, new TNull()]) : $scalar;
         }
 
         throw new Exception("Unsupported type for stub creation: $typeName");
@@ -199,24 +184,17 @@ class Parser
 
     public function parseUnionType(ReflectionUnionType $reflectionType): TUnion
     {
-        $types = array_map(fn($x) => self::typeFromReflectionTypeForUnion($x), $reflectionType->getTypes());
-
+        $types = array_map(fn($x) => $this->typeFromReflectionTypeForUnion($x), $reflectionType->getTypes());
         return new TUnion($types);
     }
 
-    // TODO: duplicated code
-    private static function typeFromReflectionTypeForUnion(ReflectionNamedType $reflectionType): TClass|TEnum|TScalar|TNull
+    // TODO: duplicated code. But there are 2 differences: 1) array is not supported in union types 2) nullable types are not supported in union types
+    private function typeFromReflectionTypeForUnion(ReflectionNamedType $reflectionType): TClass|TEnum|TScalar|TNull
     {
         $typeName = $reflectionType->getName();
-        if ($typeName === 'mixed') {
-            throw new Exception("Unsupported type for stub creation: mixed");
-        }
 
         if (enum_exists($typeName)) {
-            $reflectionEnum = new ReflectionEnum($typeName);
-            $reflectionCases = $reflectionEnum->getCases();
-            $cases = array_map(fn(ReflectionEnumUnitCase|ReflectionEnumPureCase $reflectionCase) => $reflectionCase->getValue(), $reflectionCases);
-            return new TEnum($cases);
+            return $this->buildEnumFromTypeName($typeName);
         }
 
         if (class_exists($typeName)) {
@@ -231,10 +209,14 @@ class Parser
             return new TNull();
         }
 
-        if ($typeName === 'array') {
-            throw new Exception("Unsupported type array in union types");
-        }
+        throw new Exception("Unsupported type for stub creation in union types: $typeName");
+    }
 
-        throw new Exception("Unsupported type for stub creation: $typeName");
+    public function buildEnumFromTypeName(string $typeName): TEnum
+    {
+        $reflectionEnum = new ReflectionEnum($typeName);
+        $reflectionCases = $reflectionEnum->getCases();
+        $cases = array_map(fn(ReflectionEnumUnitCase|ReflectionEnumPureCase $reflectionCase) => $reflectionCase->getValue(), $reflectionCases);
+        return new TEnum($cases);
     }
 }
