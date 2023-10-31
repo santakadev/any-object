@@ -2,8 +2,11 @@
 
 namespace Santakadev\AnyObject\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Santakadev\AnyObject\AnyObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\BackedIntEnumType;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\BackedIntEnumTypeObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\BackedStringEnumType;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\BackedStringEnumTypeObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\ChildObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomSubObject;
@@ -12,7 +15,6 @@ use Santakadev\AnyObject\Tests\TestData\CustomTypes\EnumTypeObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\NullableCustomObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\NullableEnumTypeObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\ParentObject;
-use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableStringObject;
 
 class CustomTypesTest extends AnyObjectTestCase
 {
@@ -63,11 +65,25 @@ class CustomTypesTest extends AnyObjectTestCase
     public function test_nullable_enum_types(AnyObject $any): void
     {
         $this->assertAll(
-            fn () => $any->of(NullableEnumTypeObject::class)->enum,
+            fn () => $any->of(NullableEnumTypeObject::class)->value,
             [
                 fn ($value) => in_array($value, [EnumType::A, EnumType::B, EnumType::C]),
                 'is_null'
             ]
         );
+    }
+
+    /** @dataProvider anyProvider */
+    public function test_backed_string_enum_types(AnyObject $any): void
+    {
+        $object = $any->of(BackedStringEnumTypeObject::class);
+        $this->assertContains($object->value, [BackedStringEnumType::A, BackedStringEnumType::B, BackedStringEnumType::C]);
+    }
+
+    /** @dataProvider anyProvider */
+    public function test_backed_int_enum_types(AnyObject $any): void
+    {
+        $object = $any->of(BackedIntEnumTypeObject::class);
+        $this->assertContains($object->value, [BackedIntEnumType::A, BackedIntEnumType::B, BackedIntEnumType::C]);
     }
 }

@@ -169,7 +169,6 @@ class Parser
         if (enum_exists($typeName)) {
             $reflectionEnum = new ReflectionEnum($typeName);
             $reflectionCases = $reflectionEnum->getCases();
-            // TODO: Is there any difference with backed enums?
             $cases = array_map(fn(ReflectionEnumUnitCase|ReflectionEnumPureCase $reflectionCase) => $reflectionCase->getValue(), $reflectionCases);
 
             if ($reflectionType->allowsNull()) {
@@ -216,7 +215,6 @@ class Parser
         if (enum_exists($typeName)) {
             $reflectionEnum = new ReflectionEnum($typeName);
             $reflectionCases = $reflectionEnum->getCases();
-            // TODO: Is there any difference with backed enums?
             $cases = array_map(fn(ReflectionEnumUnitCase|ReflectionEnumPureCase $reflectionCase) => $reflectionCase->getValue(), $reflectionCases);
             return new TEnum($cases);
         }
