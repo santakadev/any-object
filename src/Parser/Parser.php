@@ -198,10 +198,6 @@ class Parser
         throw new Exception("Unsupported type for stub creation: $typeName");
     }
 
-    /**
-     * @param ReflectionUnionType $reflectionType
-     * @return TUnion
-     */
     public function parseUnionType(ReflectionUnionType $reflectionType): TUnion
     {
         $types = array_map(fn($x) => self::typeFromReflectionTypeForUnion($x), $reflectionType->getTypes());
