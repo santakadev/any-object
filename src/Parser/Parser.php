@@ -186,7 +186,7 @@ class Parser
         throw new Exception("Unsupported type for stub creation: $typeName");
     }
 
-    public function parseUnionType(ReflectionUnionType $reflectionType): TUnion
+    private function parseUnionType(ReflectionUnionType $reflectionType): TUnion
     {
         $types = array_map(fn($x) => $this->typeFromReflectionTypeForUnion($x), $reflectionType->getTypes());
         return new TUnion($types);
@@ -220,7 +220,7 @@ class Parser
         throw new Exception("Unsupported type for stub creation in union types: $typeName");
     }
 
-    public function buildEnumFromTypeName(string $typeName): TEnum
+    private function buildEnumFromTypeName(string $typeName): TEnum
     {
         $reflectionEnum = new ReflectionEnum($typeName);
         $reflectionCases = $reflectionEnum->getCases();
