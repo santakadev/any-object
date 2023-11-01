@@ -13,6 +13,7 @@ use Santakadev\AnyObject\Types\TEnum;
 use Santakadev\AnyObject\Types\TNull;
 use Santakadev\AnyObject\Types\TScalar;
 use Santakadev\AnyObject\Types\TUnion;
+use SplStack;
 
 class AnyObject
 {
@@ -44,18 +45,11 @@ class AnyObject
     private function buildRecursivelyThroughConstructor(GraphNode $node, array $with, array $visited = [])
     {
         if ($node->type instanceof TUnion) {
-            return $this->buildRecursivelyThroughConstructor($node->adjacencyList[array_rand($node->adjacencyList)], $with, $visited);
+            return $this->buildRandomUnion($node, fn (GraphNode $node) => $this->buildRecursivelyThroughConstructor($node, $with, $visited));
         }
 
         if ($node->type instanceof TArray) {
-            $minElements = 0;
-            $maxElements = 50;
-            $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
-            $array = [];
-            for ($i = 0; $i < $elementsCount; $i++) {
-                $array[] = $this->buildRecursivelyThroughConstructor($node->pickRandomBranch(), $visited);
-            }
-            return $array;
+            return $this->buildRandomArray($node, fn (GraphNode $node) => $this->buildRecursivelyThroughConstructor($node, $with, $visited));
         }
 
         if (!$node->type instanceof TClass) {
@@ -94,18 +88,11 @@ class AnyObject
     private function buildRecursivelyThroughProperties(GraphNode $node, array $with, array $visited = [])
     {
         if ($node->type instanceof TUnion) {
-            return $this->buildRecursivelyThroughProperties($node->adjacencyList[array_rand($node->adjacencyList)], $with, $visited);
+            return $this->buildRandomUnion($node, fn (GraphNode $node) => $this->buildRecursivelyThroughProperties($node, $with, $visited));
         }
 
         if ($node->type instanceof TArray) {
-            $minElements = 0;
-            $maxElements = 50;
-            $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
-            $array = [];
-            for ($i = 0; $i < $elementsCount; $i++) {
-                $array[] = $this->buildRecursivelyThroughProperties($node->pickRandomBranch(), $visited);
-            }
-            return $array;
+            return $this->buildRandomArray($node, fn (GraphNode $node) => $this->buildRecursivelyThroughProperties($node, $with, $visited));
         }
 
         if (!$node->type instanceof TClass) {
@@ -157,5 +144,22 @@ class AnyObject
                 TScalar::bool => $this->faker->boolean(),
             },
         };
+    }
+
+    private function buildRandomArray(GraphNode $arrayNode, callable $builder): array
+    {
+        $minElements = 0;
+        $maxElements = 50;
+        $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
+        $array = [];
+        for ($i = 0; $i < $elementsCount; $i++) {
+            $array[] = $builder($arrayNode->pickRandomBranch());
+        }
+        return $array;
+    }
+
+    private function buildRandomUnion(GraphNode $node, callable $builder)
+    {
+        return $builder($node->adjacencyList[array_rand($node->adjacencyList)]);
     }
 }
