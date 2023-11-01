@@ -44,19 +44,12 @@ class AnyObject
 
     private function buildRecursivelyThroughConstructor(GraphNode $node, array $with, array $visited = [])
     {
-        if ($node->type instanceof TUnion) {
-            return $this->buildRandomUnion($node, fn (GraphNode $node) => $this->buildRecursivelyThroughConstructor($node, $with, $visited));
-        }
-
-        if ($node->type instanceof TArray) {
-            return $this->buildRandomArray($node, fn (GraphNode $node) => $this->buildRecursivelyThroughConstructor($node, $with, $visited));
-        }
-
-        if ($node->type instanceof TClass) {
-            return $this->buildRandomClassThroughConstructor($node, $with, $visited);
-        } else {
-            return $this->buildSingleRandomValue($node->type);
-        }
+        return match (get_class($node->type)) {
+            TUnion::class => $this->buildRandomUnion($node, fn (GraphNode $node) => $this->buildRecursivelyThroughConstructor($node, $with, $visited)),
+            TArray::class => $this->buildRandomArray($node, fn (GraphNode $node) => $this->buildRecursivelyThroughConstructor($node, $with, $visited)),
+            TClass::class => $this->buildRandomClassThroughConstructor($node, $with, $visited),
+            default => $this->buildSingleRandomValue($node->type)
+        };
     }
 
     private function buildFromProperties(string $class, array $with = []): object
@@ -67,19 +60,12 @@ class AnyObject
 
     private function buildRecursivelyThroughProperties(GraphNode $node, array $with, array $visited = [])
     {
-        if ($node->type instanceof TUnion) {
-            return $this->buildRandomUnion($node, fn (GraphNode $node) => $this->buildRecursivelyThroughProperties($node, $with, $visited));
-        }
-
-        if ($node->type instanceof TArray) {
-            return $this->buildRandomArray($node, fn (GraphNode $node) => $this->buildRecursivelyThroughProperties($node, $with, $visited));
-        }
-
-        if ($node->type instanceof TClass) {
-            return $this->buildRandomClassThroughProperties($node, $visited, $with);
-        } else {
-            return $this->buildSingleRandomValue($node->type);
-        }
+        return match (get_class($node->type)) {
+            TUnion::class => $this->buildRandomUnion($node, fn (GraphNode $node) => $this->buildRecursivelyThroughProperties($node, $with, $visited)),
+            TArray::class => $this->buildRandomArray($node, fn (GraphNode $node) => $this->buildRecursivelyThroughProperties($node, $with, $visited)),
+            TClass::class => $this->buildRandomClassThroughProperties($node, $visited, $with),
+            default => $this->buildSingleRandomValue($node->type)
+        };
     }
 
     private function buildSingleRandomValue(TClass|TArray|TUnion|TEnum|TScalar|TNull $type): string|int|float|bool|object|array|null
