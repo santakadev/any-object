@@ -5,9 +5,11 @@ namespace Santakadev\AnyObject\Tests;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Santakadev\AnyObject\AnyObject;
-use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionArrayIntObject;
+use Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\InterfaceObject;
 use Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\IntersectionObject;
 use Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\MixedObject;
+use Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\UnionArrayIntObject;
+use Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\UnionInterfaceIntObject;
 use Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\UntypedArrayObject;
 use Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\UntypedNullableArrayObject;
 use Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\UntypedObject;
@@ -40,7 +42,6 @@ class UnsupportedTypesTest extends TestCase
         $any->of(MixedObject::class);
     }
 
-
     /** @dataProvider anyProvider */
     public function test_untyped_array_properties_are_not_supported(AnyObject $any): void
     {
@@ -63,5 +64,20 @@ class UnsupportedTypesTest extends TestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Unsupported type for stub creation in union types: array');
         $any->of(UnionArrayIntObject::class);
+    }
+
+    /** @dataProvider anyProvider */
+    public function test_interfaces_are_not_supported(AnyObject $any): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Interfaces are not supported for stub creation: Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\CustomInterface');
+        $any->of(InterfaceObject::class);
+    }
+    /** @dataProvider anyProvider */
+    public function test_union_with_interfaces_are_not_supported(AnyObject $any): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Interfaces are not supported for stub creation: Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\CustomInterface');
+        $any->of(UnionInterfaceIntObject::class);
     }
 }

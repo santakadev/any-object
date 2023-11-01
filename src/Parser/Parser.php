@@ -179,6 +179,10 @@ class Parser
             return $reflectionType->allowsNull() ? new TUnion([$scalar, new TNull()]) : $scalar;
         }
 
+        if (interface_exists($typeName)) {
+            throw new Exception("Interfaces are not supported for stub creation: $typeName");
+        }
+
         throw new Exception("Unsupported type for stub creation: $typeName");
     }
 
@@ -207,6 +211,10 @@ class Parser
 
         if ($typeName === 'null') {
             return new TNull();
+        }
+
+        if (interface_exists($typeName)) {
+            throw new Exception("Interfaces are not supported for stub creation: $typeName");
         }
 
         throw new Exception("Unsupported type for stub creation in union types: $typeName");
