@@ -13,7 +13,6 @@ use Santakadev\AnyObject\Types\TEnum;
 use Santakadev\AnyObject\Types\TNull;
 use Santakadev\AnyObject\Types\TScalar;
 use Santakadev\AnyObject\Types\TUnion;
-use SplStack;
 
 class AnyObject
 {
@@ -28,7 +27,6 @@ class AnyObject
 
     public function of(string $class, array $with = []): object
     {
-        // TODO: think the best way of handling circular references
         if ($this->useConstructor) {
             return $this->buildFromConstructor($class, $with);
         } else {
@@ -39,33 +37,28 @@ class AnyObject
     private function buildFromConstructor(string $class, array $with = []): object
     {
         $root = $this->parser->parseThroughConstructor($class);
-        $classBuilder = $this->getRandomClassBuilderThroughConstructor();
-        return $this->buildRecursively($root, $with, $classBuilder);
+        $classBuilder = [$this, 'buildRandomClassThroughConstructor'];
+        return $this->build($root, $with, $classBuilder);
     }
 
     private function buildFromProperties(string $class, array $with = []): object
     {
         $root = $this->parser->parseThroughProperties($class);
-        $classBuilder = $this->getRandomClassBuilderThroughProperties();
-        return $this->buildRecursively($root, $with, $classBuilder);
+        $classBuilder = [$this, 'buildRandomClassThroughProperties'];
+        return $this->build($root, $with, $classBuilder);
     }
 
-    private function buildRecursively(GraphNode $node, array $with, callable $classBuilder, array $visited = [])
+    private function build(GraphNode $node, array $with, callable $classBuilder, array $visited = [])
     {
+        $builder = fn(GraphNode $node) => $this->build($node, $with, $classBuilder, $visited);
+
         return match (get_class($node->type)) {
-            TUnion::class => $this->buildRandomUnion($node, fn (GraphNode $node) => $this->buildRecursively($node, $with, $classBuilder, $visited)),
-            TArray::class => $this->buildRandomArray($node, fn (GraphNode $node) => $this->buildRecursively($node, $with, $classBuilder, $visited)),
             TClass::class => $classBuilder($node, $with, $visited),
-            default => $this->buildSingleRandomValue($node->type)
-        };
-    }
-
-    private function buildSingleRandomValue(TClass|TArray|TUnion|TEnum|TScalar|TNull $type): string|int|float|bool|object|array|null
-    {
-        return match (get_class($type)) {
-            TEnum::class => $type->pickRandomCase(),
+            TUnion::class => $this->buildRandomUnion($node, $builder),
+            TArray::class => $this->buildRandomArray($node, $builder),
+            TEnum::class => $node->type->pickRandomCase(),
             TNull::class => null,
-            TScalar::class => match ($type) {
+            TScalar::class => match ($node->type) {
                 TScalar::string => $this->faker->text(),
                 TScalar::int => $this->faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX), // TODO: Use Randomizer if PHP>=8.2
                 TScalar::float =>  $this->faker->randomFloat(), // TODO: negative float values
@@ -104,8 +97,8 @@ class AnyObject
                 continue;
             }
 
-            $classBuilder = $this->getRandomClassBuilderThroughConstructor();
-            $value = $this->buildRecursively($adj, $with, $classBuilder, $visited);
+            $classBuilder = [$this, 'buildRandomClassThroughConstructor'];
+            $value = $this->build($adj, $with, $classBuilder, $visited);
             if ($value instanceof TClass) {
                 $visited[$adj->type->class] = $value;
             }
@@ -134,8 +127,8 @@ class AnyObject
                 continue;
             }
 
-            $classBuilder = $this->getRandomClassBuilderThroughProperties();
-            $value = $this->buildRecursively($adj, $with, $classBuilder, $visited);
+            $classBuilder = [$this, 'buildRandomClassThroughProperties'];
+            $value = $this->build($adj, $with, $classBuilder, $visited);
             if ($value instanceof TClass) {
                 $visited[$adj->type->class] = $value;
             }
@@ -151,15 +144,5 @@ class AnyObject
         }
 
         return $instance;
-    }
-
-    private function getRandomClassBuilderThroughConstructor(): callable
-    {
-        return fn($node, $with, $visited) => $this->buildRandomClassThroughConstructor($node, $with, $visited);
-    }
-
-    public function getRandomClassBuilderThroughProperties(): callable
-    {
-        return fn($node, $with, $visited) => $this->buildRandomClassThroughProperties($node, $with, $visited);
     }
 }
