@@ -39,31 +39,23 @@ class AnyObject
     private function buildFromConstructor(string $class, array $with = []): object
     {
         $root = $this->parser->parseThroughConstructor($class);
-        return $this->buildRecursivelyThroughConstructor($root, $with);
-    }
-
-    private function buildRecursivelyThroughConstructor(GraphNode $node, array $with, array $visited = [])
-    {
-        return match (get_class($node->type)) {
-            TUnion::class => $this->buildRandomUnion($node, fn (GraphNode $node) => $this->buildRecursivelyThroughConstructor($node, $with, $visited)),
-            TArray::class => $this->buildRandomArray($node, fn (GraphNode $node) => $this->buildRecursivelyThroughConstructor($node, $with, $visited)),
-            TClass::class => $this->buildRandomClassThroughConstructor($node, $with, $visited),
-            default => $this->buildSingleRandomValue($node->type)
-        };
+        $classBuilder = $this->getRandomClassBuilderThroughConstructor();
+        return $this->buildRecursively($root, $with, $classBuilder);
     }
 
     private function buildFromProperties(string $class, array $with = []): object
     {
         $root = $this->parser->parseThroughProperties($class);
-        return $this->buildRecursivelyThroughProperties($root, $with);
+        $classBuilder = $this->getRandomClassBuilderThroughProperties();
+        return $this->buildRecursively($root, $with, $classBuilder);
     }
 
-    private function buildRecursivelyThroughProperties(GraphNode $node, array $with, array $visited = [])
+    private function buildRecursively(GraphNode $node, array $with, callable $classBuilder, array $visited = [])
     {
         return match (get_class($node->type)) {
-            TUnion::class => $this->buildRandomUnion($node, fn (GraphNode $node) => $this->buildRecursivelyThroughProperties($node, $with, $visited)),
-            TArray::class => $this->buildRandomArray($node, fn (GraphNode $node) => $this->buildRecursivelyThroughProperties($node, $with, $visited)),
-            TClass::class => $this->buildRandomClassThroughProperties($node, $visited, $with),
+            TUnion::class => $this->buildRandomUnion($node, fn (GraphNode $node) => $this->buildRecursively($node, $with, $classBuilder, $visited)),
+            TArray::class => $this->buildRandomArray($node, fn (GraphNode $node) => $this->buildRecursively($node, $with, $classBuilder, $visited)),
+            TClass::class => $classBuilder($node, $with, $visited),
             default => $this->buildSingleRandomValue($node->type)
         };
     }
@@ -112,7 +104,8 @@ class AnyObject
                 continue;
             }
 
-            $value = $this->buildRecursivelyThroughConstructor($adj, $with, $visited);
+            $classBuilder = $this->getRandomClassBuilderThroughConstructor();
+            $value = $this->buildRecursively($adj, $with, $classBuilder, $visited);
             if ($value instanceof TClass) {
                 $visited[$adj->type->class] = $value;
             }
@@ -124,7 +117,7 @@ class AnyObject
         return new $node->type->class(...$arguments);
     }
 
-    public function buildRandomClassThroughProperties(GraphNode $node, array $visited, array $with): string|object
+    public function buildRandomClassThroughProperties(GraphNode $node, array $with, array $visited): string|object
     {
         $reflectionClass = new ReflectionClass($node->type->class);
         $instance = $reflectionClass->newInstanceWithoutConstructor();
@@ -141,7 +134,8 @@ class AnyObject
                 continue;
             }
 
-            $value = $this->buildRecursivelyThroughProperties($adj, $with, $visited);
+            $classBuilder = $this->getRandomClassBuilderThroughProperties();
+            $value = $this->buildRecursively($adj, $with, $classBuilder, $visited);
             if ($value instanceof TClass) {
                 $visited[$adj->type->class] = $value;
             }
@@ -157,5 +151,15 @@ class AnyObject
         }
 
         return $instance;
+    }
+
+    private function getRandomClassBuilderThroughConstructor(): callable
+    {
+        return fn($node, $with, $visited) => $this->buildRandomClassThroughConstructor($node, $with, $visited);
+    }
+
+    public function getRandomClassBuilderThroughProperties(): callable
+    {
+        return fn($node, $with, $visited) => $this->buildRandomClassThroughProperties($node, $with, $visited);
     }
 }
