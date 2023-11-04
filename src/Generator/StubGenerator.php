@@ -8,11 +8,9 @@ use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\Instanceof_;
 use PhpParser\Node\Expr\Match_;
 use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\MatchArm;
 use PhpParser\Node\Name;
-use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Return_;
@@ -33,6 +31,8 @@ class StubGenerator
     {
         $root = $this->parser->parseThroughConstructor($class);
 
+        // TODO: Traverse the tree and alter the PHPParser nodes to generate the stubs
+
         $reflectionClass = new ReflectionClass($root->type->class);
         $name = $reflectionClass->getShortName();
         $classNamespace = $reflectionClass->getNamespaceName();
@@ -46,6 +46,14 @@ class StubGenerator
             ->addStmt($factory->class($stubName)
                 ->makeFinal()
 
+                /* For each constructor I need to:
+                 * - add a param with its type
+                 * - add an if statement to check if the param is provided
+                 * - add the param to the constructor call
+                 * - if some param is a class (or array of that class), I need to recurse to generate the stub factory for that class
+                 * - for enums I'm not sure if I need to generate a stub factory
+                 * - for the rest I need to generate a random value
+                 */
                 ->addStmt($factory->method('with')
                     ->makePublic()
                     ->setReturnType($name)
@@ -64,6 +72,7 @@ class StubGenerator
                     ->addStmt(new Return_($factory->new($name, [new Variable('value')])))
                 )
 
+                // Build method is not dependant of the tree
                 ->addStmt($factory->method('build')
                     ->setReturnType($name)
                     ->makePublic()
