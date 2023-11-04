@@ -1,0 +1,23 @@
+<?php
+
+namespace Santakadev\AnyObject\Generator\Tests\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
+
+final class StringObjectFactory
+{
+    public function with(string|ValueNotProvided $value = new ValueNotProvided): StringObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $value = (Factory::create())->text();
+        }
+
+        return new StringObject($value);
+    }
+
+    public function build(): StringObject
+    {
+        return self::with();
+    }
+}
