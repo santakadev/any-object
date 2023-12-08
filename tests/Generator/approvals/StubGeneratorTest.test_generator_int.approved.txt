@@ -1,0 +1,21 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\IntObject;
+final class IntObjectFactory
+{
+    public function with(int|ValueNotProvided $value = new ValueNotProvided()) : IntObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX);
+        }
+        return new IntObject($value);
+    }
+    public function build() : IntObject
+    {
+        return $this->with();
+    }
+}

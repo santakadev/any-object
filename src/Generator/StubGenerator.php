@@ -5,6 +5,7 @@ namespace Santakadev\AnyObject\Generator;
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\ClassConstFetch;
+use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\Instanceof_;
 use PhpParser\Node\Expr\Match_;
 use PhpParser\Node\Expr\MethodCall;
@@ -16,7 +17,14 @@ use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\PrettyPrinter\Standard;
 use ReflectionClass;
+use Santakadev\AnyObject\Parser\GraphNode;
 use Santakadev\AnyObject\Parser\Parser;
+use Santakadev\AnyObject\Types\TArray;
+use Santakadev\AnyObject\Types\TClass;
+use Santakadev\AnyObject\Types\TEnum;
+use Santakadev\AnyObject\Types\TNull;
+use Santakadev\AnyObject\Types\TScalar;
+use Santakadev\AnyObject\Types\TUnion;
 
 class StubGenerator
 {
@@ -60,13 +68,13 @@ class StubGenerator
                     ->addParam(
                         $factory
                             ->param('value')
-                            ->setType('string|ValueNotProvided')
+                            ->setType($root->adjacencyList['value']->type->value . '|ValueNotProvided') // TODO: remove direct access
                             ->setDefault($factory->new(new Name('ValueNotProvided')))
                     )
                     ->addStmt(new If_(new Instanceof_(new Variable('value'), new Name('ValueNotProvided')), [
                         'stmts' => [
                             new Expression(new Assign(new Variable('faker'), $factory->staticCall(new Name('Factory'), 'create'))),
-                            new Expression(new Assign(new Variable('value'), $factory->methodCall(new Variable('faker'), 'text' )))
+                            new Expression(new Assign(new Variable('value'), $this->fakerFactory($root->adjacencyList['value'], $factory)))
                         ]
                     ]))
                     ->addStmt(new Return_($factory->new($name, [new Variable('value')])))
@@ -97,25 +105,44 @@ class StubGenerator
         return $file;
     }
 
+    public function fakerFactory(GraphNode $node, BuilderFactory $factory)
+    {
+        return match (get_class($node->type)) {
+            TClass::class => [],
+            TUnion::class => [],
+            TArray::class => [],
+            TEnum::class => [],
+            TNull::class => [],
+            TScalar::class => match ($node->type) {
+                TScalar::string =>  $factory->methodCall(new Variable('faker'), 'text'),
+                TScalar::int =>  $factory->methodCall(new Variable('faker'), 'numberBetween', [new ConstFetch(new Name('PHP_INT_MIN')), new ConstFetch(new Name('PHP_INT_MAX'))]),
+                TScalar::float => [],
+                TScalar::bool => [],
+            },
+        };
+    }
+
     public function generateAnyFile(): void
     {
         $factory = new BuilderFactory;
         $node = $factory->namespace('Santakadev\AnyObject\Tests\Generator\Generated')
             ->addStmt($factory->use('Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject'))
+            ->addStmt($factory->use('Santakadev\AnyObject\Tests\TestData\ScalarTypes\IntObject'))
             ->addStmt($factory->class('Any')
                 ->makeFinal()
 
                 ->addStmt($factory->method('of')
                     ->makePublic()
                     ->makeStatic()
-                    ->setReturnType('StringObjectFactory')
+                    ->setReturnType('StringObjectFactory|IntObjectFactory')
                     ->addParam(
                         $factory
                             ->param('class')
                             ->setType('string')
                     )
                     ->addStmt(new Return_(new Match_(new Variable('class'), [
-                        new MatchArm([new ClassConstFetch(new Name('StringObject'), 'class')], $factory->new(new Name('StringObjectFactory')))
+                        new MatchArm([new ClassConstFetch(new Name('StringObject'), 'class')], $factory->new(new Name('StringObjectFactory'))),
+                        new MatchArm([new ClassConstFetch(new Name('IntObject'), 'class')], $factory->new(new Name('IntObjectFactory')))
                     ])))
                 )
             )
