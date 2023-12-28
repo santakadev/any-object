@@ -4,13 +4,9 @@ namespace Santakadev\AnyObject\Generator;
 
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Expr\Assign;
-use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\Instanceof_;
-use PhpParser\Node\Expr\Match_;
-use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
-use PhpParser\Node\MatchArm;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\If_;
