@@ -44,7 +44,7 @@ class StubGenerator
         $reflectionClass = new ReflectionClass($root->type->class);
         $name = $reflectionClass->getShortName();
         $classNamespace = $reflectionClass->getNamespaceName();
-        $stubName = $name . 'Factory';
+        $stubName = 'Any' . $name;
         $factoryNamespace = 'Santakadev\\AnyObject\\Tests\\Generator\\Generated';
 
         $factory = new BuilderFactory;
@@ -64,6 +64,7 @@ class StubGenerator
                  */
                 ->addStmt($factory->method('with')
                     ->makePublic()
+                    ->makeStatic()
                     ->setReturnType($name)
                     ->addParams(
                         array_map(
@@ -95,7 +96,8 @@ class StubGenerator
                 ->addStmt($factory->method('build')
                     ->setReturnType($name)
                     ->makePublic()
-                    ->addStmt(new Return_(new MethodCall(new Variable('this'), 'with')))
+                    ->makeStatic()
+                    ->addStmt(new Return_($factory->staticCall(new Name('self'), 'with')))
                 )
             )
 
@@ -110,7 +112,6 @@ class StubGenerator
 
         file_put_contents(__DIR__ . "/../../tests/Generator/Generated/$stubName.php", $file);
 
-        $this->generateAnyFile();
         $this->generateValueNotProvidedFile();
 
         return $file;
@@ -131,39 +132,6 @@ class StubGenerator
                 TScalar::bool => [],
             },
         };
-    }
-
-    public function generateAnyFile(): void
-    {
-        $factory = new BuilderFactory;
-        $node = $factory->namespace('Santakadev\AnyObject\Tests\Generator\Generated')
-            ->addStmt($factory->use('Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject'))
-            ->addStmt($factory->use('Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringIntObject'))
-            ->addStmt($factory->use('Santakadev\AnyObject\Tests\TestData\ScalarTypes\IntObject'))
-            ->addStmt($factory->class('Any')
-                ->makeFinal()
-
-                ->addStmt($factory->method('of')
-                    ->makePublic()
-                    ->makeStatic()
-                    ->setReturnType('StringObjectFactory|IntObjectFactory|StringIntObjectFactory')
-                    ->addParam(
-                        $factory
-                            ->param('class')
-                            ->setType('string')
-                    )
-                    ->addStmt(new Return_(new Match_(new Variable('class'), [
-                        new MatchArm([new ClassConstFetch(new Name('StringObject'), 'class')], $factory->new(new Name('StringObjectFactory'))),
-                        new MatchArm([new ClassConstFetch(new Name('IntObject'), 'class')], $factory->new(new Name('IntObjectFactory'))),
-                        new MatchArm([new ClassConstFetch(new Name('StringIntObject'), 'class')], $factory->new(new Name('StringIntObjectFactory'))),
-                    ])))
-                )
-            )
-            ->getNode();
-        $stmts = [$node];
-        $prettyPrinter = new Standard();
-        $any = $prettyPrinter->prettyPrintFile($stmts) . "\n";
-        file_put_contents(__DIR__ . "/../../tests/Generator/Generated/Any.php", $any);
     }
 
     public function generateValueNotProvidedFile(): void

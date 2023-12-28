@@ -4,9 +4,9 @@ namespace Santakadev\AnyObject\Tests\Generator\Generated;
 
 use Faker\Factory;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringIntObject;
-final class StringIntObjectFactory
+final class AnyStringIntObject
 {
-    public function with(string|ValueNotProvided $str = new ValueNotProvided(), int|ValueNotProvided $number = new ValueNotProvided()) : StringIntObject
+    public static function with(string|ValueNotProvided $str = new ValueNotProvided(), int|ValueNotProvided $number = new ValueNotProvided()) : StringIntObject
     {
         if ($str instanceof ValueNotProvided) {
             $faker = Factory::create();
@@ -18,8 +18,8 @@ final class StringIntObjectFactory
         }
         return new StringIntObject($str, $number);
     }
-    public function build() : StringIntObject
+    public static function build() : StringIntObject
     {
-        return $this->with();
+        return self::with();
     }
 }

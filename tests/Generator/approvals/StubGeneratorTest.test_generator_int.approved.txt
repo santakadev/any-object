@@ -4,9 +4,9 @@ namespace Santakadev\AnyObject\Tests\Generator\Generated;
 
 use Faker\Factory;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\IntObject;
-final class IntObjectFactory
+final class AnyIntObject
 {
-    public function with(int|ValueNotProvided $value = new ValueNotProvided()) : IntObject
+    public static function with(int|ValueNotProvided $value = new ValueNotProvided()) : IntObject
     {
         if ($value instanceof ValueNotProvided) {
             $faker = Factory::create();
@@ -14,8 +14,8 @@ final class IntObjectFactory
         }
         return new IntObject($value);
     }
-    public function build() : IntObject
+    public static function build() : IntObject
     {
-        return $this->with();
+        return self::with();
     }
 }
