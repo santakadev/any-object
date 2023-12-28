@@ -1,0 +1,25 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringIntObject;
+final class StringIntObjectFactory
+{
+    public function with(string|ValueNotProvided $str = new ValueNotProvided(), int|ValueNotProvided $number = new ValueNotProvided()) : StringIntObject
+    {
+        if ($str instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $str = $faker->text();
+        }
+        if ($number instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $number = $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX);
+        }
+        return new StringIntObject($str, $number);
+    }
+    public function build() : StringIntObject
+    {
+        return $this->with();
+    }
+}

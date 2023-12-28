@@ -65,19 +65,30 @@ class StubGenerator
                 ->addStmt($factory->method('with')
                     ->makePublic()
                     ->setReturnType($name)
-                    ->addParam(
-                        $factory
-                            ->param('value')
-                            ->setType($root->adjacencyList['value']->type->value . '|ValueNotProvided') // TODO: remove direct access
-                            ->setDefault($factory->new(new Name('ValueNotProvided')))
+                    ->addParams(
+                        array_map(
+                            fn (string $argName, GraphNode $n) => $factory
+                                ->param($argName)
+                                ->setType($n->type->value . '|ValueNotProvided')
+                                ->setDefault($factory->new(new Name('ValueNotProvided'))),
+                            array_keys($root->adjacencyList),
+                            array_values($root->adjacencyList)
+                        )
                     )
-                    ->addStmt(new If_(new Instanceof_(new Variable('value'), new Name('ValueNotProvided')), [
-                        'stmts' => [
-                            new Expression(new Assign(new Variable('faker'), $factory->staticCall(new Name('Factory'), 'create'))),
-                            new Expression(new Assign(new Variable('value'), $this->fakerFactory($root->adjacencyList['value'], $factory)))
-                        ]
-                    ]))
-                    ->addStmt(new Return_($factory->new($name, [new Variable('value')])))
+                    ->addStmts(
+                        array_map(
+                            fn (string $argName, GraphNode $n) =>
+                                new If_(new Instanceof_(new Variable($argName), new Name('ValueNotProvided')), [
+                                    'stmts' => [
+                                        new Expression(new Assign(new Variable('faker'), $factory->staticCall(new Name('Factory'), 'create'))),
+                                        new Expression(new Assign(new Variable($argName), $this->fakerFactory($n, $factory)))
+                                    ]
+                                ]),
+                            array_keys($root->adjacencyList),
+                            array_values($root->adjacencyList)
+                        )
+                    )
+                    ->addStmt(new Return_($factory->new($name, array_map(fn ($name) => new Variable($name), array_keys($root->adjacencyList))))) // TODO: Not too readable
                 )
 
                 // Build method is not dependant of the tree
@@ -127,6 +138,7 @@ class StubGenerator
         $factory = new BuilderFactory;
         $node = $factory->namespace('Santakadev\AnyObject\Tests\Generator\Generated')
             ->addStmt($factory->use('Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject'))
+            ->addStmt($factory->use('Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringIntObject'))
             ->addStmt($factory->use('Santakadev\AnyObject\Tests\TestData\ScalarTypes\IntObject'))
             ->addStmt($factory->class('Any')
                 ->makeFinal()
@@ -134,7 +146,7 @@ class StubGenerator
                 ->addStmt($factory->method('of')
                     ->makePublic()
                     ->makeStatic()
-                    ->setReturnType('StringObjectFactory|IntObjectFactory')
+                    ->setReturnType('StringObjectFactory|IntObjectFactory|StringIntObjectFactory')
                     ->addParam(
                         $factory
                             ->param('class')
@@ -142,7 +154,8 @@ class StubGenerator
                     )
                     ->addStmt(new Return_(new Match_(new Variable('class'), [
                         new MatchArm([new ClassConstFetch(new Name('StringObject'), 'class')], $factory->new(new Name('StringObjectFactory'))),
-                        new MatchArm([new ClassConstFetch(new Name('IntObject'), 'class')], $factory->new(new Name('IntObjectFactory')))
+                        new MatchArm([new ClassConstFetch(new Name('IntObject'), 'class')], $factory->new(new Name('IntObjectFactory'))),
+                        new MatchArm([new ClassConstFetch(new Name('StringIntObject'), 'class')], $factory->new(new Name('StringIntObjectFactory'))),
                     ])))
                 )
             )
