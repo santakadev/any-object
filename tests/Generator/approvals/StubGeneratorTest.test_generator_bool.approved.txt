@@ -1,0 +1,21 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\BoolObject;
+final class AnyBoolObject
+{
+    public static function with(bool|ValueNotProvided $value = new ValueNotProvided()) : BoolObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = $faker->boolean();
+        }
+        return new BoolObject($value);
+    }
+    public static function build() : BoolObject
+    {
+        return self::with();
+    }
+}
