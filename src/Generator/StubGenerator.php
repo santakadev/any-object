@@ -124,7 +124,7 @@ class StubGenerator
             TScalar::class => match ($node->type) {
                 TScalar::string =>  $factory->methodCall(new Variable('faker'), 'text'),
                 TScalar::int =>  $factory->methodCall(new Variable('faker'), 'numberBetween', [new ConstFetch(new Name('PHP_INT_MIN')), new ConstFetch(new Name('PHP_INT_MAX'))]),
-                TScalar::float => [],
+                TScalar::float => $factory->methodCall(new Variable('faker'), 'randomFloat'),
                 TScalar::bool => [],
             },
         };

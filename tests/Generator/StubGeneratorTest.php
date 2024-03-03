@@ -5,9 +5,11 @@ namespace Santakadev\AnyObject\Tests\Generator;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Santakadev\AnyObject\Generator\StubGenerator;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyFloatObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyIntObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyStringIntObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyStringObject;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\FloatObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\IntObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringIntObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
@@ -30,6 +32,15 @@ class StubGeneratorTest extends TestCase
         Approvals::verifyString($text);
         $test = AnyIntObject::with(1);
         $this->assertEquals(1, $test->value);
+    }
+
+    public function test_generator_float(): void
+    {
+        $generator = new StubGenerator();
+        $text = $generator->generate(FloatObject::class);
+        Approvals::verifyString($text);
+        $test = AnyFloatObject::with(1.1);
+        $this->assertEquals(1.1, $test->value);
     }
 
     public function test_generator_string_int(): void

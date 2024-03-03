@@ -1,0 +1,21 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\FloatObject;
+final class AnyFloatObject
+{
+    public static function with(float|ValueNotProvided $value = new ValueNotProvided()) : FloatObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = $faker->randomFloat();
+        }
+        return new FloatObject($value);
+    }
+    public static function build() : FloatObject
+    {
+        return self::with();
+    }
+}
