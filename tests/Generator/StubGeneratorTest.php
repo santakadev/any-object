@@ -16,6 +16,7 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\BoolObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\FloatObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\IntObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableIntObject;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableStringObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringIntObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
 
@@ -65,6 +66,17 @@ class StubGeneratorTest extends AnyObjectTestCase
         $this->assertAll(
             fn () => (AnyNullableIntObject::with())->value,
             ['is_int', 'is_null']
+        );
+    }
+
+    public function test_generator_nullable_string(): void
+    {
+        $generator = new StubGenerator();
+        $text = $generator->generate(NullableStringObject::class);
+        Approvals::verifyString($text);
+        $this->assertAll(
+            fn () => (AnyNullableStringObject::with())->value,
+            ['is_string', 'is_null']
         );
     }
 

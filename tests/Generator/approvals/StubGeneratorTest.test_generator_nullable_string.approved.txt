@@ -1,0 +1,24 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableStringObject;
+final class AnyNullableStringObject
+{
+    public static function with(string|null|ValueNotProvided $value = new ValueNotProvided()) : NullableStringObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = match (array_rand(['null', 'string'])) {
+                0 => null,
+                1 => $faker->text(),
+            };
+        }
+        return new NullableStringObject($value);
+    }
+    public static function build() : NullableStringObject
+    {
+        return self::with();
+    }
+}
