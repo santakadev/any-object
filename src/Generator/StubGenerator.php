@@ -155,7 +155,7 @@ class StubGenerator
 
     private function buildRandomUnion(GraphNode $node, BuilderFactory $factory): Match_
     {
-        $types = array_map(fn($type) => $this->typeFromGraphNode($type), $node->adjacencyList);
+        $types = array_map(fn ($type) => $this->typeFromGraphNode($type), $node->adjacencyList);
 
         $arrayRandFuncCall = new FuncCall(
             new Name('array_rand'),
@@ -163,10 +163,8 @@ class StubGenerator
                 new Arg(new Array_(array_map(fn($type) => new String_($type), $types)))
             ]
         );
-        $matchArms = [
-            new MatchArm([new LNumber(0)], $this->fakerFactory(new GraphNode($node->type->types[0]), $factory)),
-            new MatchArm([new LNumber(1)], $this->fakerFactory(new GraphNode($node->type->types[1]), $factory)),
-        ];
+
+        $matchArms = array_map(fn (GraphNode $node, int $index) => new MatchArm([new LNumber($index)], $this->fakerFactory($node, $factory)), $node->adjacencyList, array_keys($node->adjacencyList));
 
         return new Match_($arrayRandFuncCall, $matchArms);
     }

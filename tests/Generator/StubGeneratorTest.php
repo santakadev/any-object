@@ -3,7 +3,6 @@
 namespace Santakadev\AnyObject\Tests\Generator;
 
 use ApprovalTests\Approvals;
-use PHPUnit\Framework\TestCase;
 use Santakadev\AnyObject\Generator\StubGenerator;
 use Santakadev\AnyObject\Tests\AnyObjectTestCase;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyBoolObject;
