@@ -2,12 +2,21 @@
 
 namespace Santakadev\AnyObject\Generator;
 
+use Closure;
 use PhpParser\BuilderFactory;
+use PhpParser\Node\Arg;
+use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\ConstFetch;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Instanceof_;
+use PhpParser\Node\Expr\Match_;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\MatchArm;
 use PhpParser\Node\Name;
+use PhpParser\Node\Scalar\LNumber;
+use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Return_;
@@ -64,9 +73,9 @@ class StubGenerator
                     ->setReturnType($name)
                     ->addParams(
                         array_map(
-                            fn (string $argName, GraphNode $n) => $factory
+                            fn(string $argName, GraphNode $n) => $factory
                                 ->param($argName)
-                                ->setType($n->type->value . '|ValueNotProvided')
+                                ->setType($this->typeFromGraphNode($n) . '|ValueNotProvided')
                                 ->setDefault($factory->new(new Name('ValueNotProvided'))),
                             array_keys($root->adjacencyList),
                             array_values($root->adjacencyList)
@@ -99,7 +108,7 @@ class StubGenerator
 
             ->getNode();
         $stmts = [$node];
-        $prettyPrinter = new Standard();
+        $prettyPrinter = new Standard(['shortArraySyntax' => true]);
         $file = $prettyPrinter->prettyPrintFile($stmts) . "\n";
 
         if (!is_dir(__DIR__ . "/../../tests/Generator/Generated")) {
@@ -117,7 +126,7 @@ class StubGenerator
     {
         return match (get_class($node->type)) {
             TClass::class => [],
-            TUnion::class => [],
+            TUnion::class => $this->buildRandomUnion($node, $factory),
             TArray::class => [],
             TEnum::class => [],
             TNull::class => [],
@@ -142,5 +151,36 @@ class StubGenerator
         $prettyPrinter = new Standard();
         $valueNotProvided = $prettyPrinter->prettyPrintFile($stmts) . "\n";
         file_put_contents(__DIR__ . "/../../tests/Generator/Generated/ValueNotProvided.php", $valueNotProvided);
+    }
+
+    private function buildRandomUnion(GraphNode $node, BuilderFactory $factory): Match_
+    {
+        $arrayRandFuncCall = new FuncCall(
+            new Name('array_rand'),
+            [
+                new Arg(new Array_([
+                    new ArrayItem(new String_('null')),
+                    new ArrayItem(new String_('int')),
+                ]))
+            ]
+        );
+        $matchArms = [
+            new MatchArm([new LNumber(0)], new ConstFetch(new Name('null'))),
+            new MatchArm([new LNumber(1)], $factory->methodCall(new Variable('faker'), 'numberBetween', [new ConstFetch(new Name('PHP_INT_MIN')), new ConstFetch(new Name('PHP_INT_MAX'))])),
+        ];
+
+        return new Match_($arrayRandFuncCall, $matchArms);
+    }
+
+    private function typeFromGraphNode(GraphNode $node): string
+    {
+        return match (get_class($node->type)) {
+            TClass::class => '',
+            TUnion::class => rtrim(array_reduce($node->type->types, fn($acc, $type) => $acc . $this->typeFromGraphNode(new GraphNode($type)) . '|', ''), '|'),
+            TArray::class => '',
+            TEnum::class => '',
+            TNull::class => 'null',
+            TScalar::class => $node->type->value,
+        };
     }
 }
