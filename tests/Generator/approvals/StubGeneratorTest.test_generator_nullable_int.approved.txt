@@ -4,6 +4,7 @@ namespace Santakadev\AnyObject\Tests\Generator\Generated;
 
 use Faker\Factory;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableIntObject;
+
 final class AnyNullableIntObject
 {
     public static function with(int|null|ValueNotProvided $value = new ValueNotProvided()) : NullableIntObject

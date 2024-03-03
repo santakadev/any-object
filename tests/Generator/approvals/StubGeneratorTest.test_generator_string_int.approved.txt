@@ -4,6 +4,7 @@ namespace Santakadev\AnyObject\Tests\Generator\Generated;
 
 use Faker\Factory;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringIntObject;
+
 final class AnyStringIntObject
 {
     public static function with(string|ValueNotProvided $str = new ValueNotProvided(), int|ValueNotProvided $number = new ValueNotProvided()) : StringIntObject

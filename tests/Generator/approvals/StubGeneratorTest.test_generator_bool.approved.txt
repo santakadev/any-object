@@ -4,6 +4,7 @@ namespace Santakadev\AnyObject\Tests\Generator\Generated;
 
 use Faker\Factory;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\BoolObject;
+
 final class AnyBoolObject
 {
     public static function with(bool|ValueNotProvided $value = new ValueNotProvided()) : BoolObject

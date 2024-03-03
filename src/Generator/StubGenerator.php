@@ -17,6 +17,7 @@ use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\If_;
+use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\PrettyPrinter\Standard;
 use ReflectionClass;
@@ -98,6 +99,7 @@ class StubGenerator
         $node = $factory->namespace($factoryNamespace)
             ->addStmt($factory->use('Faker\Factory'))
             ->addStmt($factory->use("$classNamespace\\$name"))
+            ->addStmt(new Nop())
             ->addStmt($factory->class($stubName)
                 ->makeFinal()
                 ->addStmt($withMethod)
