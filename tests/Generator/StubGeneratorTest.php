@@ -9,6 +9,8 @@ use Santakadev\AnyObject\Tests\AnyObjectTestCase;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyBoolObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyFloatObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyIntObject;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyNullableBoolObject;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyNullableFloatObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyNullableIntObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyNullableStringObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyStringIntObject;
@@ -16,6 +18,8 @@ use Santakadev\AnyObject\Tests\Generator\Generated\AnyStringObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\BoolObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\FloatObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\IntObject;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableBoolObject;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableFloatObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableIntObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableStringObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringIntObject;
@@ -59,6 +63,17 @@ class StubGeneratorTest extends AnyObjectTestCase
         $this->assertFalse($test->value);
     }
 
+    public function test_generator_nullable_string(): void
+    {
+        $generator = new StubGenerator();
+        $text = $generator->generate(NullableStringObject::class);
+        Approvals::verifyString($text);
+        $this->assertAll(
+            fn () => (AnyNullableStringObject::with())->value,
+            ['is_string', 'is_null']
+        );
+    }
+
     public function test_generator_nullable_int(): void
     {
         $generator = new StubGenerator();
@@ -70,14 +85,25 @@ class StubGeneratorTest extends AnyObjectTestCase
         );
     }
 
-    public function test_generator_nullable_string(): void
+    public function test_generator_nullable_float(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(NullableStringObject::class);
+        $text = $generator->generate(NullableFloatObject::class);
         Approvals::verifyString($text);
         $this->assertAll(
-            fn () => (AnyNullableStringObject::with())->value,
-            ['is_string', 'is_null']
+            fn () => (AnyNullableFloatObject::with())->value,
+            ['is_float', 'is_null']
+        );
+    }
+
+    public function test_generator_nullable_bool(): void
+    {
+        $generator = new StubGenerator();
+        $text = $generator->generate(NullableBoolObject::class);
+        Approvals::verifyString($text);
+        $this->assertAll(
+            fn () => (AnyNullableBoolObject::with())->value,
+            ['is_bool', 'is_null']
         );
     }
 
