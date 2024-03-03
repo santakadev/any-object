@@ -2,11 +2,9 @@
 
 namespace Santakadev\AnyObject\Generator;
 
-use Closure;
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Array_;
-use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
@@ -53,57 +51,57 @@ class StubGenerator
         $factoryNamespace = 'Santakadev\\AnyObject\\Tests\\Generator\\Generated';
 
         $factory = new BuilderFactory;
+
+        /* For each constructor I need to:
+         * - add a param with its type
+         * - add an if statement to check if the param is provided
+         * - add the param to the constructor call
+         * - if some param is a class (or array of that class), I need to recurse to generate the stub factory for that class
+         * - for enums I'm not sure if I need to generate a stub factory
+         * - for the rest I need to generate a random value
+         */
+        $withMethod = $factory->method('with')
+            ->makePublic()
+            ->makeStatic()
+            ->setReturnType($name)
+            ->addParams(
+                array_map(
+                    fn(string $argName, GraphNode $n) => $factory
+                        ->param($argName)
+                        ->setType($this->typeFromGraphNode($n) . '|ValueNotProvided')
+                        ->setDefault($factory->new(new Name('ValueNotProvided'))),
+                    array_keys($root->adjacencyList),
+                    array_values($root->adjacencyList)
+                )
+            )
+            ->addStmts(
+                array_map(
+                    fn(string $argName, GraphNode $n) => new If_(new Instanceof_(new Variable($argName), new Name('ValueNotProvided')), [
+                        'stmts' => [
+                            new Expression(new Assign(new Variable('faker'), $factory->staticCall(new Name('Factory'), 'create'))),
+                            new Expression(new Assign(new Variable($argName), $this->fakerFactory($n, $factory)))
+                        ]
+                    ]),
+                    array_keys($root->adjacencyList),
+                    array_values($root->adjacencyList)
+                )
+            )
+            ->addStmt(new Return_($factory->new($name, array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList))))); // TODO: Not too readable
+
+        // Build method is not dependant of the tree
+        $buildMethod = $factory->method('build')
+            ->setReturnType($name)
+            ->makePublic()
+            ->makeStatic()
+            ->addStmt(new Return_($factory->staticCall(new Name('self'), 'with')));
+
         $node = $factory->namespace($factoryNamespace)
             ->addStmt($factory->use('Faker\Factory'))
             ->addStmt($factory->use("$classNamespace\\$name"))
             ->addStmt($factory->class($stubName)
                 ->makeFinal()
-
-                /* For each constructor I need to:
-                 * - add a param with its type
-                 * - add an if statement to check if the param is provided
-                 * - add the param to the constructor call
-                 * - if some param is a class (or array of that class), I need to recurse to generate the stub factory for that class
-                 * - for enums I'm not sure if I need to generate a stub factory
-                 * - for the rest I need to generate a random value
-                 */
-                ->addStmt($factory->method('with')
-                    ->makePublic()
-                    ->makeStatic()
-                    ->setReturnType($name)
-                    ->addParams(
-                        array_map(
-                            fn(string $argName, GraphNode $n) => $factory
-                                ->param($argName)
-                                ->setType($this->typeFromGraphNode($n) . '|ValueNotProvided')
-                                ->setDefault($factory->new(new Name('ValueNotProvided'))),
-                            array_keys($root->adjacencyList),
-                            array_values($root->adjacencyList)
-                        )
-                    )
-                    ->addStmts(
-                        array_map(
-                            fn (string $argName, GraphNode $n) =>
-                                new If_(new Instanceof_(new Variable($argName), new Name('ValueNotProvided')), [
-                                    'stmts' => [
-                                        new Expression(new Assign(new Variable('faker'), $factory->staticCall(new Name('Factory'), 'create'))),
-                                        new Expression(new Assign(new Variable($argName), $this->fakerFactory($n, $factory)))
-                                    ]
-                                ]),
-                            array_keys($root->adjacencyList),
-                            array_values($root->adjacencyList)
-                        )
-                    )
-                    ->addStmt(new Return_($factory->new($name, array_map(fn ($name) => new Variable($name), array_keys($root->adjacencyList))))) // TODO: Not too readable
-                )
-
-                // Build method is not dependant of the tree
-                ->addStmt($factory->method('build')
-                    ->setReturnType($name)
-                    ->makePublic()
-                    ->makeStatic()
-                    ->addStmt(new Return_($factory->staticCall(new Name('self'), 'with')))
-                )
+                ->addStmt($withMethod)
+                ->addStmt($buildMethod)
             )
 
             ->getNode();
