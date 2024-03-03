@@ -129,7 +129,7 @@ class StubGenerator
             TUnion::class => $this->buildRandomUnion($node, $factory),
             TArray::class => [],
             TEnum::class => [],
-            TNull::class => [],
+            TNull::class => new ConstFetch(new Name('null')),
             TScalar::class => match ($node->type) {
                 TScalar::string =>  $factory->methodCall(new Variable('faker'), 'text'),
                 TScalar::int =>  $factory->methodCall(new Variable('faker'), 'numberBetween', [new ConstFetch(new Name('PHP_INT_MIN')), new ConstFetch(new Name('PHP_INT_MAX'))]),
@@ -155,18 +155,18 @@ class StubGenerator
 
     private function buildRandomUnion(GraphNode $node, BuilderFactory $factory): Match_
     {
+        $types = array_map(fn($type) => $this->typeFromGraphNode(new GraphNode($type)), $node->type->types);
+
+
         $arrayRandFuncCall = new FuncCall(
             new Name('array_rand'),
             [
-                new Arg(new Array_([
-                    new ArrayItem(new String_('null')),
-                    new ArrayItem(new String_('int')),
-                ]))
+                new Arg(new Array_(array_map(fn($type) => new String_($type), $types)))
             ]
         );
         $matchArms = [
-            new MatchArm([new LNumber(0)], new ConstFetch(new Name('null'))),
-            new MatchArm([new LNumber(1)], $factory->methodCall(new Variable('faker'), 'numberBetween', [new ConstFetch(new Name('PHP_INT_MIN')), new ConstFetch(new Name('PHP_INT_MAX'))])),
+            new MatchArm([new LNumber(0)], $this->fakerFactory(new GraphNode($node->type->types[0]), $factory)),
+            new MatchArm([new LNumber(1)], $this->fakerFactory(new GraphNode($node->type->types[1]), $factory)),
         ];
 
         return new Match_($arrayRandFuncCall, $matchArms);

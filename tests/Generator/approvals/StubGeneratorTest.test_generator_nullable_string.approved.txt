@@ -10,9 +10,9 @@ final class AnyNullableStringObject
     {
         if ($value instanceof ValueNotProvided) {
             $faker = Factory::create();
-            $value = match (array_rand(['null', 'string'])) {
-                0 => null,
-                1 => $faker->text(),
+            $value = match (array_rand(['string', 'null'])) {
+                0 => $faker->text(),
+                1 => null,
             };
         }
         return new NullableStringObject($value);

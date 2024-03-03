@@ -10,6 +10,7 @@ use Santakadev\AnyObject\Tests\Generator\Generated\AnyBoolObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyFloatObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyIntObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyNullableIntObject;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyNullableStringObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyStringIntObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyStringObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\BoolObject;

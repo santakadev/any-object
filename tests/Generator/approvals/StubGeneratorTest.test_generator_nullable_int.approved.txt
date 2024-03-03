@@ -10,9 +10,9 @@ final class AnyNullableIntObject
     {
         if ($value instanceof ValueNotProvided) {
             $faker = Factory::create();
-            $value = match (array_rand(['null', 'int'])) {
-                0 => null,
-                1 => $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
+            $value = match (array_rand(['int', 'null'])) {
+                0 => $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
+                1 => null,
             };
         }
         return new NullableIntObject($value);
