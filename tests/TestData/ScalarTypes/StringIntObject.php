@@ -4,12 +4,12 @@ namespace Santakadev\AnyObject\Tests\TestData\ScalarTypes;
 
 class StringIntObject
 {
-    public readonly string $str;
+    public readonly string $string;
     public readonly int $number;
 
-    public function __construct(string $str, int $number)
+    public function __construct(string $string, int $number)
     {
-        $this->str = $str;
+        $this->string = $string;
         $this->number = $number;
     }
 }

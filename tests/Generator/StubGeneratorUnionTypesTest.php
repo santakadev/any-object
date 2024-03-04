@@ -25,6 +25,10 @@ class StubGeneratorUnionTypesTest extends AnyObjectTestCase
             fn () => ((AnyUnionBasicTypes::with()))->value,
             ['is_string', 'is_int', 'is_float', 'is_bool']
         );
+        $this->assertEquals('string', AnyUnionBasicTypes::with('string')->value);
+        $this->assertEquals(1, AnyUnionBasicTypes::with(1)->value);
+        $this->assertEquals(1.1, AnyUnionBasicTypes::with(1.1)->value);
+        $this->assertTrue(AnyUnionBasicTypes::with(true)->value);
     }
 
     public function test_generator_nullable_union(): void
@@ -36,6 +40,9 @@ class StubGeneratorUnionTypesTest extends AnyObjectTestCase
             fn () => (AnyUnionStringIntNull::with())->value,
             ['is_string', 'is_int', 'is_null']
         );
+        $this->assertEquals('string', AnyUnionStringIntNull::with('string')->value);
+        $this->assertEquals(1, AnyUnionStringIntNull::with(1)->value);
+        $this->assertNull(AnyUnionStringIntNull::with(null)->value);
     }
 
     public function test_union_custom_types(): void

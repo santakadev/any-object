@@ -82,6 +82,8 @@ class StubGeneratorScalarTypesTest extends AnyObjectTestCase
             fn () => (AnyNullableIntObject::with())->value,
             ['is_int', 'is_null']
         );
+        $this->assertEquals(1, AnyNullableIntObject::with(1)->value);
+        $this->assertNull(AnyNullableIntObject::with(null)->value);
     }
 
     public function test_generator_nullable_float(): void
@@ -93,6 +95,8 @@ class StubGeneratorScalarTypesTest extends AnyObjectTestCase
             fn () => (AnyNullableFloatObject::with())->value,
             ['is_float', 'is_null']
         );
+        $this->assertEquals(1.1, AnyNullableFloatObject::with(1.1)->value);
+        $this->assertNull(AnyNullableFloatObject::with(null)->value);
     }
 
     public function test_generator_nullable_bool(): void
@@ -104,6 +108,8 @@ class StubGeneratorScalarTypesTest extends AnyObjectTestCase
             fn () => (AnyNullableBoolObject::with())->value,
             ['is_bool', 'is_null']
         );
+        $this->assertTrue(AnyNullableBoolObject::with(true)->value);
+        $this->assertNull(AnyNullableBoolObject::with(null)->value);
     }
 
     public function test_generator_string_int(): void
@@ -111,10 +117,10 @@ class StubGeneratorScalarTypesTest extends AnyObjectTestCase
         $generator = new StubGenerator();
         $text = $generator->generate(StringIntObject::class);
         Approvals::verifyString($text);
-        $test = AnyStringIntObject::with(str: 'str', number: 1);
-        $this->assertEquals("str", $test->str);
+        $test = AnyStringIntObject::with(string: 'string', number: 1);
+        $this->assertEquals("string", $test->string);
         $this->assertEquals(1, $test->number);
-        $this->assertIsString(AnyStringIntObject::build()->str);
+        $this->assertIsString(AnyStringIntObject::build()->string);
         $this->assertIsInt(AnyStringIntObject::build()->number);
     }
 }
