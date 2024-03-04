@@ -43,7 +43,12 @@ class StubGenerator
     {
         $root = $this->parser->parseThroughConstructor($class);
 
-        // TODO: Traverse the tree and alter the PHPParser nodes to generate the stubs
+        // TODO: circular references 😬
+        foreach ($root->adjacencyList as $children) {
+            if ($children->type instanceof TClass) {
+                $this->generate($children->type->class);
+            }
+        }
 
         $reflectionClass = new ReflectionClass($root->type->class);
         $name = $reflectionClass->getShortName();
