@@ -1,0 +1,27 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionBasicTypes;
+
+final class AnyUnionBasicTypes
+{
+    public static function with(string|int|float|bool|ValueNotProvided $value = new ValueNotProvided()) : UnionBasicTypes
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = match (array_rand(['string', 'int', 'float', 'bool'])) {
+                0 => $faker->text(),
+                1 => $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
+                2 => $faker->randomFloat(),
+                3 => $faker->boolean(),
+            };
+        }
+        return new UnionBasicTypes($value);
+    }
+    public static function build() : UnionBasicTypes
+    {
+        return self::with();
+    }
+}
