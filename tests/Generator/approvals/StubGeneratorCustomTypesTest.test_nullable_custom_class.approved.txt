@@ -1,0 +1,26 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\NullableCustomObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomSubObject;
+
+final class AnyNullableCustomObject
+{
+    public static function with(CustomSubObject|null|ValueNotProvided $value = new ValueNotProvided()) : NullableCustomObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = match (array_rand(['CustomSubObject', 'null'])) {
+                0 => AnyCustomSubObject::build(),
+                1 => null,
+            };
+        }
+        return new NullableCustomObject($value);
+    }
+    public static function build() : NullableCustomObject
+    {
+        return self::with();
+    }
+}
