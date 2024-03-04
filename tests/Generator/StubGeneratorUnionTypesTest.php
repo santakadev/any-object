@@ -6,6 +6,7 @@ use ApprovalTests\Approvals;
 use Santakadev\AnyObject\Generator\StubGenerator;
 use Santakadev\AnyObject\Tests\AnyObjectTestCase;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyUnionBasicTypes;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyUnionCustomTypes;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyUnionStringIntNull;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\IntObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
@@ -39,8 +40,6 @@ class StubGeneratorUnionTypesTest extends AnyObjectTestCase
 
     public function test_union_custom_types(): void
     {
-        $this->markTestIncomplete();
-
         $generator = new StubGenerator();
         $text = $generator->generate(UnionCustomTypes::class);
         Approvals::verifyString($text);
@@ -51,5 +50,7 @@ class StubGeneratorUnionTypesTest extends AnyObjectTestCase
                 fn ($value) => $value instanceof IntObject
             ]
         );
+        $this->assertEquals(1, AnyUnionCustomTypes::with(new IntObject(1))->value->value);
+        $this->assertEquals('string', AnyUnionCustomTypes::with(new StringObject('string'))->value->value);
     }
 }

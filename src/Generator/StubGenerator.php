@@ -110,6 +110,13 @@ class StubGenerator
             if ($children->type instanceof TClass) {
                 $nodeBuilder->addStmt($factory->use($children->type->class));
             }
+            if ($children->type instanceof TUnion) {
+                foreach ($children->type->types as $type) {
+                    if ($type instanceof TClass) {
+                        $nodeBuilder->addStmt($factory->use($type->class));
+                    }
+                }
+            }
         }
 
         $nodeBuilder->addStmt(new Nop())

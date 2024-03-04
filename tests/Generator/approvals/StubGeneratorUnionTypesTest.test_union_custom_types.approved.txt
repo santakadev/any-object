@@ -1,0 +1,27 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionCustomTypes;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\IntObject;
+
+final class AnyUnionCustomTypes
+{
+    public static function with(StringObject|IntObject|ValueNotProvided $value = new ValueNotProvided()) : UnionCustomTypes
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = match (array_rand(['StringObject', 'IntObject'])) {
+                0 => AnyStringObject::build(),
+                1 => AnyIntObject::build(),
+            };
+        }
+        return new UnionCustomTypes($value);
+    }
+    public static function build() : UnionCustomTypes
+    {
+        return self::with();
+    }
+}
