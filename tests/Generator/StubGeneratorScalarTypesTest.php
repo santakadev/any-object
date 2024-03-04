@@ -14,8 +14,6 @@ use Santakadev\AnyObject\Tests\Generator\Generated\AnyNullableIntObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyNullableStringObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyStringIntObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyStringObject;
-use Santakadev\AnyObject\Tests\Generator\Generated\AnyUnionBasicTypes;
-use Santakadev\AnyObject\Tests\Generator\Generated\AnyUnionStringIntNull;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\BoolObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\FloatObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\IntObject;
@@ -25,9 +23,6 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableIntObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableStringObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringIntObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
-use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionBasicTypes;
-use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionCustomTypes;
-use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionStringIntNull;
 
 class StubGeneratorScalarTypesTest extends AnyObjectTestCase
 {
