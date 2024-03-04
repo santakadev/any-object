@@ -1,0 +1,23 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomSubObject;
+
+final class AnyCustomObject
+{
+    public static function with(CustomSubObject|ValueNotProvided $value = new ValueNotProvided()) : CustomObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = AnyCustomSubObject::build();
+        }
+        return new CustomObject($value);
+    }
+    public static function build() : CustomObject
+    {
+        return self::with();
+    }
+}

@@ -125,7 +125,7 @@ class StubGenerator
     public function fakerFactory(GraphNode $node, BuilderFactory $factory)
     {
         return match (get_class($node->type)) {
-            TClass::class => [],
+            TClass::class => $factory->staticCall($this->classShortName($node->type->class), 'build'),
             TUnion::class => $this->buildRandomUnion($node, $factory),
             TArray::class => [],
             TEnum::class => [],
@@ -137,6 +137,11 @@ class StubGenerator
                 TScalar::bool => $factory->methodCall(new Variable('faker'), 'boolean'),
             },
         };
+    }
+
+    public function classShortName(string $class): string
+    {
+        return (new ReflectionClass($class))->getShortName();
     }
 
     public function generateValueNotProvidedFile(): void
@@ -172,7 +177,7 @@ class StubGenerator
     private function typeFromGraphNode(GraphNode $node): string
     {
         return match (get_class($node->type)) {
-            TClass::class => '',
+            TClass::class => $this->classShortName($node->type->class),
             TUnion::class => rtrim(array_reduce($node->type->types, fn($acc, $type) => $acc . $this->typeFromGraphNode(new GraphNode($type)) . '|', ''), '|'),
             TArray::class => '',
             TEnum::class => '',

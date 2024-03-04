@@ -5,6 +5,7 @@ namespace Santakadev\AnyObject\Tests\Generator;
 use ApprovalTests\Approvals;
 use Santakadev\AnyObject\Generator\StubGenerator;
 use Santakadev\AnyObject\Tests\AnyObjectTestCase;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyCustomObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomSubObject;
 
