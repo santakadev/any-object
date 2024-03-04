@@ -96,17 +96,24 @@ class StubGenerator
             ->makeStatic()
             ->addStmt(new Return_($factory->staticCall(new Name('self'), 'with')));
 
-        $node = $factory->namespace($factoryNamespace)
+        $nodeBuilder = $factory->namespace($factoryNamespace)
             ->addStmt($factory->use('Faker\Factory'))
-            ->addStmt($factory->use("$classNamespace\\$name"))
-            ->addStmt(new Nop())
+            ->addStmt($factory->use("$classNamespace\\$name"));
+
+        // Add use statements for all children classes
+        foreach ($root->adjacencyList as $children) {
+            if ($children->type instanceof TClass) {
+                $nodeBuilder->addStmt($factory->use($children->type->class));
+            }
+        }
+
+        $nodeBuilder->addStmt(new Nop())
             ->addStmt($factory->class($stubName)
                 ->makeFinal()
                 ->addStmt($withMethod)
                 ->addStmt($buildMethod)
-            )
-
-            ->getNode();
+            );
+        $node = $nodeBuilder->getNode();
         $stmts = [$node];
         $prettyPrinter = new Standard(['shortArraySyntax' => true]);
         $file = $prettyPrinter->prettyPrintFile($stmts) . "\n";
@@ -125,7 +132,7 @@ class StubGenerator
     public function fakerFactory(GraphNode $node, BuilderFactory $factory)
     {
         return match (get_class($node->type)) {
-            TClass::class => $factory->staticCall($this->classShortName($node->type->class), 'build'),
+            TClass::class => $factory->staticCall('Any' . $this->classShortName($node->type->class), 'build'),
             TUnion::class => $this->buildRandomUnion($node, $factory),
             TArray::class => [],
             TEnum::class => [],
