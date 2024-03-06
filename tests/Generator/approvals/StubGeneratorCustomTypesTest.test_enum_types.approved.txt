@@ -1,0 +1,23 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\EnumTypeObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\EnumType;
+
+final class AnyEnumTypeObject
+{
+    public static function with(EnumType|ValueNotProvided $enum = new ValueNotProvided()) : EnumTypeObject
+    {
+        if ($enum instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $enum = EnumType::cases()[array_rand(EnumType::cases())];
+        }
+        return new EnumTypeObject($enum);
+    }
+    public static function build() : EnumTypeObject
+    {
+        return self::with();
+    }
+}

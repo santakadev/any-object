@@ -5,6 +5,7 @@ namespace Santakadev\AnyObject\Generator;
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
@@ -106,16 +107,19 @@ class StubGenerator
             ->addStmt($factory->use("$classNamespace\\$name"));
 
         // Add use statements for all children classes
-        foreach ($root->adjacencyList as $children) {
-            if ($children->type instanceof TClass) {
-                $nodeBuilder->addStmt($factory->use($children->type->class));
+        foreach ($root->adjacencyList as $child) {
+            if ($child->type instanceof TClass) {
+                $nodeBuilder->addStmt($factory->use($child->type->class));
             }
-            if ($children->type instanceof TUnion) {
-                foreach ($children->type->types as $type) {
+            if ($child->type instanceof TUnion) {
+                foreach ($child->type->types as $type) {
                     if ($type instanceof TClass) {
                         $nodeBuilder->addStmt($factory->use($type->class));
                     }
                 }
+            }
+            if ($child->type instanceof TEnum) {
+                $nodeBuilder->addStmt($factory->use($this->enumName($child->type)));
             }
         }
 
@@ -147,7 +151,7 @@ class StubGenerator
             TClass::class => $factory->staticCall('Any' . $this->classShortName($node->type->class), 'build'),
             TUnion::class => $this->buildRandomUnion($node, $factory),
             TArray::class => [],
-            TEnum::class => [],
+            TEnum::class => $this->buildRandomEnum($node, $factory),
             TNull::class => new ConstFetch(new Name('null')),
             TScalar::class => match ($node->type) {
                 TScalar::string =>  $factory->methodCall(new Variable('faker'), 'text'),
@@ -193,15 +197,39 @@ class StubGenerator
         return new Match_($arrayRandFuncCall, $matchArms);
     }
 
+    private function buildRandomEnum(GraphNode $node, BuilderFactory $factory): ArrayDimFetch
+    {
+        // Static Call: EnumType::cases()
+        $enumTypeCasesStaticCall = $factory->staticCall(new Name('EnumType'), 'cases');
+
+        // Function Call: array_rand(EnumType::cases())
+        $arrayRandFuncCall = $factory->funcCall(new Name('array_rand'), [
+            new Arg($enumTypeCasesStaticCall)
+        ]);
+
+        // Array Access: EnumType::cases()[array_rand(EnumType::cases())]
+        return new ArrayDimFetch($enumTypeCasesStaticCall, $arrayRandFuncCall);
+    }
+
     private function typeFromGraphNode(GraphNode $node): string
     {
         return match (get_class($node->type)) {
             TClass::class => $this->classShortName($node->type->class),
             TUnion::class => rtrim(array_reduce($node->type->types, fn($acc, $type) => $acc . $this->typeFromGraphNode(new GraphNode($type)) . '|', ''), '|'),
             TArray::class => '',
-            TEnum::class => '',
+            TEnum::class => $this->enumShortName($node->type),
             TNull::class => 'null',
             TScalar::class => $node->type->value,
         };
+    }
+
+    public function enumShortName(TEnum $enumType): string
+    {
+        return $this->classShortName($this->enumName($enumType)); // TODO: this is risky if the enum has no cases. I think I should add a property with the enum type
+    }
+
+    public function enumName(TEnum $enumType): string
+    {
+        return get_class($enumType->values[0]);
     }
 }

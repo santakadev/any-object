@@ -3,14 +3,15 @@
 namespace Santakadev\AnyObject\Tests\Generator;
 
 use ApprovalTests\Approvals;
-use Santakadev\AnyObject\AnyObject;
 use Santakadev\AnyObject\Generator\StubGenerator;
 use Santakadev\AnyObject\Tests\AnyObjectTestCase;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyCustomObject;
-use Santakadev\AnyObject\Tests\Generator\Generated\AnyCustomSubObject;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyEnumTypeObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyNullableCustomObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomSubObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\EnumType;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\EnumTypeObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\NullableCustomObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
 
@@ -39,5 +40,19 @@ class StubGeneratorCustomTypesTest extends AnyObjectTestCase
         );
         $this->assertEquals('string', AnyNullableCustomObject::with(new CustomSubObject(new StringObject('string')))->value->value->value);
         $this->assertNull(AnyNullableCustomObject::with(null)->value);
+    }
+
+    public function test_circular_references_through_properties(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_enum_types(): void
+    {
+        $generator = new StubGenerator();
+        $text = $generator->generate(EnumTypeObject::class);
+        Approvals::verifyString($text);
+        $object = AnyEnumTypeObject::build();
+        $this->assertContains($object->enum, [EnumType::A, EnumType::B, EnumType::C]); // TODO: use assertAll (also in the equivalent test in the other test suite)
     }
 }
