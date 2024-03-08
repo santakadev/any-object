@@ -57,8 +57,14 @@ class CustomTypesTest extends AnyObjectTestCase
     /** @dataProvider anyProvider */
     public function test_enum_types(AnyObject $any): void
     {
-        $object = $any->of(EnumTypeObject::class);
-        $this->assertContains($object->enum, [EnumType::A, EnumType::B, EnumType::C]);
+        $this->assertAll(
+            fn () => $any->of(EnumTypeObject::class)->enum,
+            [
+                fn ($value) => $value === EnumType::A,
+                fn ($value) => $value === EnumType::B,
+                fn ($value) => $value === EnumType::C,
+            ]
+        );
     }
 
     /** @dataProvider anyProvider */
@@ -67,8 +73,10 @@ class CustomTypesTest extends AnyObjectTestCase
         $this->assertAll(
             fn () => $any->of(NullableEnumTypeObject::class)->value,
             [
-                fn ($value) => in_array($value, [EnumType::A, EnumType::B, EnumType::C]),
-                'is_null'
+                fn ($value) => $value === EnumType::A,
+                fn ($value) => $value === EnumType::B,
+                fn ($value) => $value === EnumType::C,
+                'is_null',
             ]
         );
     }
@@ -76,14 +84,26 @@ class CustomTypesTest extends AnyObjectTestCase
     /** @dataProvider anyProvider */
     public function test_backed_string_enum_types(AnyObject $any): void
     {
-        $object = $any->of(BackedStringEnumTypeObject::class);
-        $this->assertContains($object->value, [BackedStringEnumType::A, BackedStringEnumType::B, BackedStringEnumType::C]);
+        $this->assertAll(
+            fn () => $any->of(BackedStringEnumTypeObject::class)->value,
+            [
+                fn ($value) => $value === BackedStringEnumType::A,
+                fn ($value) => $value === BackedStringEnumType::B,
+                fn ($value) => $value === BackedStringEnumType::C,
+            ]
+        );
     }
 
     /** @dataProvider anyProvider */
     public function test_backed_int_enum_types(AnyObject $any): void
     {
-        $object = $any->of(BackedIntEnumTypeObject::class);
-        $this->assertContains($object->value, [BackedIntEnumType::A, BackedIntEnumType::B, BackedIntEnumType::C]);
+        $this->assertAll(
+            fn () => $any->of(BackedIntEnumTypeObject::class)->value,
+            [
+                fn ($value) => $value === BackedIntEnumType::A,
+                fn ($value) => $value === BackedIntEnumType::B,
+                fn ($value) => $value === BackedIntEnumType::C,
+            ]
+        );
     }
 }

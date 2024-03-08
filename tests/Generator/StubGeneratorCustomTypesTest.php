@@ -52,7 +52,13 @@ class StubGeneratorCustomTypesTest extends AnyObjectTestCase
         $generator = new StubGenerator();
         $text = $generator->generate(EnumTypeObject::class);
         Approvals::verifyString($text);
-        $object = AnyEnumTypeObject::build();
-        $this->assertContains($object->enum, [EnumType::A, EnumType::B, EnumType::C]); // TODO: use assertAll (also in the equivalent test in the other test suite)
+        $this->assertAll(
+            fn () => AnyEnumTypeObject::build()->enum,
+            [
+                fn ($value) => $value === EnumType::A,
+                fn ($value) => $value === EnumType::B,
+                fn ($value) => $value === EnumType::C,
+            ]
+        );
     }
 }
