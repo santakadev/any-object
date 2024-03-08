@@ -167,7 +167,6 @@ class StubGenerator
         return match (get_class($node->type)) {
             TClass::class => $this->buildRandomClass($factory, $node),
             TUnion::class => $this->buildRandomUnion($node, $factory),
-            TArray::class => $this->buildRandomArray(),
             TEnum::class => $this->buildRandomEnum($node, $factory),
             TNull::class => new ConstFetch(new Name('null')),
             TScalar::class => match ($node->type) {
@@ -298,7 +297,7 @@ class StubGenerator
                     'cond' => [new Smaller(new Variable('i'), new Variable('elementsCount'))],
                     'loop' => [new PostInc(new Variable('i'))],
                     'stmts' => [
-                        new Expression(new Assign(new ArrayDimFetch(new Variable($argName)), $this->buildRandomString($factory)))
+                        new Expression(new Assign(new ArrayDimFetch(new Variable($argName)), $this->buildRandom($node->adjacencyList[0], $factory)))
                     ]
                 ]
             )

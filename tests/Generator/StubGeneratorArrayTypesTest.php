@@ -5,7 +5,9 @@ namespace Santakadev\AnyObject\Tests\Generator;
 use ApprovalTests\Approvals;
 use Santakadev\AnyObject\Generator\StubGenerator;
 use Santakadev\AnyObject\Tests\AnyObjectTestCase;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfIntObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfStringObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfIntObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
 
 /*
@@ -27,6 +29,20 @@ class StubGeneratorArrayTypesTest extends AnyObjectTestCase
         $this->assertLessThanOrEqual(50, count($object->value));
         foreach ($object->value as $item) {
             $this->assertIsString($item);
+        }
+    }
+
+    public function test_generator_array_of_int(): void
+    {
+        $generator = new StubGenerator();
+        $text = $generator->generate(GenericArrayOfIntObject::class);
+        Approvals::verifyString($text);
+        $object = AnyGenericArrayOfIntObject::build();
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        foreach ($object->value as $item) {
+            $this->assertIsInt($item);
         }
     }
 }
