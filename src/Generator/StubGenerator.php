@@ -87,7 +87,7 @@ class StubGenerator
                 array_map(
                     fn(string $argName, GraphNode $n) => new If_(new Instanceof_(new Variable($argName), new Name('ValueNotProvided')), [
                         'stmts' => [
-                            new Expression(new Assign(new Variable('faker'), $factory->staticCall(new Name('Factory'), 'create'))),
+                            $this->initializeFaker($factory),
                             new Expression(new Assign(new Variable($argName), $this->fakerFactory($n, $factory)))
                         ]
                     ]),
@@ -266,5 +266,10 @@ class StubGenerator
     private function buildRandomArray(): ConstFetch
     {
         return new ConstFetch(new Name('FAKE'));
+    }
+
+    private function initializeFaker(BuilderFactory $factory): Expression
+    {
+        return new Expression(new Assign(new Variable('faker'), $factory->staticCall(new Name('Factory'), 'create')));
     }
 }
