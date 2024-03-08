@@ -153,7 +153,7 @@ class StubGenerator
         return match (get_class($node->type)) {
             TClass::class => $factory->staticCall('Any' . $this->classShortName($node->type->class), 'build'),
             TUnion::class => $this->buildRandomUnion($node, $factory),
-            TArray::class => [],
+            TArray::class => new ConstFetch(new Name('FAKE')),
             TEnum::class => $this->buildRandomEnum($node, $factory),
             TNull::class => new ConstFetch(new Name('null')),
             TScalar::class => match ($node->type) {
