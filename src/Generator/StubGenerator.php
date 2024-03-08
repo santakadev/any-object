@@ -88,7 +88,7 @@ class StubGenerator
                     fn(string $argName, GraphNode $n) => new If_(new Instanceof_(new Variable($argName), new Name('ValueNotProvided')), [
                         'stmts' => [
                             $this->initializeFaker($factory),
-                            new Expression(new Assign(new Variable($argName), $this->fakerFactory($n, $factory)))
+                            $this->buildRandomArgumentValue($argName, $n, $factory)
                         ]
                     ]),
                     array_keys($root->adjacencyList),
@@ -150,7 +150,12 @@ class StubGenerator
         return $file;
     }
 
-    private function fakerFactory(GraphNode $node, BuilderFactory $factory)
+    private function buildRandomArgumentValue(string $argName, GraphNode $node, BuilderFactory $factory): Expression
+    {
+        return new Expression(new Assign(new Variable($argName), $this->buildRandom($node, $factory)));
+    }
+
+    private function buildRandom(GraphNode $node, BuilderFactory $factory)
     {
         return match (get_class($node->type)) {
             TClass::class => $this->buildRandomClass($factory, $node),
@@ -197,7 +202,7 @@ class StubGenerator
             ]
         );
 
-        $matchArms = array_map(fn (GraphNode $node, int $index) => new MatchArm([new LNumber($index)], $this->fakerFactory($node, $factory)), $node->adjacencyList, array_keys($node->adjacencyList));
+        $matchArms = array_map(fn (GraphNode $node, int $index) => new MatchArm([new LNumber($index)], $this->buildRandom($node, $factory)), $node->adjacencyList, array_keys($node->adjacencyList));
 
         return new Match_($arrayRandFuncCall, $matchArms);
     }
