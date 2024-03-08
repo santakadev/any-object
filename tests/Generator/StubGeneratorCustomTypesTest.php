@@ -17,7 +17,7 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
 
 class StubGeneratorCustomTypesTest extends AnyObjectTestCase
 {
-    public function test_custom_class(): void
+    public function test_generator_custom_class(): void
     {
         $generator = new StubGenerator();
         $text = $generator->generate(CustomObject::class);
@@ -26,7 +26,7 @@ class StubGeneratorCustomTypesTest extends AnyObjectTestCase
         $this->assertInstanceOf(CustomSubObject::class, $object->value);
     }
 
-    public function test_nullable_custom_class(): void
+    public function test_generator_nullable_custom_class(): void
     {
         $generator = new StubGenerator();
         $text = $generator->generate(NullableCustomObject::class);
@@ -42,12 +42,12 @@ class StubGeneratorCustomTypesTest extends AnyObjectTestCase
         $this->assertNull(AnyNullableCustomObject::with(null)->value);
     }
 
-    public function test_circular_references_through_properties(): void
+    public function test_generator_circular_references_through_properties(): void
     {
         $this->markTestIncomplete();
     }
 
-    public function test_enum_types(): void
+    public function test_generator_enum_types(): void
     {
         $generator = new StubGenerator();
         $text = $generator->generate(EnumTypeObject::class);
