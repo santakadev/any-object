@@ -203,7 +203,7 @@ class StubGenerator
     private function buildRandomEnum(GraphNode $node, BuilderFactory $factory): ArrayDimFetch
     {
         // Static Call: EnumType::cases()
-        $enumTypeCasesStaticCall = $factory->staticCall(new Name('EnumType'), 'cases');
+        $enumTypeCasesStaticCall = $factory->staticCall(new Name($this->enumShortName($node->type)), 'cases');
 
         // Function Call: array_rand(EnumType::cases())
         $arrayRandFuncCall = $factory->funcCall(new Name('array_rand'), [

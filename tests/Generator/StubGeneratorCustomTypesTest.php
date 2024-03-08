@@ -5,10 +5,13 @@ namespace Santakadev\AnyObject\Tests\Generator;
 use ApprovalTests\Approvals;
 use Santakadev\AnyObject\Generator\StubGenerator;
 use Santakadev\AnyObject\Tests\AnyObjectTestCase;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyBackedStringEnumTypeObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyCustomObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyEnumTypeObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyNullableCustomObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyNullableEnumTypeObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\BackedStringEnumType;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\BackedStringEnumTypeObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomSubObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\EnumType;
@@ -79,4 +82,20 @@ class StubGeneratorCustomTypesTest extends AnyObjectTestCase
             ]
         );
     }
+
+    public function test_generator_backed_string_enum_types(): void
+    {
+        $generator = new StubGenerator();
+        $text = $generator->generate(BackedStringEnumTypeObject::class);
+        Approvals::verifyString($text);
+        $this->assertAll(
+            fn () => AnyBackedStringEnumTypeObject::build()->value,
+            [
+                fn ($value) => $value === BackedStringEnumType::A,
+                fn ($value) => $value === BackedStringEnumType::B,
+                fn ($value) => $value === BackedStringEnumType::C,
+            ]
+        );
+    }
+
 }

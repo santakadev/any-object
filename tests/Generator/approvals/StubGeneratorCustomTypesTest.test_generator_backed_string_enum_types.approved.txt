@@ -1,0 +1,23 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\BackedStringEnumTypeObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\BackedStringEnumType;
+
+final class AnyBackedStringEnumTypeObject
+{
+    public static function with(BackedStringEnumType|ValueNotProvided $value = new ValueNotProvided()) : BackedStringEnumTypeObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = BackedStringEnumType::cases()[array_rand(BackedStringEnumType::cases())];
+        }
+        return new BackedStringEnumTypeObject($value);
+    }
+    public static function build() : BackedStringEnumTypeObject
+    {
+        return self::with();
+    }
+}
