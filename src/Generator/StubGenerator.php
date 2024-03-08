@@ -86,10 +86,7 @@ class StubGenerator
             ->addStmts(
                 array_map(
                     fn(string $argName, GraphNode $n) => new If_(new Instanceof_(new Variable($argName), new Name('ValueNotProvided')), [
-                        'stmts' => [
-                            $this->initializeFaker($factory),
-                            $this->buildRandomArgumentValue($argName, $n, $factory)
-                        ]
+                        'stmts' => $this->buildRandomArgumentValueStatements($argName, $n, $factory)
                     ]),
                     array_keys($root->adjacencyList),
                     array_values($root->adjacencyList)
@@ -150,9 +147,14 @@ class StubGenerator
         return $file;
     }
 
-    private function buildRandomArgumentValue(string $argName, GraphNode $node, BuilderFactory $factory): Expression
+    private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory): array
     {
-        return new Expression(new Assign(new Variable($argName), $this->buildRandom($node, $factory)));
+        return match (get_class($node->type)) {
+            default => [
+                $this->initializeFaker($factory),
+                new Expression(new Assign(new Variable($argName), $this->buildRandom($node, $factory)))
+            ]
+        };
     }
 
     private function buildRandom(GraphNode $node, BuilderFactory $factory)
