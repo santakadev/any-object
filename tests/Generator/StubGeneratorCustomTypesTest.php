@@ -8,11 +8,13 @@ use Santakadev\AnyObject\Tests\AnyObjectTestCase;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyCustomObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyEnumTypeObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyNullableCustomObject;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyNullableEnumTypeObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomSubObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\EnumType;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\EnumTypeObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\NullableCustomObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\NullableEnumTypeObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
 
 class StubGeneratorCustomTypesTest extends AnyObjectTestCase
@@ -58,6 +60,22 @@ class StubGeneratorCustomTypesTest extends AnyObjectTestCase
                 fn ($value) => $value === EnumType::A,
                 fn ($value) => $value === EnumType::B,
                 fn ($value) => $value === EnumType::C,
+            ]
+        );
+    }
+
+    public function test_generator_nullable_enum_types(): void
+    {
+        $generator = new StubGenerator();
+        $text = $generator->generate(NullableEnumTypeObject::class);
+        Approvals::verifyString($text);
+        $this->assertAll(
+            fn () => AnyNullableEnumTypeObject::build()->value,
+            [
+                fn ($value) => $value === EnumType::A,
+                fn ($value) => $value === EnumType::B,
+                fn ($value) => $value === EnumType::C,
+                'is_null',
             ]
         );
     }

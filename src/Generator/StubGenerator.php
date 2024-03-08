@@ -116,6 +116,9 @@ class StubGenerator
                     if ($type instanceof TClass) {
                         $nodeBuilder->addStmt($factory->use($type->class));
                     }
+                    if ($type instanceof TEnum) {
+                        $nodeBuilder->addStmt($factory->use($this->enumName($type)));
+                    }
                 }
             }
             if ($child->type instanceof TEnum) {

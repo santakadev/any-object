@@ -1,0 +1,26 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\NullableEnumTypeObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\EnumType;
+
+final class AnyNullableEnumTypeObject
+{
+    public static function with(EnumType|null|ValueNotProvided $value = new ValueNotProvided()) : NullableEnumTypeObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = match (array_rand(['EnumType', 'null'])) {
+                0 => EnumType::cases()[array_rand(EnumType::cases())],
+                1 => null,
+            };
+        }
+        return new NullableEnumTypeObject($value);
+    }
+    public static function build() : NullableEnumTypeObject
+    {
+        return self::with();
+    }
+}
