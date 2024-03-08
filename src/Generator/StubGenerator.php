@@ -11,6 +11,8 @@ use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Instanceof_;
 use PhpParser\Node\Expr\Match_;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\MatchArm;
 use PhpParser\Node\Name;
@@ -148,29 +150,29 @@ class StubGenerator
         return $file;
     }
 
-    public function fakerFactory(GraphNode $node, BuilderFactory $factory)
+    private function fakerFactory(GraphNode $node, BuilderFactory $factory)
     {
         return match (get_class($node->type)) {
-            TClass::class => $factory->staticCall('Any' . $this->classShortName($node->type->class), 'build'),
+            TClass::class => $this->buildRandomClass($factory, $node),
             TUnion::class => $this->buildRandomUnion($node, $factory),
-            TArray::class => new ConstFetch(new Name('FAKE')),
+            TArray::class => $this->buildRandomArray(),
             TEnum::class => $this->buildRandomEnum($node, $factory),
             TNull::class => new ConstFetch(new Name('null')),
             TScalar::class => match ($node->type) {
-                TScalar::string =>  $factory->methodCall(new Variable('faker'), 'text'),
-                TScalar::int =>  $factory->methodCall(new Variable('faker'), 'numberBetween', [new ConstFetch(new Name('PHP_INT_MIN')), new ConstFetch(new Name('PHP_INT_MAX'))]),
-                TScalar::float => $factory->methodCall(new Variable('faker'), 'randomFloat'),
-                TScalar::bool => $factory->methodCall(new Variable('faker'), 'boolean'),
+                TScalar::string => $this->buildRandomString($factory),
+                TScalar::int => $this->buildRandomInt($factory),
+                TScalar::float => $this->buildRandomFloat($factory),
+                TScalar::bool => $this->buildRandomBool($factory),
             },
         };
     }
 
-    public function classShortName(string $class): string
+    private function classShortName(string $class): string
     {
         return (new ReflectionClass($class))->getShortName();
     }
 
-    public function generateValueNotProvidedFile(): void
+    private function generateValueNotProvidedFile(): void
     {
         $factory = new BuilderFactory;
         $node = $factory->namespace('Santakadev\AnyObject\Tests\Generator\Generated')
@@ -226,13 +228,43 @@ class StubGenerator
         };
     }
 
-    public function enumShortName(TEnum $enumType): string
+    private function enumShortName(TEnum $enumType): string
     {
         return $this->classShortName($this->enumName($enumType)); // TODO: this is risky if the enum has no cases. I think I should add a property with the enum type
     }
 
-    public function enumName(TEnum $enumType): string
+    private function enumName(TEnum $enumType): string
     {
         return get_class($enumType->values[0]);
+    }
+
+    private function buildRandomBool(BuilderFactory $factory): MethodCall
+    {
+        return $factory->methodCall(new Variable('faker'), 'boolean');
+    }
+
+    private function buildRandomFloat(BuilderFactory $factory): MethodCall
+    {
+        return $factory->methodCall(new Variable('faker'), 'randomFloat');
+    }
+
+    private function buildRandomInt(BuilderFactory $factory): MethodCall
+    {
+        return $factory->methodCall(new Variable('faker'), 'numberBetween', [new ConstFetch(new Name('PHP_INT_MIN')), new ConstFetch(new Name('PHP_INT_MAX'))]);
+    }
+
+    private function buildRandomString(BuilderFactory $factory): MethodCall
+    {
+        return $factory->methodCall(new Variable('faker'), 'text');
+    }
+
+    private function buildRandomClass(BuilderFactory $factory, GraphNode $node): StaticCall
+    {
+        return $factory->staticCall('Any' . $this->classShortName($node->type->class), 'build');
+    }
+
+    private function buildRandomArray(): ConstFetch
+    {
+        return new ConstFetch(new Name('FAKE'));
     }
 }
