@@ -7,11 +7,14 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
+use PhpParser\Node\Expr\AssignOp\Plus;
+use PhpParser\Node\Expr\BinaryOp\Smaller;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Instanceof_;
 use PhpParser\Node\Expr\Match_;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\PostInc;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\MatchArm;
@@ -19,6 +22,7 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Expression;
+use PhpParser\Node\Stmt\For_;
 use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\Stmt\Return_;
@@ -150,6 +154,7 @@ class StubGenerator
     private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory): array
     {
         return match (get_class($node->type)) {
+            TArray::class => $this->buildRandomArrayArgumentValueStatements($argName, $node, $factory),
             default => [
                 $this->initializeFaker($factory),
                 new Expression(new Assign(new Variable($argName), $this->buildRandom($node, $factory)))
@@ -228,7 +233,7 @@ class StubGenerator
         return match (get_class($node->type)) {
             TClass::class => $this->classShortName($node->type->class),
             TUnion::class => rtrim(array_reduce($node->type->types, fn($acc, $type) => $acc . $this->typeFromGraphNode(new GraphNode($type)) . '|', ''), '|'),
-            TArray::class => '',
+            TArray::class => 'array', // TODO: should I add the type of the array in the PHPDoc?
             TEnum::class => $this->enumShortName($node->type),
             TNull::class => 'null',
             TScalar::class => $node->type->value,
@@ -270,13 +275,33 @@ class StubGenerator
         return $factory->staticCall('Any' . $this->classShortName($node->type->class), 'build');
     }
 
-    private function buildRandomArray(): ConstFetch
-    {
-        return new ConstFetch(new Name('FAKE'));
-    }
-
     private function initializeFaker(BuilderFactory $factory): Expression
     {
         return new Expression(new Assign(new Variable('faker'), $factory->staticCall(new Name('Factory'), 'create')));
+    }
+
+    private function buildRandomArrayArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory)
+    {
+        return [
+            $this->initializeFaker($factory),
+            new Expression(new Assign(new Variable('minElements'), new LNumber(0))),
+            new Expression(new Assign(new Variable('maxElements'), new LNumber(50))),
+            new Expression(new Assign(new Variable('elementsCount'), $factory->methodCall(new Variable('faker'), 'numberBetween', [new Variable('minElements'), new Variable('maxElements')]))),
+            new Expression(new Assign(new Variable($argName), new Array_())),
+            // generate this:
+            // for ($i = 0; $i < $elementsCount; $i++) {\n
+            //     $value[] = $faker->text();\n
+            // }\n
+            new For_(
+                [
+                    'init' => [new Assign(new Variable('i'), new LNumber(0))],
+                    'cond' => [new Smaller(new Variable('i'), new Variable('elementsCount'))],
+                    'loop' => [new PostInc(new Variable('i'))],
+                    'stmts' => [
+                        new Expression(new Assign(new ArrayDimFetch(new Variable($argName)), $this->buildRandomString($factory)))
+                    ]
+                ]
+            )
+        ];
     }
 }
