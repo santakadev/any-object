@@ -167,6 +167,7 @@ class StubGenerator
         return match (get_class($node->type)) {
             TClass::class => $this->buildRandomClass($factory, $node),
             TUnion::class => $this->buildRandomUnion($node, $factory),
+            TArray::class => $this->buildRandomArray($node, $factory),
             TEnum::class => $this->buildRandomEnum($node, $factory),
             TNull::class => new ConstFetch(new Name('null')),
             TScalar::class => match ($node->type) {
@@ -211,6 +212,15 @@ class StubGenerator
         $matchArms = array_map(fn (GraphNode $node, int $index) => new MatchArm([new LNumber($index)], $this->buildRandom($node, $factory)), $node->adjacencyList, array_keys($node->adjacencyList));
 
         return new Match_($arrayRandFuncCall, $matchArms);
+    }
+
+    private function buildRandomArray(GraphNode $node, BuilderFactory $factory)
+    {
+        if (count($node->adjacencyList) === 1) {
+            return $this->buildRandom($node->adjacencyList[0], $factory);
+        } else {
+            return $this->buildRandomUnion($node, $factory);
+        }
     }
 
     private function buildRandomEnum(GraphNode $node, BuilderFactory $factory): ArrayDimFetch
@@ -287,17 +297,13 @@ class StubGenerator
             new Expression(new Assign(new Variable('maxElements'), new LNumber(50))),
             new Expression(new Assign(new Variable('elementsCount'), $factory->methodCall(new Variable('faker'), 'numberBetween', [new Variable('minElements'), new Variable('maxElements')]))),
             new Expression(new Assign(new Variable($argName), new Array_())),
-            // generate this:
-            // for ($i = 0; $i < $elementsCount; $i++) {\n
-            //     $value[] = $faker->text();\n
-            // }\n
             new For_(
                 [
                     'init' => [new Assign(new Variable('i'), new LNumber(0))],
                     'cond' => [new Smaller(new Variable('i'), new Variable('elementsCount'))],
                     'loop' => [new PostInc(new Variable('i'))],
                     'stmts' => [
-                        new Expression(new Assign(new ArrayDimFetch(new Variable($argName)), $this->buildRandom($node->adjacencyList[0], $factory)))
+                        new Expression(new Assign(new ArrayDimFetch(new Variable($argName)), $this->buildRandom($node, $factory)))
                     ]
                 ]
             )

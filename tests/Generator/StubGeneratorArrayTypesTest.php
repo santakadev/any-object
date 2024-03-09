@@ -10,11 +10,13 @@ use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfFloatObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfFQNCustomTypeObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfIntObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfStringObject;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericNullableArrayOfStringObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfBoolObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfFloatObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfFQNCustomTypeObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfIntObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericNullableArrayOfStringObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
 
 /*
@@ -92,6 +94,24 @@ class StubGeneratorArrayTypesTest extends AnyObjectTestCase
         $this->assertLessThanOrEqual(50, count($object->value));
         foreach ($object->value as $item) {
             $this->assertInstanceOf(CustomObject::class, $item);
+        }
+    }
+
+    public function test_generator_nullable_array_of_string(): void
+    {
+        $generator = new StubGenerator();
+        $text = $generator->generate(GenericNullableArrayOfStringObject::class);
+        Approvals::verifyString($text);
+        $object = AnyGenericNullableArrayOfStringObject::build();
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        foreach ($object->value as $item) {
+            // TODO: this is not safe to catch bugs.
+            $this->assertTrue(
+                is_string($item) ||
+                is_null($item)
+            );
         }
     }
 }
