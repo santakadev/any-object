@@ -7,12 +7,15 @@ use Santakadev\AnyObject\Generator\StubGenerator;
 use Santakadev\AnyObject\Tests\AnyObjectTestCase;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfBoolObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfFloatObject;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfFQNCustomTypeObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfIntObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfStringObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfBoolObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfFloatObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfFQNCustomTypeObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfIntObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
 
 /*
  * The different ways of parsing an array are already covered the
@@ -75,6 +78,20 @@ class StubGeneratorArrayTypesTest extends AnyObjectTestCase
         $this->assertLessThanOrEqual(50, count($object->value));
         foreach ($object->value as $item) {
             $this->assertIsBool($item);
+        }
+    }
+
+    public function test_generator_array_of_fqn_custom_type(): void
+    {
+        $generator = new StubGenerator();
+        $text = $generator->generate(GenericArrayOfFQNCustomTypeObject::class);
+        Approvals::verifyString($text);
+        $object = AnyGenericArrayOfFQNCustomTypeObject::build();
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        foreach ($object->value as $item) {
+            $this->assertInstanceOf(CustomObject::class, $item);
         }
     }
 }
