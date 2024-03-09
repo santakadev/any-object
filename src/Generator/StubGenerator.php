@@ -7,7 +7,6 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
-use PhpParser\Node\Expr\AssignOp\Plus;
 use PhpParser\Node\Expr\BinaryOp\Smaller;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
@@ -46,7 +45,7 @@ class StubGenerator
         $this->parser = new Parser();
     }
 
-    public function generate(string $class): string
+    public function generate(string $class, $outputDir = __DIR__ . "/../../tests/Generator/Generated"): string
     {
         $root = $this->parser->parseThroughConstructor($class);
 
@@ -61,6 +60,7 @@ class StubGenerator
         $name = $reflectionClass->getShortName();
         $classNamespace = $reflectionClass->getNamespaceName();
         $stubName = 'Any' . $name;
+        // TODO: Read from psr-4 from package.json to build the namespace based on the $outputDir
         $factoryNamespace = 'Santakadev\\AnyObject\\Tests\\Generator\\Generated';
 
         $factory = new BuilderFactory;
@@ -140,13 +140,13 @@ class StubGenerator
         $prettyPrinter = new Standard(['shortArraySyntax' => true]);
         $file = $prettyPrinter->prettyPrintFile($stmts) . "\n";
 
-        if (!is_dir(__DIR__ . "/../../tests/Generator/Generated")) {
-            mkdir(__DIR__ . "/../../tests/Generator/Generated");
+        if (!is_dir($outputDir)) {
+            mkdir($outputDir);
         }
 
-        file_put_contents(__DIR__ . "/../../tests/Generator/Generated/$stubName.php", $file);
+        file_put_contents($outputDir . DIRECTORY_SEPARATOR . "$stubName.php", $file);
 
-        $this->generateValueNotProvidedFile();
+        $this->generateValueNotProvidedFile($outputDir);
 
         return $file;
     }
@@ -184,7 +184,7 @@ class StubGenerator
         return (new ReflectionClass($class))->getShortName();
     }
 
-    private function generateValueNotProvidedFile(): void
+    private function generateValueNotProvidedFile($outputDir): void
     {
         $factory = new BuilderFactory;
         $node = $factory->namespace('Santakadev\AnyObject\Tests\Generator\Generated')
@@ -195,7 +195,7 @@ class StubGenerator
         $stmts = [$node];
         $prettyPrinter = new Standard();
         $valueNotProvided = $prettyPrinter->prettyPrintFile($stmts) . "\n";
-        file_put_contents(__DIR__ . "/../../tests/Generator/Generated/ValueNotProvided.php", $valueNotProvided);
+        file_put_contents($outputDir . DIRECTORY_SEPARATOR . "ValueNotProvided.php", $valueNotProvided);
     }
 
     private function buildRandomUnion(GraphNode $node, BuilderFactory $factory): Match_
