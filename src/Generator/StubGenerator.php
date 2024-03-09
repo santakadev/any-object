@@ -45,15 +45,14 @@ class StubGenerator
         $this->parser = new Parser();
     }
 
-    // TODO: remove output dir default value
-    public function generate(string $class, $outputDir = __DIR__ . "/../../tests/Generator/Generated"): void
+    public function generate(string $class, string $outputDir): void
     {
         $root = $this->parser->parseThroughConstructor($class);
 
         // TODO: circular references 😬
         foreach ($root->adjacencyList as $children) {
             if ($children->type instanceof TClass) {
-                $this->generate($children->type->class);
+                $this->generate($children->type->class, $outputDir);
             }
         }
 
@@ -91,7 +90,7 @@ class StubGenerator
             ->addStmts(
                 array_map(
                     fn(string $argName, GraphNode $n) => new If_(new Instanceof_(new Variable($argName), new Name('ValueNotProvided')), [
-                        'stmts' => $this->buildRandomArgumentValueStatements($argName, $n, $factory)
+                        'stmts' => $this->buildRandomArgumentValueStatements($argName, $n, $factory, $outputDir)
                     ]),
                     array_keys($root->adjacencyList),
                     array_values($root->adjacencyList)
@@ -150,10 +149,10 @@ class StubGenerator
         $this->generateValueNotProvidedFile($outputDir);
     }
 
-    private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory): array
+    private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, string $outputDir): array
     {
         return match (get_class($node->type)) {
-            TArray::class => $this->buildRandomArrayArgumentValueStatements($argName, $node, $factory),
+            TArray::class => $this->buildRandomArrayArgumentValueStatements($argName, $node, $factory, $outputDir),
             default => [
                 $this->initializeFaker($factory),
                 new Expression(new Assign(new Variable($argName), $this->buildRandom($node, $factory)))
@@ -288,12 +287,12 @@ class StubGenerator
         return new Expression(new Assign(new Variable('faker'), $factory->staticCall(new Name('Factory'), 'create')));
     }
 
-    private function buildRandomArrayArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory)
+    private function buildRandomArrayArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, string $outputDir)
     {
         // TODO: 2 responsibilities here: children classes generation and build random array statements
         foreach ($node->adjacencyList as $child) {
             if ($child->type instanceof TClass) {
-                $this->generate($child->type->class); // TODO: here I'm relying in the default outputDir :/
+                $this->generate($child->type->class, $outputDir); // TODO: here I'm relying in the default outputDir :/
             }
         }
 

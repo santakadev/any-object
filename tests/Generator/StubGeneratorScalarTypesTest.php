@@ -29,7 +29,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_string(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(StringObject::class, self::OUTPUT_DIR);
+        $generator->generate(StringObject::class, self::OUTPUT_DIR, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(StringObject::class);
         Approvals::verifyString($text);
@@ -40,7 +40,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_int(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(IntObject::class);
+        $generator->generate(IntObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(IntObject::class);
         Approvals::verifyString($text);
@@ -51,7 +51,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_float(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(FloatObject::class);
+        $generator->generate(FloatObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(FloatObject::class);
         Approvals::verifyString($text);
@@ -62,7 +62,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_bool(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(BoolObject::class);
+        $generator->generate(BoolObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(BoolObject::class);
         Approvals::verifyString($text);
@@ -73,7 +73,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_nullable_string(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(NullableStringObject::class);
+        $generator->generate(NullableStringObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(NullableStringObject::class);
         Approvals::verifyString($text);
@@ -86,7 +86,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_nullable_int(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(NullableIntObject::class);
+        $generator->generate(NullableIntObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(NullableIntObject::class);
         Approvals::verifyString($text);
@@ -101,7 +101,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_nullable_float(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(NullableFloatObject::class);
+        $generator->generate(NullableFloatObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(NullableFloatObject::class);
         Approvals::verifyString($text);
@@ -116,7 +116,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_nullable_bool(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(NullableBoolObject::class);
+        $generator->generate(NullableBoolObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(NullableBoolObject::class);
         Approvals::verifyString($text);
@@ -131,7 +131,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_string_int(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(StringIntObject::class);
+        $generator->generate(StringIntObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(StringIntObject::class);
         Approvals::verifyString($text);

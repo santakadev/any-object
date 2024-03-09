@@ -18,7 +18,7 @@ class StubGeneratorUnionTypesTest extends StubGeneratorTestCase
     public function test_generator_union_basic_types(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(UnionBasicTypes::class);
+        $generator->generate(UnionBasicTypes::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(UnionBasicTypes::class);
         Approvals::verifyString($text);
@@ -35,7 +35,7 @@ class StubGeneratorUnionTypesTest extends StubGeneratorTestCase
     public function test_generator_nullable_union(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(UnionStringIntNull::class);
+        $generator->generate(UnionStringIntNull::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(UnionStringIntNull::class);
         Approvals::verifyString($text);
@@ -51,7 +51,7 @@ class StubGeneratorUnionTypesTest extends StubGeneratorTestCase
     public function test_generator_union_custom_types(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(UnionCustomTypes::class);
+        $generator->generate(UnionCustomTypes::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(UnionCustomTypes::class);
         Approvals::verifyString($text);

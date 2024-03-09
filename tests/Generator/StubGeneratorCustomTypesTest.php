@@ -27,7 +27,7 @@ class StubGeneratorCustomTypesTest extends StubGeneratorTestCase
     public function test_generator_custom_class(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(CustomObject::class);
+        $generator->generate(CustomObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(CustomObject::class);
         Approvals::verifyString($text);
@@ -38,7 +38,7 @@ class StubGeneratorCustomTypesTest extends StubGeneratorTestCase
     public function test_generator_nullable_custom_class(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(NullableCustomObject::class);
+        $generator->generate(NullableCustomObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(NullableCustomObject::class);
         Approvals::verifyString($text);
@@ -61,7 +61,7 @@ class StubGeneratorCustomTypesTest extends StubGeneratorTestCase
     public function test_generator_enum_types(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(EnumTypeObject::class);
+        $generator->generate(EnumTypeObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(EnumTypeObject::class);
         Approvals::verifyString($text);
@@ -78,7 +78,7 @@ class StubGeneratorCustomTypesTest extends StubGeneratorTestCase
     public function test_generator_nullable_enum_types(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(NullableEnumTypeObject::class);
+        $generator->generate(NullableEnumTypeObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(NullableEnumTypeObject::class);
         Approvals::verifyString($text);
@@ -96,7 +96,7 @@ class StubGeneratorCustomTypesTest extends StubGeneratorTestCase
     public function test_generator_backed_string_enum_types(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(BackedStringEnumTypeObject::class);
+        $generator->generate(BackedStringEnumTypeObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(BackedStringEnumTypeObject::class);
         Approvals::verifyString($text);
@@ -113,7 +113,7 @@ class StubGeneratorCustomTypesTest extends StubGeneratorTestCase
     public function test_generator_backed_int_enum_types(): void
     {
         $generator = new StubGenerator();
-        $generator->generate(BackedIntEnumTypeObject::class);
+        $generator->generate(BackedIntEnumTypeObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(BackedIntEnumTypeObject::class);
         Approvals::verifyString($text);
