@@ -90,6 +90,7 @@ class AnyObject
         foreach ($node->adjacencyList as $paramName => $adj) {
             if (isset($with[$paramName])) { // TODO: this could lead to strange results, as with can modify nested classes properties
                 $arguments[] = $with[$paramName];
+                continue; // TODO: There's no test for this case
             }
 
             if ($adj->type instanceof TClass && isset($visited[$adj->type->class])) {
