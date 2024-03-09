@@ -3,7 +3,7 @@
 namespace Santakadev\AnyObject\Tests\Generator;
 
 use ApprovalTests\Approvals;
-use Santakadev\AnyObject\Generator\StubGenerator;
+use Santakadev\AnyObject\Generator\FactoryGenerator;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyBoolObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyFloatObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyIntObject;
@@ -23,12 +23,12 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableStringObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringIntObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
 
-class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
+class FactoryGeneratorScalarTypesTest extends FactoryGeneratorTestCase
 {
 
     public function test_generator_string(): void
     {
-        $generator = new StubGenerator();
+        $generator = new FactoryGenerator();
         $generator->generate(StringObject::class, self::OUTPUT_DIR, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(StringObject::class);
@@ -39,7 +39,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
 
     public function test_generator_int(): void
     {
-        $generator = new StubGenerator();
+        $generator = new FactoryGenerator();
         $generator->generate(IntObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(IntObject::class);
@@ -50,7 +50,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
 
     public function test_generator_float(): void
     {
-        $generator = new StubGenerator();
+        $generator = new FactoryGenerator();
         $generator->generate(FloatObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(FloatObject::class);
@@ -61,7 +61,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
 
     public function test_generator_bool(): void
     {
-        $generator = new StubGenerator();
+        $generator = new FactoryGenerator();
         $generator->generate(BoolObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(BoolObject::class);
@@ -72,7 +72,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
 
     public function test_generator_nullable_string(): void
     {
-        $generator = new StubGenerator();
+        $generator = new FactoryGenerator();
         $generator->generate(NullableStringObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(NullableStringObject::class);
@@ -85,7 +85,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
 
     public function test_generator_nullable_int(): void
     {
-        $generator = new StubGenerator();
+        $generator = new FactoryGenerator();
         $generator->generate(NullableIntObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(NullableIntObject::class);
@@ -100,7 +100,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
 
     public function test_generator_nullable_float(): void
     {
-        $generator = new StubGenerator();
+        $generator = new FactoryGenerator();
         $generator->generate(NullableFloatObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(NullableFloatObject::class);
@@ -115,7 +115,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
 
     public function test_generator_nullable_bool(): void
     {
-        $generator = new StubGenerator();
+        $generator = new FactoryGenerator();
         $generator->generate(NullableBoolObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(NullableBoolObject::class);
@@ -130,7 +130,7 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
 
     public function test_generator_string_int(): void
     {
-        $generator = new StubGenerator();
+        $generator = new FactoryGenerator();
         $generator->generate(StringIntObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(StringIntObject::class);

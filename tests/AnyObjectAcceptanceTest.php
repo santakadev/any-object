@@ -13,16 +13,17 @@ use Santakadev\AnyObject\Tests\TestData\ComplexType\Quantity;
 
 class AnyObjectAcceptanceTest extends TestCase
 {
+    // TODO: Acceptance test using properties parser
     public function test_complex_type(): void
     {
         $any = new AnyObject();
 
         $quantity = new Quantity(3);
         $amount = new Amount(100);
-        $money = $any->of(Money::class, ['amount' => $amount]);
+        $money = $any->of(Money::class, with: ['amount' => $amount]);
         $price = new ProductPrice($money);
-        $product = $any->of(Product::class, ['price' => $price]);
-        $cart = $any->of(Cart::class, ['currency' => $money->currency]);
+        $product = $any->of(Product::class, with: ['price' => $price]);
+        $cart = $any->of(Cart::class, with: ['currency' => $money->currency]);
 
         $cart->addProduct($product, $quantity);
 

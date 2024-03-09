@@ -4,7 +4,7 @@ namespace Santakadev\AnyObject\Tests\Generator;
 
 use Santakadev\AnyObject\Tests\AnyObjectTestCase;
 
-class StubGeneratorTestCase extends AnyObjectTestCase
+class FactoryGeneratorTestCase extends AnyObjectTestCase
 {
     protected const OUTPUT_DIR = __DIR__ . '/Generated';
 

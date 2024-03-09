@@ -2,7 +2,7 @@
 
 namespace Santakadev\AnyObject\Tests\Generator;
 
-use Santakadev\AnyObject\Generator\StubGenerator;
+use Santakadev\AnyObject\Generator\FactoryGenerator;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyCart;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyCartLine;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyCartLineCollection;
@@ -16,13 +16,13 @@ use Santakadev\AnyObject\Tests\TestData\ComplexType\Product;
 use Santakadev\AnyObject\Tests\TestData\ComplexType\ProductPrice;
 use Santakadev\AnyObject\Tests\TestData\ComplexType\Quantity;
 
-class StubGeneratorAcceptanceTest extends StubGeneratorTestCase
+class FactoryGeneratorAcceptanceTest extends FactoryGeneratorTestCase
 {
     // TODO: Support DateTimeImmutable
     // TODO: Support configuring int generation. Example: Only positive values
     public function test_generator_complex_type(): void
     {
-        $generator = new StubGenerator();
+        $generator = new FactoryGenerator();
         $generator->generate(Cart::class, self::OUTPUT_DIR);
         $generator->generate(Product::class, self::OUTPUT_DIR);
         $generator->generate(Money::class, self::OUTPUT_DIR);

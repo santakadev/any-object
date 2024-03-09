@@ -29,7 +29,7 @@ Fix some properties and use a random value for the rest
 
 ```php
 $any = new AnyObject();
-$object = $any->of(class: Product::class, with: ['name' => 'My Product']);
+$object = $any->of(Product::class, with: ['name' => 'My Product']);
 ```
 
 ## License

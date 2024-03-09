@@ -3,7 +3,7 @@
 namespace Santakadev\AnyObject\Tests\Generator;
 
 use ApprovalTests\Approvals;
-use Santakadev\AnyObject\Generator\StubGenerator;
+use Santakadev\AnyObject\Generator\FactoryGenerator;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyUnionBasicTypes;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyUnionCustomTypes;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyUnionStringIntNull;
@@ -13,11 +13,11 @@ use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionBasicTypes;
 use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionCustomTypes;
 use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionStringIntNull;
 
-class StubGeneratorUnionTypesTest extends StubGeneratorTestCase
+class FactoryGeneratorUnionTypesTest extends FactoryGeneratorTestCase
 {
     public function test_generator_union_basic_types(): void
     {
-        $generator = new StubGenerator();
+        $generator = new FactoryGenerator();
         $generator->generate(UnionBasicTypes::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(UnionBasicTypes::class);
@@ -34,7 +34,7 @@ class StubGeneratorUnionTypesTest extends StubGeneratorTestCase
 
     public function test_generator_nullable_union(): void
     {
-        $generator = new StubGenerator();
+        $generator = new FactoryGenerator();
         $generator->generate(UnionStringIntNull::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(UnionStringIntNull::class);
@@ -50,7 +50,7 @@ class StubGeneratorUnionTypesTest extends StubGeneratorTestCase
 
     public function test_generator_union_custom_types(): void
     {
-        $generator = new StubGenerator();
+        $generator = new FactoryGenerator();
         $generator->generate(UnionCustomTypes::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(UnionCustomTypes::class);

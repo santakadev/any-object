@@ -36,7 +36,7 @@ use Santakadev\AnyObject\Types\TNull;
 use Santakadev\AnyObject\Types\TScalar;
 use Santakadev\AnyObject\Types\TUnion;
 
-class StubGenerator
+class FactoryGenerator
 {
     private Parser $parser;
 
