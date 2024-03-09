@@ -1,0 +1,28 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfFloatObject;
+
+final class AnyGenericArrayOfFloatObject
+{
+    public static function with(array|ValueNotProvided $value = new ValueNotProvided()) : GenericArrayOfFloatObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $minElements = 0;
+            $maxElements = 50;
+            $elementsCount = $faker->numberBetween($minElements, $maxElements);
+            $value = [];
+            for ($i = 0; $i < $elementsCount; $i++) {
+                $value[] = $faker->randomFloat();
+            }
+        }
+        return new GenericArrayOfFloatObject($value);
+    }
+    public static function build() : GenericArrayOfFloatObject
+    {
+        return self::with();
+    }
+}
