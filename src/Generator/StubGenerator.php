@@ -45,6 +45,8 @@ class StubGenerator
         $this->parser = new Parser();
     }
 
+    // TODO: remove output dir default value
+    // TODO: don't return the file string value. I made this initially to make testing easier
     public function generate(string $class, $outputDir = __DIR__ . "/../../tests/Generator/Generated"): string
     {
         $root = $this->parser->parseThroughConstructor($class);
