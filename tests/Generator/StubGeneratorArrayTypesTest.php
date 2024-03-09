@@ -31,7 +31,9 @@ class StubGeneratorArrayTypesTest extends StubGeneratorTestCase
     public function test_generator_array_of_string(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(GenericArrayOfStringObject::class);
+        $generator->generate(GenericArrayOfStringObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(GenericArrayOfStringObject::class);
         Approvals::verifyString($text);
         $object = AnyGenericArrayOfStringObject::build();
         $this->assertIsArray($object->value);
@@ -45,7 +47,9 @@ class StubGeneratorArrayTypesTest extends StubGeneratorTestCase
     public function test_generator_array_of_int(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(GenericArrayOfIntObject::class);
+        $generator->generate(GenericArrayOfIntObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(GenericArrayOfIntObject::class);
         Approvals::verifyString($text);
         $object = AnyGenericArrayOfIntObject::build();
         $this->assertIsArray($object->value);
@@ -59,7 +63,9 @@ class StubGeneratorArrayTypesTest extends StubGeneratorTestCase
     public function test_generator_array_of_float(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(GenericArrayOfFloatObject::class);
+        $generator->generate(GenericArrayOfFloatObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(GenericArrayOfFloatObject::class);
         Approvals::verifyString($text);
         $object = AnyGenericArrayOfFloatObject::build();
         $this->assertIsArray($object->value);
@@ -73,7 +79,9 @@ class StubGeneratorArrayTypesTest extends StubGeneratorTestCase
     public function test_generator_array_of_bool(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(GenericArrayOfBoolObject::class);
+        $generator->generate(GenericArrayOfBoolObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(GenericArrayOfBoolObject::class);
         Approvals::verifyString($text);
         $object = AnyGenericArrayOfBoolObject::build();
         $this->assertIsArray($object->value);
@@ -87,7 +95,9 @@ class StubGeneratorArrayTypesTest extends StubGeneratorTestCase
     public function test_generator_array_of_fqn_custom_type(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(GenericArrayOfFQNCustomTypeObject::class);
+        $generator->generate(GenericArrayOfFQNCustomTypeObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(GenericArrayOfFQNCustomTypeObject::class);
         Approvals::verifyString($text);
         $object = AnyGenericArrayOfFQNCustomTypeObject::build();
         $this->assertIsArray($object->value);
@@ -101,7 +111,9 @@ class StubGeneratorArrayTypesTest extends StubGeneratorTestCase
     public function test_generator_array_of_union_basic_types(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(GenericArrayOfUnionBasicTypesObject::class);
+        $generator->generate(GenericArrayOfUnionBasicTypesObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(GenericArrayOfUnionBasicTypesObject::class);
         Approvals::verifyString($text);
         $object = AnyGenericArrayOfUnionBasicTypesObject::build();
         $this->assertIsArray($object->value);
@@ -120,7 +132,9 @@ class StubGeneratorArrayTypesTest extends StubGeneratorTestCase
     public function test_generator_nullable_array_of_string(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(GenericNullableArrayOfStringObject::class);
+        $generator->generate(GenericNullableArrayOfStringObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(GenericNullableArrayOfStringObject::class);
         Approvals::verifyString($text);
         $object = AnyGenericNullableArrayOfStringObject::build();
         $this->assertIsArray($object->value);

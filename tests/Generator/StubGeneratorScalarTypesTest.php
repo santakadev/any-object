@@ -25,10 +25,13 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
 
 class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
 {
+
     public function test_generator_string(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(StringObject::class);
+        $generator->generate(StringObject::class, self::OUTPUT_DIR);
+
+        $text = $this->readGeneratedAnyFileFor(StringObject::class);
         Approvals::verifyString($text);
         $test = AnyStringObject::with(value: "test");
         $this->assertEquals("test", $test->value);
@@ -37,7 +40,9 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_int(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(IntObject::class);
+        $generator->generate(IntObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(IntObject::class);
         Approvals::verifyString($text);
         $test = AnyIntObject::with(1);
         $this->assertEquals(1, $test->value);
@@ -46,7 +51,9 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_float(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(FloatObject::class);
+        $generator->generate(FloatObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(FloatObject::class);
         Approvals::verifyString($text);
         $test = AnyFloatObject::with(1.1);
         $this->assertEquals(1.1, $test->value);
@@ -55,7 +62,9 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_bool(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(BoolObject::class);
+        $generator->generate(BoolObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(BoolObject::class);
         Approvals::verifyString($text);
         $test = AnyBoolObject::with(false);
         $this->assertFalse($test->value);
@@ -64,7 +73,9 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_nullable_string(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(NullableStringObject::class);
+        $generator->generate(NullableStringObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(NullableStringObject::class);
         Approvals::verifyString($text);
         $this->assertAll(
             fn () => (AnyNullableStringObject::with())->value,
@@ -75,7 +86,9 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_nullable_int(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(NullableIntObject::class);
+        $generator->generate(NullableIntObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(NullableIntObject::class);
         Approvals::verifyString($text);
         $this->assertAll(
             fn () => (AnyNullableIntObject::with())->value,
@@ -88,7 +101,9 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_nullable_float(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(NullableFloatObject::class);
+        $generator->generate(NullableFloatObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(NullableFloatObject::class);
         Approvals::verifyString($text);
         $this->assertAll(
             fn () => (AnyNullableFloatObject::with())->value,
@@ -101,7 +116,9 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_nullable_bool(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(NullableBoolObject::class);
+        $generator->generate(NullableBoolObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(NullableBoolObject::class);
         Approvals::verifyString($text);
         $this->assertAll(
             fn () => (AnyNullableBoolObject::with())->value,
@@ -114,7 +131,9 @@ class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
     public function test_generator_string_int(): void
     {
         $generator = new StubGenerator();
-        $text = $generator->generate(StringIntObject::class);
+        $generator->generate(StringIntObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(StringIntObject::class);
         Approvals::verifyString($text);
         $test = AnyStringIntObject::with(string: 'string', number: 1);
         $this->assertEquals("string", $test->string);

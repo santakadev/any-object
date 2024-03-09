@@ -6,6 +6,8 @@ use Santakadev\AnyObject\Tests\AnyObjectTestCase;
 
 class StubGeneratorTestCase extends AnyObjectTestCase
 {
+    protected const OUTPUT_DIR = __DIR__ . '/Generated';
+
     protected function setUp(): void
     {
         self::cleanGeneratedFiles();
@@ -27,5 +29,17 @@ class StubGeneratorTestCase extends AnyObjectTestCase
             }
             rmdir(__DIR__ . '/Generated');
         }
+    }
+
+    protected function readGeneratedAnyFileFor(string $fullyQualifiedClassName): string|false
+    {
+        return file_get_contents(self::OUTPUT_DIR . $this->getAnyObjectClassName($fullyQualifiedClassName));
+    }
+
+    private function getAnyObjectClassName(string $fullyQualifiedClassName): string
+    {
+        $shortClassName = substr($fullyQualifiedClassName, strrpos($fullyQualifiedClassName, '\\') + 1);
+
+        return "/Any{$shortClassName}.php";
     }
 }

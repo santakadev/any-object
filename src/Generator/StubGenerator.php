@@ -46,8 +46,7 @@ class StubGenerator
     }
 
     // TODO: remove output dir default value
-    // TODO: don't return the file string value. I made this initially to make testing easier
-    public function generate(string $class, $outputDir = __DIR__ . "/../../tests/Generator/Generated"): string
+    public function generate(string $class, $outputDir = __DIR__ . "/../../tests/Generator/Generated"): void
     {
         $root = $this->parser->parseThroughConstructor($class);
 
@@ -149,8 +148,6 @@ class StubGenerator
         file_put_contents($outputDir . DIRECTORY_SEPARATOR . "$stubName.php", $file);
 
         $this->generateValueNotProvidedFile($outputDir);
-
-        return $file;
     }
 
     private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory): array
