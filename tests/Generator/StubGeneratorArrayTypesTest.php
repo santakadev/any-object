@@ -10,12 +10,14 @@ use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfFloatObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfFQNCustomTypeObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfIntObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfStringObject;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfUnionBasicTypesObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericNullableArrayOfStringObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfBoolObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfFloatObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfFQNCustomTypeObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfIntObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
+use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfUnionBasicTypesObject;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericNullableArrayOfStringObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
 
@@ -94,6 +96,25 @@ class StubGeneratorArrayTypesTest extends AnyObjectTestCase
         $this->assertLessThanOrEqual(50, count($object->value));
         foreach ($object->value as $item) {
             $this->assertInstanceOf(CustomObject::class, $item);
+        }
+    }
+
+    public function test_generator_array_of_union_basic_types(): void
+    {
+        $generator = new StubGenerator();
+        $text = $generator->generate(GenericArrayOfUnionBasicTypesObject::class);
+        Approvals::verifyString($text);
+        $object = AnyGenericArrayOfUnionBasicTypesObject::build();
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        foreach ($object->value as $item) {
+            $this->assertTrue(
+                is_string($item) ||
+                is_int($item) ||
+                is_float($item) ||
+                is_bool($item)
+            );
         }
     }
 
