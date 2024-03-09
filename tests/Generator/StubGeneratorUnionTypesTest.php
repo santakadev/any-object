@@ -45,7 +45,7 @@ class StubGeneratorUnionTypesTest extends AnyObjectTestCase
         $this->assertNull(AnyUnionStringIntNull::with(null)->value);
     }
 
-    public function test_union_custom_types(): void
+    public function test_generator_union_custom_types(): void
     {
         $generator = new StubGenerator();
         $text = $generator->generate(UnionCustomTypes::class);
