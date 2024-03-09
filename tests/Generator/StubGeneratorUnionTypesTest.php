@@ -4,7 +4,6 @@ namespace Santakadev\AnyObject\Tests\Generator;
 
 use ApprovalTests\Approvals;
 use Santakadev\AnyObject\Generator\StubGenerator;
-use Santakadev\AnyObject\Tests\AnyObjectTestCase;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyUnionBasicTypes;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyUnionCustomTypes;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyUnionStringIntNull;
@@ -14,7 +13,7 @@ use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionBasicTypes;
 use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionCustomTypes;
 use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionStringIntNull;
 
-class StubGeneratorUnionTypesTest extends AnyObjectTestCase
+class StubGeneratorUnionTypesTest extends StubGeneratorTestCase
 {
     public function test_generator_union_basic_types(): void
     {

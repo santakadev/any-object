@@ -293,6 +293,13 @@ class StubGenerator
 
     private function buildRandomArrayArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory)
     {
+        // TODO: 2 responsibilities here: children classes generation and build random array statements
+        foreach ($node->adjacencyList as $child) {
+            if ($child->type instanceof TClass) {
+                $this->generate($child->type->class); // TODO: here I'm relying in the default outputDir :/
+            }
+        }
+
         return [
             $this->initializeFaker($factory),
             new Expression(new Assign(new Variable('minElements'), new LNumber(0))),

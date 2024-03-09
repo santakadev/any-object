@@ -4,7 +4,6 @@ namespace Santakadev\AnyObject\Tests\Generator;
 
 use ApprovalTests\Approvals;
 use Santakadev\AnyObject\Generator\StubGenerator;
-use Santakadev\AnyObject\Tests\AnyObjectTestCase;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfBoolObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfFloatObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfFQNCustomTypeObject;
@@ -27,7 +26,7 @@ use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
  *
  * @see Santakadev\AnyObject\Tests\ArrayTypesTest
  */
-class StubGeneratorArrayTypesTest extends AnyObjectTestCase
+class StubGeneratorArrayTypesTest extends StubGeneratorTestCase
 {
     public function test_generator_array_of_string(): void
     {

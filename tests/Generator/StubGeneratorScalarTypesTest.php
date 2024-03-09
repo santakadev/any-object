@@ -4,7 +4,6 @@ namespace Santakadev\AnyObject\Tests\Generator;
 
 use ApprovalTests\Approvals;
 use Santakadev\AnyObject\Generator\StubGenerator;
-use Santakadev\AnyObject\Tests\AnyObjectTestCase;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyBoolObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyFloatObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyIntObject;
@@ -24,7 +23,7 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableStringObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringIntObject;
 use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
 
-class StubGeneratorScalarTypesTest extends AnyObjectTestCase
+class StubGeneratorScalarTypesTest extends StubGeneratorTestCase
 {
     public function test_generator_string(): void
     {

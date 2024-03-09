@@ -5,7 +5,6 @@ namespace Santakadev\AnyObject\Tests\Generator\Generated;
 use Faker\Factory;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
 use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomSubObject;
-use Santakadev\AnyObject\Tests\Generator\Generated\AnyCustomObject;
 
 final class AnyCustomObject
 {
