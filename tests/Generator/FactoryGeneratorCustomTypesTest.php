@@ -26,7 +26,7 @@ class FactoryGeneratorCustomTypesTest extends FactoryGeneratorTestCase
 {
     public function test_generator_custom_class(): void
     {
-        $generator = new FactoryGenerator();
+        $generator = $this->factoryGenerator();
         $generator->generate(CustomObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(CustomObject::class);
@@ -37,7 +37,7 @@ class FactoryGeneratorCustomTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_nullable_custom_class(): void
     {
-        $generator = new FactoryGenerator();
+        $generator = $this->factoryGenerator();
         $generator->generate(NullableCustomObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(NullableCustomObject::class);
@@ -60,7 +60,7 @@ class FactoryGeneratorCustomTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_enum_types(): void
     {
-        $generator = new FactoryGenerator();
+        $generator = $this->factoryGenerator();
         $generator->generate(EnumTypeObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(EnumTypeObject::class);
@@ -77,7 +77,7 @@ class FactoryGeneratorCustomTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_nullable_enum_types(): void
     {
-        $generator = new FactoryGenerator();
+        $generator = $this->factoryGenerator();
         $generator->generate(NullableEnumTypeObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(NullableEnumTypeObject::class);
@@ -95,7 +95,7 @@ class FactoryGeneratorCustomTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_backed_string_enum_types(): void
     {
-        $generator = new FactoryGenerator();
+        $generator = $this->factoryGenerator();
         $generator->generate(BackedStringEnumTypeObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(BackedStringEnumTypeObject::class);
@@ -112,7 +112,7 @@ class FactoryGeneratorCustomTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_backed_int_enum_types(): void
     {
-        $generator = new FactoryGenerator();
+        $generator = $this->factoryGenerator();
         $generator->generate(BackedIntEnumTypeObject::class, self::OUTPUT_DIR);
 
         $text = $this->readGeneratedAnyFileFor(BackedIntEnumTypeObject::class);

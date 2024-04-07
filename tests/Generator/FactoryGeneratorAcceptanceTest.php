@@ -22,7 +22,7 @@ class FactoryGeneratorAcceptanceTest extends FactoryGeneratorTestCase
     // TODO: Support configuring int generation. Example: Only positive values
     public function test_generator_complex_type(): void
     {
-        $generator = new FactoryGenerator();
+        $generator = $this->factoryGenerator();
         $generator->generate(Cart::class, self::OUTPUT_DIR);
         $generator->generate(Product::class, self::OUTPUT_DIR);
         $generator->generate(Money::class, self::OUTPUT_DIR);

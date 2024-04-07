@@ -38,11 +38,14 @@ use Santakadev\AnyObject\Types\TUnion;
 
 class FactoryGenerator
 {
-    private Parser $parser;
+    private readonly Parser $parser;
+    private readonly string $namespace;
 
-    public function __construct()
+    public function __construct(string $namespace)
     {
         $this->parser = new Parser();
+        // TODO: Read from psr-4 from package.json to build the namespace based on the $outputDir
+        $this->namespace = $namespace;
     }
 
     public function generate(string $class, string $outputDir): void
@@ -60,8 +63,6 @@ class FactoryGenerator
         $name = $reflectionClass->getShortName();
         $classNamespace = $reflectionClass->getNamespaceName();
         $stubName = 'Any' . $name;
-        // TODO: Read from psr-4 from package.json to build the namespace based on the $outputDir
-        $factoryNamespace = 'Santakadev\\AnyObject\\Tests\\Generator\\Generated';
 
         $factory = new BuilderFactory;
 
@@ -105,7 +106,7 @@ class FactoryGenerator
             ->makeStatic()
             ->addStmt(new Return_($factory->staticCall(new Name('self'), 'with')));
 
-        $nodeBuilder = $factory->namespace($factoryNamespace)
+        $nodeBuilder = $factory->namespace($this->namespace)
             ->addStmt($factory->use('Faker\Factory'))
             ->addStmt($factory->use("$classNamespace\\$name"));
 
@@ -185,7 +186,7 @@ class FactoryGenerator
     private function generateValueNotProvidedFile($outputDir): void
     {
         $factory = new BuilderFactory;
-        $node = $factory->namespace('Santakadev\AnyObject\Tests\Generator\Generated')
+        $node = $factory->namespace($this->namespace)
             ->addStmt($factory->class('ValueNotProvided')
                 ->makeFinal()
             )
