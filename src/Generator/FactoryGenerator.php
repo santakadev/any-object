@@ -64,14 +64,6 @@ class FactoryGenerator
 
         $factory = new BuilderFactory;
 
-        /* For each constructor I need to:
-         * - add a param with its type
-         * - add an if statement to check if the param is provided
-         * - add the param to the constructor call
-         * - if some param is a class (or array of that class), I need to recurse to generate the stub factory for that class
-         * - for enums I'm not sure if I need to generate a stub factory
-         * - for the rest I need to generate a random value
-         */
         $withMethod = $factory->method('with')
             ->makePublic()
             ->makeStatic()
@@ -95,9 +87,8 @@ class FactoryGenerator
                     array_values($root->adjacencyList)
                 )
             )
-            ->addStmt(new Return_($factory->new($name, array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList))))); // TODO: Not too readable
+            ->addStmt(new Return_($factory->new($name, array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList)))));
 
-        // Build method is not dependant of the tree
         $buildMethod = $factory->method('build')
             ->setReturnType($name)
             ->makePublic()
@@ -108,7 +99,6 @@ class FactoryGenerator
             ->addStmt($factory->use('Faker\Factory'))
             ->addStmt($factory->use("$classNamespace\\$name"));
 
-        // Add use statements for all children classes
         foreach ($root->adjacencyList as $child) {
             if ($child->type instanceof TClass) {
                 $nodeBuilder->addStmt($factory->use($child->type->class));
@@ -222,15 +212,12 @@ class FactoryGenerator
 
     private function buildRandomEnum(GraphNode $node, BuilderFactory $factory): ArrayDimFetch
     {
-        // Static Call: EnumType::cases()
         $enumTypeCasesStaticCall = $factory->staticCall(new Name($this->enumShortName($node->type)), 'cases');
 
-        // Function Call: array_rand(EnumType::cases())
         $arrayRandFuncCall = $factory->funcCall(new Name('array_rand'), [
             new Arg($enumTypeCasesStaticCall)
         ]);
 
-        // Array Access: EnumType::cases()[array_rand(EnumType::cases())]
         return new ArrayDimFetch($enumTypeCasesStaticCall, $arrayRandFuncCall);
     }
 
