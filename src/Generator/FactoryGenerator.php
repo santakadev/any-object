@@ -39,23 +39,21 @@ use Santakadev\AnyObject\Types\TUnion;
 class FactoryGenerator
 {
     private readonly Parser $parser;
-    private readonly string $namespace;
 
-    public function __construct(string $namespace)
+    public function __construct()
     {
         $this->parser = new Parser();
-        // TODO: Read from psr-4 from package.json to build the namespace based on the $outputDir
-        $this->namespace = $namespace;
     }
 
-    public function generate(string $class, string $outputDir): void
+    // TODO: Read from psr-4 from package.json to build the namespace based on the $outputDir
+    public function generate(string $class, string $outputDir, $outputNamespace): void
     {
         $root = $this->parser->parseThroughConstructor($class);
 
         // TODO: circular references 😬
         foreach ($root->adjacencyList as $children) {
             if ($children->type instanceof TClass) {
-                $this->generate($children->type->class, $outputDir);
+                $this->generate($children->type->class, $outputDir, $outputNamespace);
             }
         }
 
@@ -91,7 +89,7 @@ class FactoryGenerator
             ->addStmts(
                 array_map(
                     fn(string $argName, GraphNode $n) => new If_(new Instanceof_(new Variable($argName), new Name('ValueNotProvided')), [
-                        'stmts' => $this->buildRandomArgumentValueStatements($argName, $n, $factory, $outputDir)
+                        'stmts' => $this->buildRandomArgumentValueStatements($argName, $n, $factory, $outputDir, $outputNamespace)
                     ]),
                     array_keys($root->adjacencyList),
                     array_values($root->adjacencyList)
@@ -106,7 +104,7 @@ class FactoryGenerator
             ->makeStatic()
             ->addStmt(new Return_($factory->staticCall(new Name('self'), 'with')));
 
-        $nodeBuilder = $factory->namespace($this->namespace)
+        $nodeBuilder = $factory->namespace($outputNamespace)
             ->addStmt($factory->use('Faker\Factory'))
             ->addStmt($factory->use("$classNamespace\\$name"));
 
@@ -147,13 +145,13 @@ class FactoryGenerator
 
         file_put_contents($outputDir . DIRECTORY_SEPARATOR . "$stubName.php", $file);
 
-        $this->generateValueNotProvidedFile($outputDir);
+        $this->generateValueNotProvidedFile($outputDir, $outputNamespace);
     }
 
-    private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, string $outputDir): array
+    private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, string $outputDir, string $outputNamespace): array
     {
         return match (get_class($node->type)) {
-            TArray::class => $this->buildRandomArrayArgumentValueStatements($argName, $node, $factory, $outputDir),
+            TArray::class => $this->buildRandomArrayArgumentValueStatements($argName, $node, $factory, $outputDir, $outputNamespace),
             default => [
                 $this->initializeFaker($factory),
                 new Expression(new Assign(new Variable($argName), $this->buildRandom($node, $factory)))
@@ -183,10 +181,10 @@ class FactoryGenerator
         return (new ReflectionClass($class))->getShortName();
     }
 
-    private function generateValueNotProvidedFile($outputDir): void
+    private function generateValueNotProvidedFile(string $outputDir, string $outputNamespace): void
     {
         $factory = new BuilderFactory;
-        $node = $factory->namespace($this->namespace)
+        $node = $factory->namespace($outputNamespace)
             ->addStmt($factory->class('ValueNotProvided')
                 ->makeFinal()
             )
@@ -288,12 +286,12 @@ class FactoryGenerator
         return new Expression(new Assign(new Variable('faker'), $factory->staticCall(new Name('Factory'), 'create')));
     }
 
-    private function buildRandomArrayArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, string $outputDir)
+    private function buildRandomArrayArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, string $outputDir, string $outputNamespace)
     {
         // TODO: 2 responsibilities here: children classes generation and build random array statements
         foreach ($node->adjacencyList as $child) {
             if ($child->type instanceof TClass) {
-                $this->generate($child->type->class, $outputDir); // TODO: here I'm relying in the default outputDir :/
+                $this->generate($child->type->class, $outputDir, $outputNamespace); // TODO: here I'm relying in the default outputDir :/
             }
         }
 

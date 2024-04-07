@@ -8,7 +8,7 @@ use Santakadev\AnyObject\Tests\AnyObjectTestCase;
 class FactoryGeneratorTestCase extends AnyObjectTestCase
 {
     protected const OUTPUT_DIR = __DIR__ . '/Generated';
-    const NAMESPACE = 'Santakadev\\AnyObject\\Tests\\Generator\\Generated';
+    const OUTPUT_NAMESPACE = 'Santakadev\\AnyObject\\Tests\\Generator\\Generated';
 
     protected function setUp(): void
     {
@@ -47,8 +47,12 @@ class FactoryGeneratorTestCase extends AnyObjectTestCase
 
     protected function generateFactoryFor(string $class): void
     {
-        $generator = new FactoryGenerator(self::NAMESPACE);
-        $generator->generate($class, self::OUTPUT_DIR);
+        $generator = new FactoryGenerator();
+        $generator->generate(
+            $class,
+            self::OUTPUT_DIR,
+            self::OUTPUT_NAMESPACE
+        );
     }
 
 }
