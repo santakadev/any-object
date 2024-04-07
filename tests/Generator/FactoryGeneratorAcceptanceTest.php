@@ -2,7 +2,6 @@
 
 namespace Santakadev\AnyObject\Tests\Generator;
 
-use Santakadev\AnyObject\Generator\FactoryGenerator;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyCart;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyCartLine;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyCartLineCollection;
@@ -22,10 +21,9 @@ class FactoryGeneratorAcceptanceTest extends FactoryGeneratorTestCase
     // TODO: Support configuring int generation. Example: Only positive values
     public function test_generator_complex_type(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(Cart::class, self::OUTPUT_DIR);
-        $generator->generate(Product::class, self::OUTPUT_DIR);
-        $generator->generate(Money::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(Cart::class);
+        $this->generateFactoryFor(Product::class);
+        $this->generateFactoryFor(Money::class);
 
         $quantity = new Quantity(3);
         $amount = new Amount(100);
@@ -37,4 +35,5 @@ class FactoryGeneratorAcceptanceTest extends FactoryGeneratorTestCase
 
         $this->assertEquals(300, $cart->total()->amount->value);
     }
+
 }

@@ -30,8 +30,7 @@ class FactoryGeneratorArrayTypesTest extends FactoryGeneratorTestCase
 {
     public function test_generator_array_of_string(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(GenericArrayOfStringObject::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(GenericArrayOfStringObject::class);
 
         $text = $this->readGeneratedAnyFileFor(GenericArrayOfStringObject::class);
         Approvals::verifyString($text);
@@ -46,8 +45,7 @@ class FactoryGeneratorArrayTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_array_of_int(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(GenericArrayOfIntObject::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(GenericArrayOfIntObject::class);
 
         $text = $this->readGeneratedAnyFileFor(GenericArrayOfIntObject::class);
         Approvals::verifyString($text);
@@ -62,8 +60,7 @@ class FactoryGeneratorArrayTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_array_of_float(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(GenericArrayOfFloatObject::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(GenericArrayOfFloatObject::class);
 
         $text = $this->readGeneratedAnyFileFor(GenericArrayOfFloatObject::class);
         Approvals::verifyString($text);
@@ -78,8 +75,7 @@ class FactoryGeneratorArrayTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_array_of_bool(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(GenericArrayOfBoolObject::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(GenericArrayOfBoolObject::class);
 
         $text = $this->readGeneratedAnyFileFor(GenericArrayOfBoolObject::class);
         Approvals::verifyString($text);
@@ -94,8 +90,7 @@ class FactoryGeneratorArrayTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_array_of_fqn_custom_type(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(GenericArrayOfFQNCustomTypeObject::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(GenericArrayOfFQNCustomTypeObject::class);
 
         $text = $this->readGeneratedAnyFileFor(GenericArrayOfFQNCustomTypeObject::class);
         Approvals::verifyString($text);
@@ -110,8 +105,7 @@ class FactoryGeneratorArrayTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_array_of_union_basic_types(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(GenericArrayOfUnionBasicTypesObject::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(GenericArrayOfUnionBasicTypesObject::class);
 
         $text = $this->readGeneratedAnyFileFor(GenericArrayOfUnionBasicTypesObject::class);
         Approvals::verifyString($text);
@@ -131,8 +125,7 @@ class FactoryGeneratorArrayTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_nullable_array_of_string(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(GenericNullableArrayOfStringObject::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(GenericNullableArrayOfStringObject::class);
 
         $text = $this->readGeneratedAnyFileFor(GenericNullableArrayOfStringObject::class);
         Approvals::verifyString($text);

@@ -28,8 +28,7 @@ class FactoryGeneratorScalarTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_string(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(StringObject::class, self::OUTPUT_DIR, self::OUTPUT_DIR);
+        $this->generateFactoryFor(StringObject::class);
 
         $text = $this->readGeneratedAnyFileFor(StringObject::class);
         Approvals::verifyString($text);
@@ -39,8 +38,7 @@ class FactoryGeneratorScalarTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_int(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(IntObject::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(IntObject::class);
 
         $text = $this->readGeneratedAnyFileFor(IntObject::class);
         Approvals::verifyString($text);
@@ -50,8 +48,7 @@ class FactoryGeneratorScalarTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_float(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(FloatObject::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(FloatObject::class);
 
         $text = $this->readGeneratedAnyFileFor(FloatObject::class);
         Approvals::verifyString($text);
@@ -61,8 +58,7 @@ class FactoryGeneratorScalarTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_bool(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(BoolObject::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(BoolObject::class);
 
         $text = $this->readGeneratedAnyFileFor(BoolObject::class);
         Approvals::verifyString($text);
@@ -72,8 +68,7 @@ class FactoryGeneratorScalarTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_nullable_string(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(NullableStringObject::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(NullableStringObject::class);
 
         $text = $this->readGeneratedAnyFileFor(NullableStringObject::class);
         Approvals::verifyString($text);
@@ -85,8 +80,7 @@ class FactoryGeneratorScalarTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_nullable_int(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(NullableIntObject::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(NullableIntObject::class);
 
         $text = $this->readGeneratedAnyFileFor(NullableIntObject::class);
         Approvals::verifyString($text);
@@ -100,8 +94,7 @@ class FactoryGeneratorScalarTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_nullable_float(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(NullableFloatObject::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(NullableFloatObject::class);
 
         $text = $this->readGeneratedAnyFileFor(NullableFloatObject::class);
         Approvals::verifyString($text);
@@ -115,8 +108,7 @@ class FactoryGeneratorScalarTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_nullable_bool(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(NullableBoolObject::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(NullableBoolObject::class);
 
         $text = $this->readGeneratedAnyFileFor(NullableBoolObject::class);
         Approvals::verifyString($text);
@@ -130,8 +122,7 @@ class FactoryGeneratorScalarTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_string_int(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(StringIntObject::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(StringIntObject::class);
 
         $text = $this->readGeneratedAnyFileFor(StringIntObject::class);
         Approvals::verifyString($text);

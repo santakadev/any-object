@@ -17,8 +17,7 @@ class FactoryGeneratorUnionTypesTest extends FactoryGeneratorTestCase
 {
     public function test_generator_union_basic_types(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(UnionBasicTypes::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(UnionBasicTypes::class);
 
         $text = $this->readGeneratedAnyFileFor(UnionBasicTypes::class);
         Approvals::verifyString($text);
@@ -34,8 +33,7 @@ class FactoryGeneratorUnionTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_nullable_union(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(UnionStringIntNull::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(UnionStringIntNull::class);
 
         $text = $this->readGeneratedAnyFileFor(UnionStringIntNull::class);
         Approvals::verifyString($text);
@@ -50,8 +48,7 @@ class FactoryGeneratorUnionTypesTest extends FactoryGeneratorTestCase
 
     public function test_generator_union_custom_types(): void
     {
-        $generator = $this->factoryGenerator();
-        $generator->generate(UnionCustomTypes::class, self::OUTPUT_DIR);
+        $this->generateFactoryFor(UnionCustomTypes::class);
 
         $text = $this->readGeneratedAnyFileFor(UnionCustomTypes::class);
         Approvals::verifyString($text);
