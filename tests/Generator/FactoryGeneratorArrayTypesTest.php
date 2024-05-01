@@ -3,7 +3,6 @@
 namespace Santakadev\AnyObject\Tests\Generator;
 
 use ApprovalTests\Approvals;
-use Santakadev\AnyObject\Generator\FactoryGenerator;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfBoolObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfFloatObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfFQNCustomTypeObject;

@@ -81,8 +81,8 @@ class Parser
                 }
                 $current->addNamedEdge($enumNode, $parameterName);
             } else {
-                $generator = $this->parseGeneratorAttribute($parameter);
-                $node = new GraphNode($type, [], $generator);
+                $userDefinedSpec = $this->parseRandomSpecAttribute($parameter);
+                $node = new GraphNode($type, [], $userDefinedSpec);
                 $current->addNamedEdge($node, $parameterName);
             }
         }
@@ -131,8 +131,8 @@ class Parser
                 }
                 $current->addNamedEdge($enumNode, $propertyName);
             } else {
-                $generator = $this->parseGeneratorAttribute($reflectionProperty);
-                $node = new GraphNode($type, [], $generator);
+                $userDefinedSpec = $this->parseRandomSpecAttribute($reflectionProperty);
+                $node = new GraphNode($type, [], $userDefinedSpec);
                 $current->addNamedEdge($node, $propertyName);
             }
         }
@@ -232,7 +232,7 @@ class Parser
         return new TEnum($cases);
     }
 
-    public function parseGeneratorAttribute(ReflectionParameter|ReflectionProperty $parameter): ?object
+    public function parseRandomSpecAttribute(ReflectionParameter|ReflectionProperty $parameter): ?object
     {
         $generatorAttributes = $parameter->getAttributes();
 

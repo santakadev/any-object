@@ -3,13 +3,13 @@
 namespace Santakadev\AnyObject\RandomGenerator;
 
 use Attribute;
-use Faker\Generator;
+use Faker\Factory;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
-final class RandomDigit implements RandomGenerator
+final class RandomDigit implements RandomIntSpec
 {
-    public function generate(Generator $faker): int
+    public function generate(): int
     {
-        return $faker->randomDigit();
+        return (Factory::create())->randomDigit();
     }
 }

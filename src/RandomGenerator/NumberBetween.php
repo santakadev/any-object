@@ -3,19 +3,19 @@
 namespace Santakadev\AnyObject\RandomGenerator;
 
 use Attribute;
-use Faker\Generator;
+use Faker\Factory;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
-final class NumberBetween implements RandomGenerator
+final class NumberBetween implements RandomIntSpec
 {
     public function __construct(
-        private readonly int $min,
-        private readonly int $max
+        public readonly int $min,
+        public readonly int $max
     ) {
     }
 
-    public function generate(Generator $faker): int
+    public function generate(): int
     {
-        return $faker->numberBetween($this->min, $this->max);
+        return (Factory::create())->numberBetween($this->min, $this->max);
     }
 }

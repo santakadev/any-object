@@ -3,10 +3,10 @@
 namespace Santakadev\AnyObject\RandomGenerator;
 
 use Attribute;
-use Faker\Generator;
+use Faker\Factory;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
-class RandomFloat implements RandomGenerator
+class RandomFloat implements RandomFloatSpec
 {
     public function __construct(
         private readonly ?int $nbMaxDecimals = null,
@@ -15,8 +15,8 @@ class RandomFloat implements RandomGenerator
     ) {
     }
 
-    public function generate(Generator $faker)
+    public function generate(): float
     {
-        return $faker->randomFloat($this->nbMaxDecimals, $this->min, $this->max);
+        return (Factory::create())->randomFloat($this->nbMaxDecimals, $this->min, $this->max);
     }
 }

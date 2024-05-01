@@ -7,6 +7,14 @@ use Faker\Generator;
 use ReflectionClass;
 use Santakadev\AnyObject\Parser\GraphNode;
 use Santakadev\AnyObject\Parser\Parser;
+use Santakadev\AnyObject\RandomGenerator\Boolean;
+use Santakadev\AnyObject\RandomGenerator\NumberBetween;
+use Santakadev\AnyObject\RandomGenerator\RandomBoolSpec;
+use Santakadev\AnyObject\RandomGenerator\RandomFloat;
+use Santakadev\AnyObject\RandomGenerator\RandomFloatSpec;
+use Santakadev\AnyObject\RandomGenerator\RandomIntSpec;
+use Santakadev\AnyObject\RandomGenerator\RandomStringSpec;
+use Santakadev\AnyObject\RandomGenerator\Text;
 use Santakadev\AnyObject\Types\TArray;
 use Santakadev\AnyObject\Types\TClass;
 use Santakadev\AnyObject\Types\TEnum;
@@ -58,10 +66,62 @@ class AnyObject
             TArray::class => $this->buildRandomArray($node, $builder),
             TEnum::class => $node->type->pickRandomCase(),
             TNull::class => null,
-            TScalar::class => $node->random($this->faker)
+            TScalar::class => match ($node->type) {
+                TScalar::string => $this->randomString($node->userDefinedSpec),
+                TScalar::int => $this->randomInt($node->userDefinedSpec),
+                TScalar::float => $this->randomFloat($node->userDefinedSpec),
+                TScalar::bool => $this->randomBool($node->userDefinedSpec),
+            },
         };
     }
 
+    private function randomInt(?RandomIntSpec $userDefinedSpec): int
+    {
+        $spec = $userDefinedSpec ?? $this->defaultIntSpec();
+
+        return $spec->generate();
+    }
+
+    private function defaultIntSpec(): RandomIntSpec
+    {
+        return new NumberBetween(PHP_INT_MIN, PHP_INT_MAX);
+    }
+
+    private function randomString(?RandomIntSpec $userDefinedSpec): string
+    {
+        $spec = $userDefinedSpec ?? $this->defaultStringSpec();
+
+        return $spec->generate();
+    }
+
+    private function defaultStringSpec(): RandomStringSpec
+    {
+        return new Text();
+    }
+
+    private function randomFloat(?RandomFloatSpec $userDefinedSpec): float
+    {
+        $spec = $userDefinedSpec ?? $this->defaultFloatSpec();
+
+        return $spec->generate();
+    }
+
+    private function defaultFloatSpec(): RandomFloatSpec
+    {
+        return new RandomFloat();
+    }
+
+    private function randomBool(?RandomBoolSpec $userDefinedSpec): bool
+    {
+        $spec = $userDefinedSpec ?? $this->defaultBoolSpec();
+
+        return $spec->generate();
+    }
+
+    private function defaultBoolSpec(): RandomBoolSpec
+    {
+        return new Boolean();
+    }
 
     private function buildRandomArray(GraphNode $arrayNode, callable $builder): array
     {

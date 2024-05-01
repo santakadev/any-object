@@ -3,7 +3,6 @@
 namespace Santakadev\AnyObject\Tests\Generator;
 
 use ApprovalTests\Approvals;
-use Santakadev\AnyObject\Generator\FactoryGenerator;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyBackedIntEnumTypeObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyBackedStringEnumTypeObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyCustomObject;

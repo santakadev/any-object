@@ -3,17 +3,17 @@
 namespace Santakadev\AnyObject\RandomGenerator;
 
 use Attribute;
-use Faker\Generator;
+use Faker\Factory;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
-final class Boolean implements RandomGenerator
+final class Boolean implements RandomBoolSpec
 {
     public function __construct(private readonly int $chanceOfGettingTrue = 50)
     {
     }
 
-    public function generate(Generator $faker): bool
+    public function generate(): bool
     {
-        return $faker->boolean($this->chanceOfGettingTrue);
+        return (Factory::create())->boolean($this->chanceOfGettingTrue);
     }
 }

@@ -3,7 +3,6 @@
 namespace Santakadev\AnyObject\Tests\Generator;
 
 use ApprovalTests\Approvals;
-use Santakadev\AnyObject\Generator\FactoryGenerator;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyUnionBasicTypes;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyUnionCustomTypes;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyUnionStringIntNull;

@@ -2,9 +2,15 @@
 
 namespace Santakadev\AnyObject\RandomGenerator;
 
-use Faker\Generator;
-
 interface RandomGenerator
 {
-    public function generate(Generator $faker);
+    public function string(): string;
+
+    public function int(): int;
+
+    public function float(): float;
+
+    public function bool(): bool;
+
+    public function array(): bool;
 }
