@@ -9,6 +9,8 @@ use Santakadev\AnyObject\Parser\GraphNode;
 use Santakadev\AnyObject\Parser\Parser;
 use Santakadev\AnyObject\RandomGenerator\Boolean;
 use Santakadev\AnyObject\RandomGenerator\NumberBetween;
+use Santakadev\AnyObject\RandomGenerator\RandomArray;
+use Santakadev\AnyObject\RandomGenerator\RandomArraySpec;
 use Santakadev\AnyObject\RandomGenerator\RandomBoolSpec;
 use Santakadev\AnyObject\RandomGenerator\RandomFloat;
 use Santakadev\AnyObject\RandomGenerator\RandomFloatSpec;
@@ -125,14 +127,14 @@ class AnyObject
 
     private function buildRandomArray(GraphNode $arrayNode, callable $builder): array
     {
-        $minElements = 0;
-        $maxElements = 50;
-        $elementsCount = $this->faker->numberBetween($minElements, $maxElements);
-        $array = [];
-        for ($i = 0; $i < $elementsCount; $i++) {
-            $array[] = $builder($arrayNode->pickRandomBranch());
-        }
-        return $array;
+        $spec = $arrayNode->userDefinedSpec ?? $this->defaultArraySpec();
+
+        return $spec->generate($arrayNode, $builder);
+    }
+
+    private function defaultArraySpec(): RandomArraySpec
+    {
+        return new RandomArray(0, 50);
     }
 
     private function buildRandomUnion(GraphNode $node, callable $builder)
