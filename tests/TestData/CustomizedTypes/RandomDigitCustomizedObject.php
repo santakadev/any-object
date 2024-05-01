@@ -2,7 +2,7 @@
 
 namespace Santakadev\AnyObject\Tests\TestData\CustomizedTypes;
 
-use Santakadev\AnyObject\Attributes\Number\RandomDigit;
+use Santakadev\AnyObject\RandomGenerator\RandomDigit;
 
 class RandomDigitCustomizedObject
 {

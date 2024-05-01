@@ -58,14 +58,10 @@ class AnyObject
             TArray::class => $this->buildRandomArray($node, $builder),
             TEnum::class => $node->type->pickRandomCase(),
             TNull::class => null,
-            TScalar::class => match ($node->type) {
-                TScalar::string => $this->faker->text(),
-                TScalar::int => $node->generateInt($this->faker),
-                TScalar::float =>  $this->faker->randomFloat(), // TODO: negative float values
-                TScalar::bool => $this->faker->boolean(),
-            },
+            TScalar::class => $node->random($this->faker)
         };
     }
+
 
     private function buildRandomArray(GraphNode $arrayNode, callable $builder): array
     {

@@ -2,7 +2,7 @@
 
 namespace Santakadev\AnyObject\Tests\TestData\CustomizedTypes;
 
-use Santakadev\AnyObject\Attributes\Number\NumberBetween;
+use Santakadev\AnyObject\RandomGenerator\NumberBetween;
 
 class NumberBetweenCustomizedObject
 {
