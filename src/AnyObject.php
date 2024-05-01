@@ -81,7 +81,7 @@ class AnyObject
 
     private function buildRandomUnion(GraphNode $node, callable $builder)
     {
-        return $builder($node->adjacencyList[array_rand($node->adjacencyList)]);
+        return $builder($node->pickRandomBranch());
     }
 
     public function buildRandomClassThroughConstructor(GraphNode $node, array $with, array $visited): object
