@@ -81,7 +81,9 @@ class Parser
                 }
                 $current->addNamedEdge($enumNode, $parameterName);
             } else {
-                $current->addNamedEdge(new GraphNode($type), $parameterName);
+                $generator = $this->parseGeneratorAttribute($parameter);
+                $node = new GraphNode($type, [], $generator);
+                $current->addNamedEdge($node, $parameterName);
             }
         }
 
@@ -129,7 +131,9 @@ class Parser
                 }
                 $current->addNamedEdge($enumNode, $propertyName);
             } else {
-                $current->addNamedEdge(new GraphNode($type), $propertyName);
+                $generator = $this->parseGeneratorAttribute($reflectionProperty);
+                $node = new GraphNode($type, [], $generator);
+                $current->addNamedEdge($node, $propertyName);
             }
         }
 
@@ -226,5 +230,16 @@ class Parser
         $reflectionCases = $reflectionEnum->getCases();
         $cases = array_map(fn(ReflectionEnumUnitCase|ReflectionEnumPureCase $reflectionCase) => $reflectionCase->getValue(), $reflectionCases);
         return new TEnum($cases);
+    }
+
+    public function parseGeneratorAttribute(ReflectionParameter|ReflectionProperty $parameter): ?object
+    {
+        $generatorAttributes = $parameter->getAttributes();
+
+        if (count($generatorAttributes) === 0) {
+            return null;
+        }
+
+        return $generatorAttributes[0]->newInstance();
     }
 }

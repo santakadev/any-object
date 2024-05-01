@@ -60,7 +60,7 @@ class AnyObject
             TNull::class => null,
             TScalar::class => match ($node->type) {
                 TScalar::string => $this->faker->text(),
-                TScalar::int => $this->faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX), // TODO: Use Randomizer if PHP>=8.2
+                TScalar::int => $node->generateInt($this->faker),
                 TScalar::float =>  $this->faker->randomFloat(), // TODO: negative float values
                 TScalar::bool => $this->faker->boolean(),
             },
