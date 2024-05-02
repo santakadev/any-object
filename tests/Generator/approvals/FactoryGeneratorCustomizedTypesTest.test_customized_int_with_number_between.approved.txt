@@ -1,0 +1,26 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\CustomizedTypes\NumberBetweenCustomizedObject;
+
+final class AnyNumberBetweenCustomizedObject
+{
+    public static function with(int|ValueNotProvided $value = new ValueNotProvided(), int|ValueNotProvided $value2 = new ValueNotProvided()) : NumberBetweenCustomizedObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = $faker->numberBetween(5, 7);
+        }
+        if ($value2 instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value2 = $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX);
+        }
+        return new NumberBetweenCustomizedObject($value, $value2);
+    }
+    public static function build() : NumberBetweenCustomizedObject
+    {
+        return self::with();
+    }
+}

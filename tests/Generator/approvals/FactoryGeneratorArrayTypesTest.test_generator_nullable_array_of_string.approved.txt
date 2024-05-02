@@ -17,7 +17,7 @@ final class AnyGenericNullableArrayOfStringObject
             $value = [];
             for ($i = 0; $i < $elementsCount; $i++) {
                 $value[] = match (array_rand(['string', 'null'])) {
-                    0 => $faker->text(),
+                    0 => $faker->text(200),
                     1 => null,
                 };
             }

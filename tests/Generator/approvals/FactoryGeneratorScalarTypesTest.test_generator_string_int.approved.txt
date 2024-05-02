@@ -11,7 +11,7 @@ final class AnyStringIntObject
     {
         if ($string instanceof ValueNotProvided) {
             $faker = Factory::create();
-            $string = $faker->text();
+            $string = $faker->text(200);
         }
         if ($number instanceof ValueNotProvided) {
             $faker = Factory::create();

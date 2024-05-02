@@ -12,10 +12,10 @@ final class AnyUnionBasicTypes
         if ($value instanceof ValueNotProvided) {
             $faker = Factory::create();
             $value = match (array_rand(['string', 'int', 'float', 'bool'])) {
-                0 => $faker->text(),
+                0 => $faker->text(200),
                 1 => $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
-                2 => $faker->randomFloat(),
-                3 => $faker->boolean(),
+                2 => $faker->randomFloat(null, 0, null),
+                3 => $faker->boolean(50),
             };
         }
         return new UnionBasicTypes($value);

@@ -89,7 +89,7 @@ class AnyObject
         return new NumberBetween(PHP_INT_MIN, PHP_INT_MAX);
     }
 
-    private function randomString(?RandomIntSpec $userDefinedSpec): string
+    private function randomString(?RandomStringSpec $userDefinedSpec): string
     {
         $spec = $userDefinedSpec ?? $this->defaultStringSpec();
 

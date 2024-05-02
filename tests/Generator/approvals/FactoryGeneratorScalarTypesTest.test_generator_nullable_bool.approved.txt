@@ -12,7 +12,7 @@ final class AnyNullableBoolObject
         if ($value instanceof ValueNotProvided) {
             $faker = Factory::create();
             $value = match (array_rand(['bool', 'null'])) {
-                0 => $faker->boolean(),
+                0 => $faker->boolean(50),
                 1 => null,
             };
         }

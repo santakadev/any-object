@@ -16,7 +16,7 @@ final class AnyGenericArrayOfBoolObject
             $elementsCount = $faker->numberBetween($minElements, $maxElements);
             $value = [];
             for ($i = 0; $i < $elementsCount; $i++) {
-                $value[] = $faker->boolean();
+                $value[] = $faker->boolean(50);
             }
         }
         return new GenericArrayOfBoolObject($value);

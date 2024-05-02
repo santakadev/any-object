@@ -1,0 +1,22 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\CustomizedTypes\RandomDigitCustomizedObject;
+
+final class AnyRandomDigitCustomizedObject
+{
+    public static function with(int|ValueNotProvided $value = new ValueNotProvided()) : RandomDigitCustomizedObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = $faker->randomDigit();
+        }
+        return new RandomDigitCustomizedObject($value);
+    }
+    public static function build() : RandomDigitCustomizedObject
+    {
+        return self::with();
+    }
+}

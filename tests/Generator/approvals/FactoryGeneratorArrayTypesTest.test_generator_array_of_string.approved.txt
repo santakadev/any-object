@@ -16,7 +16,7 @@ final class AnyGenericArrayOfStringObject
             $elementsCount = $faker->numberBetween($minElements, $maxElements);
             $value = [];
             for ($i = 0; $i < $elementsCount; $i++) {
-                $value[] = $faker->text();
+                $value[] = $faker->text(200);
             }
         }
         return new GenericArrayOfStringObject($value);

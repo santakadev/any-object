@@ -16,7 +16,7 @@ final class AnyGenericArrayOfFloatObject
             $elementsCount = $faker->numberBetween($minElements, $maxElements);
             $value = [];
             for ($i = 0; $i < $elementsCount; $i++) {
-                $value[] = $faker->randomFloat();
+                $value[] = $faker->randomFloat(null, 0, null);
             }
         }
         return new GenericArrayOfFloatObject($value);

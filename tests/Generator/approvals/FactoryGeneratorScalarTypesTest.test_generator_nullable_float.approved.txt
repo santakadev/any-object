@@ -12,7 +12,7 @@ final class AnyNullableFloatObject
         if ($value instanceof ValueNotProvided) {
             $faker = Factory::create();
             $value = match (array_rand(['float', 'null'])) {
-                0 => $faker->randomFloat(),
+                0 => $faker->randomFloat(null, 0, null),
                 1 => null,
             };
         }

@@ -4,6 +4,7 @@ namespace Santakadev\AnyObject\Generator;
 
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Arg;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
@@ -29,6 +30,14 @@ use PhpParser\PrettyPrinter\Standard;
 use ReflectionClass;
 use Santakadev\AnyObject\Parser\GraphNode;
 use Santakadev\AnyObject\Parser\Parser;
+use Santakadev\AnyObject\RandomGenerator\Boolean;
+use Santakadev\AnyObject\RandomGenerator\NumberBetween;
+use Santakadev\AnyObject\RandomGenerator\RandomBoolSpec;
+use Santakadev\AnyObject\RandomGenerator\RandomFloat;
+use Santakadev\AnyObject\RandomGenerator\RandomFloatSpec;
+use Santakadev\AnyObject\RandomGenerator\RandomIntSpec;
+use Santakadev\AnyObject\RandomGenerator\RandomStringSpec;
+use Santakadev\AnyObject\RandomGenerator\Text;
 use Santakadev\AnyObject\Types\TArray;
 use Santakadev\AnyObject\Types\TClass;
 use Santakadev\AnyObject\Types\TEnum;
@@ -158,12 +167,64 @@ class FactoryGenerator
             TEnum::class => $this->buildRandomEnum($node, $factory),
             TNull::class => new ConstFetch(new Name('null')),
             TScalar::class => match ($node->type) {
-                TScalar::string => $this->buildRandomString($factory),
-                TScalar::int => $this->buildRandomInt($factory),
-                TScalar::float => $this->buildRandomFloat($factory),
-                TScalar::bool => $this->buildRandomBool($factory),
+                TScalar::string => $this->buildRandomString($node->userDefinedSpec, $factory),
+                TScalar::int => $this->buildRandomInt($node->userDefinedSpec, $factory),
+                TScalar::float => $this->buildRandomFloat($node->userDefinedSpec, $factory),
+                TScalar::bool => $this->buildRandomBool($node->userDefinedSpec, $factory),
             },
         };
+    }
+
+    private function buildRandomInt(?RandomIntSpec $userDefinedSpec, BuilderFactory $factory): Expr
+    {
+        $spec = $userDefinedSpec ?? $this->defaultIntSpec();
+
+        return $spec->generateCode($factory);
+    }
+
+    // TODO: Duplicated code
+    private function defaultIntSpec(): RandomIntSpec
+    {
+        return new NumberBetween(PHP_INT_MIN, PHP_INT_MAX);
+    }
+
+    private function buildRandomString(?RandomStringSpec $userDefinedSpec, BuilderFactory $factory): Expr
+    {
+        $spec = $userDefinedSpec ?? $this->defaultStringSpec();
+
+        return $spec->generateCode($factory);
+    }
+
+    // TODO: Duplicated code
+    private function defaultStringSpec(): RandomStringSpec
+    {
+        return new Text();
+    }
+
+    private function buildRandomFloat(?RandomFloatSpec $userDefinedSpec, BuilderFactory $factory): Expr
+    {
+        $spec = $userDefinedSpec ?? $this->defaultFloatSpec();
+
+        return $spec->generateCode($factory);
+    }
+
+    // TODO: Duplicated code
+    private function defaultFloatSpec(): RandomFloatSpec
+    {
+        return new RandomFloat();
+    }
+
+    private function buildRandomBool(?RandomBoolSpec $userDefinedSpec, $factory): Expr
+    {
+        $spec = $userDefinedSpec ?? $this->defaultBoolSpec();
+
+        return $spec->generateCode($factory);
+    }
+
+    // TODO: Duplicated code
+    private function defaultBoolSpec(): RandomBoolSpec
+    {
+        return new Boolean();
     }
 
     private function classShortName(string $class): string
@@ -241,26 +302,6 @@ class FactoryGenerator
     private function enumName(TEnum $enumType): string
     {
         return get_class($enumType->values[0]);
-    }
-
-    private function buildRandomBool(BuilderFactory $factory): MethodCall
-    {
-        return $factory->methodCall(new Variable('faker'), 'boolean');
-    }
-
-    private function buildRandomFloat(BuilderFactory $factory): MethodCall
-    {
-        return $factory->methodCall(new Variable('faker'), 'randomFloat');
-    }
-
-    private function buildRandomInt(BuilderFactory $factory): MethodCall
-    {
-        return $factory->methodCall(new Variable('faker'), 'numberBetween', [new ConstFetch(new Name('PHP_INT_MIN')), new ConstFetch(new Name('PHP_INT_MAX'))]);
-    }
-
-    private function buildRandomString(BuilderFactory $factory): MethodCall
-    {
-        return $factory->methodCall(new Variable('faker'), 'text');
     }
 
     private function buildRandomClass(BuilderFactory $factory, GraphNode $node): StaticCall

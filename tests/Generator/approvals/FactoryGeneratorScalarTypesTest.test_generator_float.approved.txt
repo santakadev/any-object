@@ -11,7 +11,7 @@ final class AnyFloatObject
     {
         if ($value instanceof ValueNotProvided) {
             $faker = Factory::create();
-            $value = $faker->randomFloat();
+            $value = $faker->randomFloat(null, 0, null);
         }
         return new FloatObject($value);
     }
