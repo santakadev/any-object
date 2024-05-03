@@ -8,6 +8,7 @@ use Santakadev\AnyObject\AnyObject;
 use Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\InterfaceObject;
 use Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\IntersectionObject;
 use Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\MixedObject;
+use Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\PrivateConstructorObject;
 use Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\UnionArrayIntObject;
 use Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\UnionInterfaceIntObject;
 use Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\UntypedArrayObject;
@@ -79,5 +80,13 @@ class UnsupportedTypesTest extends TestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Interfaces are not supported for stub creation: Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\CustomInterface');
         $any->of(UnionInterfaceIntObject::class);
+    }
+
+    public function test_private_constructor_throw_constructor_without_named_constructor(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('You\'re trying to build from constructor a class that has a private constructor. Use #[NamedConstructor] to tag an alternative constructor: Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\PrivateConstructorObject');
+
+        (new AnyObject())->of(PrivateConstructorObject::class);
     }
 }
