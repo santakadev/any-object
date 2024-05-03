@@ -85,7 +85,15 @@ class UnsupportedTypesTest extends TestCase
     public function test_private_constructor_throw_constructor_without_named_constructor(): void
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('You\'re trying to build from constructor a class that has a private constructor. Use #[NamedConstructor] to tag an alternative constructor: Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\PrivateConstructorObject');
+        $this->expectExceptionMessage('You\'re trying to build from constructor a class with non-public constructor. Use #[NamedConstructor] to tag an alternative constructor: Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\PrivateConstructorObject');
+
+        (new AnyObject())->of(PrivateConstructorObject::class);
+    }
+
+    public function test_protected_constructor_throw_constructor_without_named_constructor(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('You\'re trying to build from constructor a class with non-public constructor. Use #[NamedConstructor] to tag an alternative constructor: Santakadev\AnyObject\Tests\TestData\UnsupportedTypes\PrivateConstructorObject');
 
         (new AnyObject())->of(PrivateConstructorObject::class);
     }

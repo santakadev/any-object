@@ -36,10 +36,11 @@ class Parser
         }
 
         $reflection = new ReflectionClass($class);
-        $constructor = $reflection->getConstructor(); // TODO: test an object without constructor. Fallback to properties?
+        $constructor = $this->findConstructor($reflection);
+
         $constructorParameters = $constructor->getParameters();
 
-        $current = new GraphNode(new TClass($class));
+        $current = new GraphNode(new TClass($class, $constructor->getName()));
 
         $visited[$class] = $current;
 
@@ -241,5 +242,34 @@ class Parser
         }
 
         return $generatorAttributes[0]->newInstance();
+    }
+
+    private function findConstructor(ReflectionClass $reflection): ?\ReflectionMethod
+    {
+        $mainConstructor = $reflection->getConstructor();
+
+        if ($mainConstructor->isPublic()) {
+            return $mainConstructor;
+        }
+
+        foreach ($reflection->getMethods() as $method) {
+            $attributes = $method->getAttributes(NamedConstructor::class);
+            if (count($attributes) > 0) {
+                if (!$method->isStatic()) {
+                    throw new Exception(sprintf('You have tagged a non-static method as #[NamedConstructor]. Make it static or tag the correct method: %s::%s.', $reflection->getName(), $method->getName()));
+                }
+
+                return $method;
+            }
+
+            // Guess named constructor
+            $methodReturnType = $method->getReturnType()?->getName();
+            if ($method->isStatic() && ($methodReturnType === 'self' || $methodReturnType === 'static')) {
+                return $method;
+            }
+        }
+
+        // TODO: test an object without constructor. Fallback to properties?
+        throw new \Exception(sprintf('You\'re trying to build from constructor a class with non-public constructor. Use #[NamedConstructor] to tag an alternative constructor: %s', $reflection->getName()));
     }
 }

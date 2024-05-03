@@ -145,12 +145,6 @@ class AnyObject
     public function buildRandomClassThroughConstructor(GraphNode $node, array $with, array $visited): object
     {
         $arguments = [];
-        $class = new ReflectionClass($node->type->class);
-        $constructor = $class->getConstructor();
-
-        if ($constructor->isPrivate()) {
-            throw new \Exception(sprintf('You\'re trying to build from constructor a class that has a private constructor. Use #[NamedConstructor] to tag an alternative constructor: %s', $node->type->class));
-        }
 
         foreach ($node->adjacencyList as $paramName => $adj) {
             if (isset($with[$paramName])) { // TODO: this could lead to strange results, as with can modify nested classes properties
@@ -172,8 +166,7 @@ class AnyObject
             $arguments[] = $value; // TODO: Reuse built objects
         }
 
-        // TODO: constructor could be private/protected. Use named constructor instead
-        return new $node->type->class(...$arguments);
+        return $node->type->build($arguments);
     }
 
     public function buildRandomClassThroughProperties(GraphNode $node, array $with, array $visited): string|object

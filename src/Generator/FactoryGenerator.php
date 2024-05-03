@@ -13,7 +13,6 @@ use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Instanceof_;
 use PhpParser\Node\Expr\Match_;
-use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PostInc;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
