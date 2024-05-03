@@ -5,6 +5,7 @@ namespace Santakadev\AnyObject\Tests;
 use Santakadev\AnyObject\AnyObject;
 use Santakadev\AnyObject\Tests\TestData\CustomizedTypes\NumberBetweenCustomizedObject;
 use Santakadev\AnyObject\Tests\TestData\CustomizedTypes\RandomDigitCustomizedObject;
+use Santakadev\AnyObject\Tests\TestData\CustomizedTypes\UuidCustomizedObject;
 
 class CustomizeRandomTest extends AnyObjectTestCase
 {
@@ -39,5 +40,15 @@ class CustomizeRandomTest extends AnyObjectTestCase
                 fn ($value) => $value === 9,
             ]
         );
+    }
+
+    /** @dataProvider anyProvider */
+    public function test_random_uuid(AnyObject $any): void
+    {
+        $value = $any->of(UuidCustomizedObject::class)->value;
+
+        $pattern = '/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i';
+
+        $this->assertMatchesRegularExpression($pattern, $value, 'The string is not a valid UUID.');
     }
 }
