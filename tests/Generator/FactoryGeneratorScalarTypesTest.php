@@ -24,7 +24,6 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
 
 class FactoryGeneratorScalarTypesTest extends FactoryGeneratorTestCase
 {
-
     public function test_generator_string(): void
     {
         $this->generateFactoryFor(StringObject::class);

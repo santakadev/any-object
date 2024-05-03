@@ -1,0 +1,22 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\ComplexContructorTypes\NamedConstructorObject;
+
+final class AnyNamedConstructorObject
+{
+    public static function with(string|ValueNotProvided $value = new ValueNotProvided()) : NamedConstructorObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = $faker->text(200);
+        }
+        return NamedConstructorObject::fromString($value);
+    }
+    public static function build() : NamedConstructorObject
+    {
+        return self::with();
+    }
+}

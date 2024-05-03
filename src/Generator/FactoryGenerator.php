@@ -16,6 +16,7 @@ use PhpParser\Node\Expr\Match_;
 use PhpParser\Node\Expr\PostInc;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Identifier;
 use PhpParser\Node\MatchArm;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\LNumber;
@@ -94,8 +95,13 @@ class FactoryGenerator
                     array_keys($root->adjacencyList),
                     array_values($root->adjacencyList)
                 )
-            )
-            ->addStmt(new Return_($factory->new($name, array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList)))));
+            );
+
+        if ($root->type->constructor === '__construct') {
+            $withMethod ->addStmt(new Return_($factory->new($name, array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList)))));
+        } else {
+            $withMethod ->addStmt(new Return_($factory->staticCall($name, new Identifier($root->type->constructor), array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList)))));
+        }
 
         $buildMethod = $factory->method('build')
             ->setReturnType($name)
