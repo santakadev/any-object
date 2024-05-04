@@ -67,7 +67,8 @@ class Parser
                     if ($type instanceof TClass) {
                         $enumNode->addEdge($this->parseThroughConstructor($type->class, $visited));
                     } else {
-                        $enumNode->addEdge(new GraphNode($type));
+                        $userDefinedSpec = $this->parseUserDefinedSpecAttribute($parameter);
+                        $enumNode->addEdge(new GraphNode($type, [], $userDefinedSpec));
                     }
                 }
                 $current->addNamedEdge($enumNode, $parameterName);
@@ -82,7 +83,7 @@ class Parser
                 }
                 $current->addNamedEdge($enumNode, $parameterName);
             } else {
-                $userDefinedSpec = $this->parseRandomSpecAttribute($parameter);
+                $userDefinedSpec = $this->parseUserDefinedSpecAttribute($parameter);
                 $node = new GraphNode($type, [], $userDefinedSpec);
                 $current->addNamedEdge($node, $parameterName);
             }
@@ -117,7 +118,8 @@ class Parser
                     if ($type instanceof TClass) {
                         $enumNode->addEdge($this->parseThroughProperties($type->class, $visited));
                     } else {
-                        $enumNode->addEdge(new GraphNode($type));
+                        $userDefinedSpec = $this->parseUserDefinedSpecAttribute($reflectionProperty);
+                        $enumNode->addEdge(new GraphNode($type, [], $userDefinedSpec));
                     }
                 }
                 $current->addNamedEdge($enumNode, $propertyName);
@@ -132,7 +134,7 @@ class Parser
                 }
                 $current->addNamedEdge($enumNode, $propertyName);
             } else {
-                $userDefinedSpec = $this->parseRandomSpecAttribute($reflectionProperty);
+                $userDefinedSpec = $this->parseUserDefinedSpecAttribute($reflectionProperty);
                 $node = new GraphNode($type, [], $userDefinedSpec);
                 $current->addNamedEdge($node, $propertyName);
             }
@@ -233,7 +235,7 @@ class Parser
         return new TEnum($cases);
     }
 
-    public function parseRandomSpecAttribute(ReflectionParameter|ReflectionProperty $parameter): ?object
+    public function parseUserDefinedSpecAttribute(ReflectionParameter|ReflectionProperty $parameter): ?object
     {
         $generatorAttributes = $parameter->getAttributes();
 
