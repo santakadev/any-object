@@ -7,6 +7,9 @@ use Santakadev\AnyObject\Tests\TestData\ComplexType\Quantity;
 
 final class QuantityBuilder
 {
+    private function __construct(private int $value)
+    {
+    }
     public static function with(int|ValueNotProvided $value = new ValueNotProvided()) : Quantity
     {
         if ($value instanceof ValueNotProvided) {

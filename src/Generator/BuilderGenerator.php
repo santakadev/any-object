@@ -25,6 +25,7 @@ use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\For_;
 use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Nop;
+use PhpParser\Node\Stmt\PropertyProperty;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\PrettyPrinter\Standard;
 use ReflectionClass;
@@ -72,6 +73,20 @@ class BuilderGenerator
         $stubName = $name . 'Builder';
 
         $factory = new BuilderFactory;
+
+
+        $constructor = $factory->method('__construct')
+            ->makePrivate()
+            ->addParams(
+                array_map(
+                    fn (string $argName, GraphNode $n) => $factory
+                        ->param($argName)
+                        ->setType($this->typeFromGraphNode($n))
+                        ->makePrivate(),
+                    array_keys($root->adjacencyList),
+                    array_values($root->adjacencyList),
+                )
+            );
 
         $withMethod = $factory->method('with')
             ->makePublic()
@@ -135,6 +150,7 @@ class BuilderGenerator
         $nodeBuilder->addStmt(new Nop())
             ->addStmt($factory->class($stubName)
                 ->makeFinal()
+                ->addStmt($constructor)
                 ->addStmt($withMethod)
                 ->addStmt($buildMethod)
             );

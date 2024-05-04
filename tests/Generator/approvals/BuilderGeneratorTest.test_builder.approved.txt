@@ -7,9 +7,8 @@ use Santakadev\AnyObject\Tests\TestData\ComplexType\Quantity;
 
 final class QuantityBuilder
 {
-    private function __construct(
-        private int $value
-    ) {
+    private function __construct(private int $value)
+    {
     }
 
     public static function create(): self
