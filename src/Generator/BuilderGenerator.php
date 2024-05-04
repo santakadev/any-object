@@ -12,6 +12,7 @@ use PhpParser\Node\Expr\BinaryOp\Smaller;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Match_;
+use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PostInc;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
@@ -102,8 +103,9 @@ class BuilderGenerator
             fn (string $argName, GraphNode $node) => $factory->method('with' . ucfirst($argName))
                 ->makePublic()
                 ->addParam(
-                    $factory->param($argName)
-                        ->setType($node->type->value)
+                    $factory
+                        ->param($argName)
+                        ->setType($this->typeFromGraphNode($node))
                 )
                 ->setReturnType('self')
                 ->addStmts([
@@ -162,8 +164,6 @@ class BuilderGenerator
         }
 
         file_put_contents($outputDir . DIRECTORY_SEPARATOR . "$stubName.php", $file);
-
-        $this->generateValueNotProvidedFile($outputDir, $outputNamespace);
     }
 
     private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, string $outputDir, string $outputNamespace): array
@@ -250,20 +250,6 @@ class BuilderGenerator
         return (new ReflectionClass($class))->getShortName();
     }
 
-    private function generateValueNotProvidedFile(string $outputDir, string $outputNamespace): void
-    {
-        $factory = new BuilderFactory;
-        $node = $factory->namespace($outputNamespace)
-            ->addStmt($factory->class('ValueNotProvided')
-                ->makeFinal()
-            )
-            ->getNode();
-        $stmts = [$node];
-        $prettyPrinter = new Standard();
-        $valueNotProvided = $prettyPrinter->prettyPrintFile($stmts) . "\n";
-        file_put_contents($outputDir . DIRECTORY_SEPARATOR . "ValueNotProvided.php", $valueNotProvided);
-    }
-
     private function buildRandomUnion(GraphNode $node, BuilderFactory $factory): Match_
     {
         $types = array_map(fn ($type) => $this->typeFromGraphNode($type), $node->adjacencyList);
@@ -322,9 +308,9 @@ class BuilderGenerator
         return get_class($enumType->values[0]);
     }
 
-    private function buildRandomClass(BuilderFactory $factory, GraphNode $node): StaticCall
+    private function buildRandomClass(BuilderFactory $factory, GraphNode $node): MethodCall
     {
-        return $factory->staticCall('Any' . $this->classShortName($node->type->class), 'build');
+        return $factory->methodCall($factory->staticCall($this->classShortName($node->type->class) . 'Builder', 'create'), 'build');
     }
 
     private function initializeFaker(BuilderFactory $factory): Expression

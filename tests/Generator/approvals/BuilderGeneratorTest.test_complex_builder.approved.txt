@@ -1,0 +1,43 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\ComplexType\Product;
+use Santakadev\AnyObject\Tests\TestData\ComplexType\ProductId;
+use Santakadev\AnyObject\Tests\TestData\ComplexType\ProductName;
+use Santakadev\AnyObject\Tests\TestData\ComplexType\ProductPrice;
+
+final class ProductBuilder
+{
+    private function __construct(private ProductId $id, private ProductName $name, private ProductPrice $price)
+    {
+    }
+    public static function create() : self
+    {
+        $faker = Factory::create();
+        $id = ProductIdBuilder::create()->build();
+        $name = ProductNameBuilder::create()->build();
+        $price = ProductPriceBuilder::create()->build();
+        return new self($id, $name, $price);
+    }
+    public function withId(ProductId $id) : self
+    {
+        $this->id = $id;
+        return $this;
+    }
+    public function withName(ProductName $name) : self
+    {
+        $this->name = $name;
+        return $this;
+    }
+    public function withPrice(ProductPrice $price) : self
+    {
+        $this->price = $price;
+        return $this;
+    }
+    public function build() : Product
+    {
+        return new Product($this->id, $this->name, $this->price);
+    }
+}
