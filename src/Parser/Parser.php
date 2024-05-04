@@ -20,6 +20,7 @@ use Santakadev\AnyObject\Types\TScalar;
 use Santakadev\AnyObject\Types\TUnion;
 use function array_map;
 
+// TODO: As the parser is used from multiple places, and I'm more confident about the contracts now, I'd like to start testing in isolation
 class Parser
 {
     private PhpdocArrayParser $phpdocArrayParser;

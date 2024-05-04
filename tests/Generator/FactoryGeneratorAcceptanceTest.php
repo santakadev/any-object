@@ -18,6 +18,8 @@ use Santakadev\AnyObject\Tests\TestData\ComplexType\Quantity;
 class FactoryGeneratorAcceptanceTest extends FactoryGeneratorTestCase
 {
     // TODO: Support DateTimeImmutable
+    // TODO: Support DateTime
+    // TODO: Support DateTimeInterface
     public function test_generator_complex_type(): void
     {
         $this->generateFactoryFor(Cart::class);
