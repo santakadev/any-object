@@ -16,10 +16,9 @@ final class QuantityBuilder
         $value = $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX);
         return new self($value);
     }
-    public function withValue(int $value): self
+    public function withValue(int $value) : self
     {
         $this->value = $value;
-
         return $this;
     }
     public function build(): Quantity

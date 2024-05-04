@@ -14,6 +14,7 @@ use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Instanceof_;
 use PhpParser\Node\Expr\Match_;
 use PhpParser\Node\Expr\PostInc;
+use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
@@ -74,7 +75,6 @@ class BuilderGenerator
 
         $factory = new BuilderFactory;
 
-
         $constructor = $factory->method('__construct')
             ->makePrivate()
             ->addParams(
@@ -101,6 +101,22 @@ class BuilderGenerator
                 ),
                 new Return_($factory->new('self', array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList))))
             ]);
+
+        $withMethods = array_map(
+            fn (string $argName, GraphNode $node) => $factory->method('with' . ucfirst($argName))
+                ->makePublic()
+                ->addParam(
+                    $factory->param($argName)
+                        ->setType($node->type->value)
+                )
+                ->setReturnType('self')
+                ->addStmts([
+                    new Expression(new Assign(new PropertyFetch(new Variable('this'), $argName), new Variable($argName))),
+                    new Return_(new Variable('this'))
+                ]),
+            array_keys($root->adjacencyList),
+            array_values($root->adjacencyList)
+        );
 
         $nodeBuilder = $factory->namespace($outputNamespace)
             ->addStmt($factory->use('Faker\Factory'))
@@ -130,6 +146,7 @@ class BuilderGenerator
                 ->makeFinal()
                 ->addStmt($constructor)
                 ->addStmt($create)
+                ->addStmts($withMethods)
             );
         $node = $nodeBuilder->getNode();
         $stmts = [$node];
