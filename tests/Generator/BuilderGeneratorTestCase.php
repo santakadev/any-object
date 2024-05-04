@@ -3,7 +3,6 @@
 namespace Santakadev\AnyObject\Tests\Generator;
 
 use Santakadev\AnyObject\Generator\BuilderGenerator;
-use Santakadev\AnyObject\Generator\FactoryGenerator;
 use Santakadev\AnyObject\Tests\AnyObjectTestCase;
 
 class BuilderGeneratorTestCase extends AnyObjectTestCase
@@ -43,7 +42,7 @@ class BuilderGeneratorTestCase extends AnyObjectTestCase
     {
         $shortClassName = substr($fullyQualifiedClassName, strrpos($fullyQualifiedClassName, '\\') + 1);
 
-        return "/{$shortClassName}Builder.php";
+        return "/Any{$shortClassName}Builder.php";
     }
 
     protected function generateBuilderFor(string $class): void

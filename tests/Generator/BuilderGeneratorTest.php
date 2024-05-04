@@ -3,10 +3,10 @@
 namespace Santakadev\AnyObject\Tests\Generator;
 
 use ApprovalTests\Approvals;
-use Santakadev\AnyObject\Tests\Generator\Generated\MoneyBuilder;
-use Santakadev\AnyObject\Tests\Generator\Generated\ProductBuilder;
-use Santakadev\AnyObject\Tests\Generator\Generated\ProductPriceBuilder;
-use Santakadev\AnyObject\Tests\Generator\Generated\QuantityBuilder;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyMoneyBuilder;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyProductBuilder;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyProductPriceBuilder;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyQuantityBuilder;
 use Santakadev\AnyObject\Tests\TestData\ComplexType\Money\Amount;
 use Santakadev\AnyObject\Tests\TestData\ComplexType\Product;
 use Santakadev\AnyObject\Tests\TestData\ComplexType\ProductId;
@@ -22,7 +22,7 @@ class BuilderGeneratorTest extends BuilderGeneratorTestCase
         $text = $this->readGeneratedAnyFileFor(Quantity::class);
         Approvals::verifyString($text);
 
-        $quantity = QuantityBuilder::create()
+        $quantity = AnyQuantityBuilder::create()
             ->withValue(3)
             ->build();
 
@@ -35,12 +35,12 @@ class BuilderGeneratorTest extends BuilderGeneratorTestCase
         $text = $this->readGeneratedAnyFileFor(Product::class);
         Approvals::verifyString($text);
 
-        $money = MoneyBuilder::create()
+        $money = AnyMoneyBuilder::create()
             ->withAmount(new Amount(5))
             ->build();
         $productPrice = new ProductPrice($money);
 
-        $product = ProductBuilder::create()
+        $product = AnyProductBuilder::create()
             ->withId(new ProductId('id'))
             ->withName(new ProductName('name'))
             ->withPrice($productPrice)

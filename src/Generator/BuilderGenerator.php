@@ -68,7 +68,7 @@ class BuilderGenerator
         $reflectionClass = new ReflectionClass($root->type->class);
         $name = $reflectionClass->getShortName();
         $classNamespace = $reflectionClass->getNamespaceName();
-        $stubName = $name . 'Builder';
+        $stubName = 'Any' . $name . 'Builder';
 
         $factory = new BuilderFactory;
 
@@ -310,7 +310,7 @@ class BuilderGenerator
 
     private function buildRandomClass(BuilderFactory $factory, GraphNode $node): MethodCall
     {
-        return $factory->methodCall($factory->staticCall($this->classShortName($node->type->class) . 'Builder', 'create'), 'build');
+        return $factory->methodCall($factory->staticCall('Any' . $this->classShortName($node->type->class) . 'Builder', 'create'), 'build');
     }
 
     private function initializeFaker(BuilderFactory $factory): Expression

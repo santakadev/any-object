@@ -8,7 +8,7 @@ use Santakadev\AnyObject\Tests\TestData\ComplexType\ProductId;
 use Santakadev\AnyObject\Tests\TestData\ComplexType\ProductName;
 use Santakadev\AnyObject\Tests\TestData\ComplexType\ProductPrice;
 
-final class ProductBuilder
+final class AnyProductBuilder
 {
     private function __construct(private ProductId $id, private ProductName $name, private ProductPrice $price)
     {
@@ -16,9 +16,9 @@ final class ProductBuilder
     public static function create() : self
     {
         $faker = Factory::create();
-        $id = ProductIdBuilder::create()->build();
-        $name = ProductNameBuilder::create()->build();
-        $price = ProductPriceBuilder::create()->build();
+        $id = AnyProductIdBuilder::create()->build();
+        $name = AnyProductNameBuilder::create()->build();
+        $price = AnyProductPriceBuilder::create()->build();
         return new self($id, $name, $price);
     }
     public function withId(ProductId $id) : self
