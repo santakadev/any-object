@@ -1,0 +1,22 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\ComplexType\Quantity;
+
+final class QuantityBuilder
+{
+    public static function with(int|ValueNotProvided $value = new ValueNotProvided()) : Quantity
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX);
+        }
+        return new Quantity($value);
+    }
+    public static function build() : Quantity
+    {
+        return self::with();
+    }
+}
