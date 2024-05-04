@@ -21,7 +21,7 @@ final class QuantityBuilder
         $this->value = $value;
         return $this;
     }
-    public function build(): Quantity
+    public function build() : Quantity
     {
         return new Quantity($this->value);
     }

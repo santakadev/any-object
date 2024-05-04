@@ -11,22 +11,18 @@ use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\BinaryOp\Smaller;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
-use PhpParser\Node\Expr\Instanceof_;
 use PhpParser\Node\Expr\Match_;
 use PhpParser\Node\Expr\PostInc;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
-use PhpParser\Node\Identifier;
 use PhpParser\Node\MatchArm;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\For_;
-use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Nop;
-use PhpParser\Node\Stmt\PropertyProperty;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\PrettyPrinter\Standard;
 use ReflectionClass;
@@ -118,6 +114,13 @@ class BuilderGenerator
             array_values($root->adjacencyList)
         );
 
+        $buildMethod = $factory->method('build')
+            ->makePublic()
+            ->setReturnType($name)
+            ->addStmt(
+                new Return_($factory->new($name, array_map(fn($name) => new PropertyFetch(new Variable('this'), $name), array_keys($root->adjacencyList))))
+            );
+
         $nodeBuilder = $factory->namespace($outputNamespace)
             ->addStmt($factory->use('Faker\Factory'))
             ->addStmt($factory->use("$classNamespace\\$name"));
@@ -147,6 +150,7 @@ class BuilderGenerator
                 ->addStmt($constructor)
                 ->addStmt($create)
                 ->addStmts($withMethods)
+                ->addStmt($buildMethod)
             );
         $node = $nodeBuilder->getNode();
         $stmts = [$node];
