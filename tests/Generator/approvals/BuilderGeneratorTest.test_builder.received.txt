@@ -10,16 +10,10 @@ final class QuantityBuilder
     private function __construct(private int $value)
     {
     }
-    public static function with(int|ValueNotProvided $value = new ValueNotProvided()) : Quantity
+    public static function create() : self
     {
-        if ($value instanceof ValueNotProvided) {
-            $faker = Factory::create();
-            $value = $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX);
-        }
-        return new Quantity($value);
-    }
-    public static function build() : Quantity
-    {
-        return self::with();
+        $faker = Factory::create();
+        $value = $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX);
+        return new self($value);
     }
 }

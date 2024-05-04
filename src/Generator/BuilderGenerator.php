@@ -88,41 +88,19 @@ class BuilderGenerator
                 )
             );
 
-        $withMethod = $factory->method('with')
+        $create = $factory->method('create')
             ->makePublic()
             ->makeStatic()
-            ->setReturnType($name)
-            ->addParams(
-                array_map(
-                    fn(string $argName, GraphNode $n) => $factory
-                        ->param($argName)
-                        ->setType($this->typeFromGraphNode($n) . '|ValueNotProvided')
-                        ->setDefault($factory->new(new Name('ValueNotProvided'))),
+            ->setReturnType('self')
+            ->addStmts([
+                $this->initializeFaker($factory),
+                ...array_map(
+                    fn(string $argName, GraphNode $n) => new Expression(new Assign(new Variable($argName), $this->buildRandom($n, $factory))),
                     array_keys($root->adjacencyList),
                     array_values($root->adjacencyList)
-                )
-            )
-            ->addStmts(
-                array_map(
-                    fn(string $argName, GraphNode $n) => new If_(new Instanceof_(new Variable($argName), new Name('ValueNotProvided')), [
-                        'stmts' => $this->buildRandomArgumentValueStatements($argName, $n, $factory, $outputDir, $outputNamespace)
-                    ]),
-                    array_keys($root->adjacencyList),
-                    array_values($root->adjacencyList)
-                )
-            );
-
-        if ($root->type->constructor === '__construct') {
-            $withMethod ->addStmt(new Return_($factory->new($name, array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList)))));
-        } else {
-            $withMethod ->addStmt(new Return_($factory->staticCall($name, new Identifier($root->type->constructor), array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList)))));
-        }
-
-        $buildMethod = $factory->method('build')
-            ->setReturnType($name)
-            ->makePublic()
-            ->makeStatic()
-            ->addStmt(new Return_($factory->staticCall(new Name('self'), 'with')));
+                ),
+                new Return_($factory->new('self', array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList))))
+            ]);
 
         $nodeBuilder = $factory->namespace($outputNamespace)
             ->addStmt($factory->use('Faker\Factory'))
@@ -151,8 +129,7 @@ class BuilderGenerator
             ->addStmt($factory->class($stubName)
                 ->makeFinal()
                 ->addStmt($constructor)
-                ->addStmt($withMethod)
-                ->addStmt($buildMethod)
+                ->addStmt($create)
             );
         $node = $nodeBuilder->getNode();
         $stmts = [$node];
@@ -173,7 +150,6 @@ class BuilderGenerator
         return match (get_class($node->type)) {
             TArray::class => $this->buildRandomArrayArgumentValueStatements($argName, $node, $factory, $outputDir, $outputNamespace),
             default => [
-                $this->initializeFaker($factory),
                 new Expression(new Assign(new Variable($argName), $this->buildRandom($node, $factory)))
             ]
         };
