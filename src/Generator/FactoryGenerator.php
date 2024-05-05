@@ -2,6 +2,8 @@
 
 namespace Santakadev\AnyObject\Generator;
 
+use DateTime;
+use DateTimeImmutable;
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
@@ -312,8 +314,10 @@ class FactoryGenerator
 
     private function buildRandomClass(BuilderFactory $factory, GraphNode $node): StaticCall|New_
     {
-        if ($node->type->class === \DateTime::class) {
+        if ($node->type->class === DateTime::class) {
             return $factory->new('DateTime');
+        } elseif ($node->type->class === DateTimeImmutable::class) {
+            return $factory->new('DateTimeImmutable');
         }
 
         return $factory->staticCall('Any' . $this->classShortName($node->type->class), 'build');

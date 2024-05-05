@@ -1,0 +1,23 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\PhpTypes\DateTimeImmutableObject;
+use DateTimeImmutable;
+
+final class AnyDateTimeImmutableObject
+{
+    public static function with(DateTimeImmutable|ValueNotProvided $value = new ValueNotProvided()) : DateTimeImmutableObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = new DateTimeImmutable();
+        }
+        return new DateTimeImmutableObject($value);
+    }
+    public static function build() : DateTimeImmutableObject
+    {
+        return self::with();
+    }
+}

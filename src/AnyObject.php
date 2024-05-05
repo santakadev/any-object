@@ -2,6 +2,8 @@
 
 namespace Santakadev\AnyObject;
 
+use DateTime;
+use DateTimeImmutable;
 use Faker\Factory;
 use Faker\Generator;
 use ReflectionClass;
@@ -144,8 +146,10 @@ class AnyObject
 
     public function buildRandomClassThroughConstructor(GraphNode $node, array $with, array $visited): object
     {
-        if ($node->type->class === \DateTime::class) {
-            return new \DateTime(); // TODO: make it random
+        if ($node->type->class === DateTime::class) {
+            return new DateTime(); // TODO: make it random
+        } elseif ($node->type->class === DateTimeImmutable::class) {
+            return new DateTimeImmutable(); // TODO: make it random
         }
 
         $arguments = [];
@@ -175,8 +179,10 @@ class AnyObject
 
     public function buildRandomClassThroughProperties(GraphNode $node, array $with, array $visited): string|object
     {
-        if ($node->type->class === \DateTime::class) {
-            return new \DateTime(); // TODO: make it random
+        if ($node->type->class === DateTime::class) {
+            return new DateTime(); // TODO: make it random
+        } elseif ($node->type->class === DateTimeImmutable::class) {
+            return new DateTimeImmutable(); // TODO: make it random
         }
 
         $reflectionClass = new ReflectionClass($node->type->class);

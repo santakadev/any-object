@@ -2,6 +2,8 @@
 
 namespace Santakadev\AnyObject\Generator;
 
+use DateTime;
+use DateTimeImmutable;
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
@@ -16,7 +18,6 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\PostInc;
 use PhpParser\Node\Expr\PropertyFetch;
-use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\MatchArm;
 use PhpParser\Node\Name;
@@ -311,8 +312,10 @@ class BuilderGenerator
 
     private function buildRandomClass(BuilderFactory $factory, GraphNode $node): MethodCall|New_
     {
-        if ($node->type->class === \DateTime::class) {
+        if ($node->type->class === DateTime::class) {
             return $factory->new('DateTime');
+        } elseif ($node->type->class === DateTimeImmutable::class) {
+            return $factory->new('DateTimeImmutable');
         }
 
         return $factory->methodCall($factory->staticCall('Any' . $this->classShortName($node->type->class) . 'Builder', 'create'), 'build');
