@@ -7,10 +7,11 @@ use Santakadev\AnyObject\Tests\TestData\ComplexType\Product;
 use Santakadev\AnyObject\Tests\TestData\ComplexType\ProductId;
 use Santakadev\AnyObject\Tests\TestData\ComplexType\ProductName;
 use Santakadev\AnyObject\Tests\TestData\ComplexType\ProductPrice;
+use DateTime;
 
 final class AnyProductBuilder
 {
-    private function __construct(private ProductId $id, private ProductName $name, private ProductPrice $price)
+    private function __construct(private ProductId $id, private ProductName $name, private ProductPrice $price, private DateTime $createdAt)
     {
     }
     public static function create() : self
@@ -19,7 +20,8 @@ final class AnyProductBuilder
         $id = AnyProductIdBuilder::create()->build();
         $name = AnyProductNameBuilder::create()->build();
         $price = AnyProductPriceBuilder::create()->build();
-        return new self($id, $name, $price);
+        $createdAt = new DateTime();
+        return new self($id, $name, $price, $createdAt);
     }
     public function withId(ProductId $id) : self
     {
@@ -36,8 +38,13 @@ final class AnyProductBuilder
         $this->price = $price;
         return $this;
     }
+    public function withCreatedAt(DateTime $createdAt) : self
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
     public function build() : Product
     {
-        return new Product($this->id, $this->name, $this->price);
+        return new Product($this->id, $this->name, $this->price, $this->createdAt);
     }
 }

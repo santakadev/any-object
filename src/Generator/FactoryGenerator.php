@@ -13,6 +13,7 @@ use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Instanceof_;
 use PhpParser\Node\Expr\Match_;
+use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\PostInc;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
@@ -309,8 +310,12 @@ class FactoryGenerator
         return get_class($enumType->values[0]);
     }
 
-    private function buildRandomClass(BuilderFactory $factory, GraphNode $node): StaticCall
+    private function buildRandomClass(BuilderFactory $factory, GraphNode $node): StaticCall|New_
     {
+        if ($node->type->class === \DateTime::class) {
+            return $factory->new('DateTime');
+        }
+
         return $factory->staticCall('Any' . $this->classShortName($node->type->class), 'build');
     }
 

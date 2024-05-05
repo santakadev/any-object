@@ -175,6 +175,10 @@ class AnyObject
 
     public function buildRandomClassThroughProperties(GraphNode $node, array $with, array $visited): string|object
     {
+        if ($node->type->class === \DateTime::class) {
+            return new \DateTime(); // TODO: make it random
+        }
+
         $reflectionClass = new ReflectionClass($node->type->class);
         $instance = $reflectionClass->newInstanceWithoutConstructor();
         $visited[$node->type->class] = $instance;

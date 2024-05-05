@@ -13,6 +13,6 @@ class PhpTypesTest extends AnyObjectTestCase
     {
         $object = $any->of(DateTimeObject::class);
 
-        $this->assertInstanceOf(DateTime::class, $object->value);
+        $this->assertLessThanOrEqual(new DateTime(), $object->value);
     }
 }

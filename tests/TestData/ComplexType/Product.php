@@ -2,12 +2,15 @@
 
 namespace Santakadev\AnyObject\Tests\TestData\ComplexType;
 
+use DateTime;
+
 class Product
 {
     public function __construct(
-        private readonly ProductId    $id,
-        private readonly ProductName  $name,
+        private readonly ProductId $id,
+        private readonly ProductName $name,
         private readonly ProductPrice $price,
+        private readonly DateTime $createdAt
     )
     {
     }
@@ -25,5 +28,10 @@ class Product
     public function price(): ProductPrice
     {
         return $this->price;
+    }
+
+    public function createdAt(): DateTime
+    {
+        return $this->createdAt;
     }
 }

@@ -1,0 +1,23 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\PhpTypes\DateTimeObject;
+use DateTime;
+
+final class AnyDateTimeObject
+{
+    public static function with(DateTime|ValueNotProvided $value = new ValueNotProvided()) : DateTimeObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value = new DateTime();
+        }
+        return new DateTimeObject($value);
+    }
+    public static function build() : DateTimeObject
+    {
+        return self::with();
+    }
+}
