@@ -6,6 +6,7 @@ use Santakadev\AnyObject\AnyObject;
 use Santakadev\AnyObject\Tests\TestData\CustomizedTypes\NullableCustomizedObject;
 use Santakadev\AnyObject\Tests\TestData\CustomizedTypes\NumberBetweenCustomizedObject;
 use Santakadev\AnyObject\Tests\TestData\CustomizedTypes\RandomDigitCustomizedObject;
+use Santakadev\AnyObject\Tests\TestData\CustomizedTypes\UrlCustomizedObject;
 use Santakadev\AnyObject\Tests\TestData\CustomizedTypes\UuidCustomizedObject;
 
 class CustomizeRandomTest extends AnyObjectTestCase
@@ -64,5 +65,13 @@ class CustomizeRandomTest extends AnyObjectTestCase
                 fn ($value) => $value === 7,
             ]
         );
+    }
+
+    /** @dataProvider anyProvider */
+    public function test_random_url(AnyObject $any): void
+    {
+        $value = $any->of(UrlCustomizedObject::class)->value;
+
+        $this->assertNotFalse(filter_var($value, FILTER_VALIDATE_URL));
     }
 }

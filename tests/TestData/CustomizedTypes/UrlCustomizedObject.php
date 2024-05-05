@@ -1,0 +1,18 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\TestData\CustomizedTypes;
+
+use Santakadev\AnyObject\RandomGenerator\Url;
+
+class UrlCustomizedObject
+{
+    #[Url]
+    public readonly string $value;
+
+    public function __construct(
+        #[Url]
+        string $value
+    ) {
+        $this->value = $value;
+    }
+}
