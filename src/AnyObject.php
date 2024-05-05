@@ -144,6 +144,10 @@ class AnyObject
 
     public function buildRandomClassThroughConstructor(GraphNode $node, array $with, array $visited): object
     {
+        if ($node->type->class === \DateTime::class) {
+            return new \DateTime(); // TODO: make it random
+        }
+
         $arguments = [];
 
         foreach ($node->adjacencyList as $paramName => $adj) {
