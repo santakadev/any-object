@@ -1,16 +1,24 @@
 Any Object
 =====================
+![packagist](https://img.shields.io/packagist/v/santakadev/any-object.svg?style=flat-square)
+![license](https://img.shields.io/github/license/santakadev/any-object)
+![build](https://github.com/santakadev/any-object/actions/workflows/ci.yaml/badge.svg)
 
-A PHP 8.1+ library to generate random objects of any class.
+> [!WARNING]  
+> This library is under active development and will continue to evolve until version 1.0. Features and API may change. Use in production at your own risk.
 
-Any Object tries to build a random object with zero configuration (when possible).
+**Any Object** generates random instances of any class with zero configuration.
+Objects can be generated on-the-fly or with the codegen feature, which allows you
+to create and maintain Object Mothers and Object Builders automatically.
 
-Possible use cases:
-- Test doubles
-- Fixtures generation
-- Property based testing
+## Features
+- **Zero Configuration:** Any Object attempts to create objects with minimal setup.
+- **Flexible Object Creation:** Supports setting specific properties while randomizing the rest.
+- **Code Generation:** Automatically builds and maintains Object Mothers and Builders for test purposes.
 
 ## Installation
+
+Install Any Object via [Composer](https://getcomposer.org/) as a development dependency:
 
 ```bash
 composer require --dev santakadev/any-object
@@ -18,14 +26,18 @@ composer require --dev santakadev/any-object
 
 ## Usage
 
-Generate a random object:
+### Generate a random object
+
+You can quickly generate a random object of a given class:
 
 ```php
 $any = new AnyObject();
 $object = $any->of(Product::class);
 ```
 
-Fix some properties and use a random value for the rest
+### Customize properties
+
+Fix certain properties while randomizing the rest:
 
 ```php
 $any = new AnyObject();
@@ -34,4 +46,4 @@ $object = $any->of(Product::class, with: ['name' => 'My Product']);
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE) for more information.
+This library is open-sourced under the [License File](LICENSE).
