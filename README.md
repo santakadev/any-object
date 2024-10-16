@@ -46,4 +46,4 @@ $object = $any->of(Product::class, with: ['name' => 'My Product']);
 
 ## License
 
-This library is open-sourced under the [License File](LICENSE).
+This library is open-sourced under the [MIT license](LICENSE).
