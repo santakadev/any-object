@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Santakadev\AnyObject\Tests\TestData\ComplexContructorTypes;
 
 class GuessSelfReturnNamedConstructorObject

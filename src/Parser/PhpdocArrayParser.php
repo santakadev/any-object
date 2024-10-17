@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Santakadev\AnyObject\Parser;
 
 use Exception;
@@ -20,7 +22,8 @@ class PhpdocArrayParser
 {
     public function parsePropertyArrayType(ReflectionProperty $reflectionProperty): TArray
     {
-        return $this->parseArrayType($reflectionProperty, $reflectionProperty->getDocComment());
+        $associatedDocComment = $reflectionProperty->getDocComment();
+        return $this->parseArrayType($reflectionProperty, $associatedDocComment !== false ? $associatedDocComment : null);
     }
 
     public function parseParameterArrayType(ReflectionParameter $reflectionParameter, string $methodDocComment): TArray
@@ -28,14 +31,16 @@ class PhpdocArrayParser
         return $this->parseArrayType($reflectionParameter, $methodDocComment);
     }
 
-    private function parseArrayType(ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, string $associatedDocComment): TArray
+    private function parseArrayType(ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty, ?string $associatedDocComment): TArray
     {
         $arrayPatterns = $this->docPatternsFromReflectionType($reflectionParameterOrProperty);
 
-        foreach ($arrayPatterns as $arrayPattern) {
-            if (preg_match($arrayPattern, $associatedDocComment, $matches) === 1) {
-                $allowsNull = $matches[1] === '?';
-                return $this->parsePhpdocArrayType($matches[2], $allowsNull, $reflectionParameterOrProperty);
+        if ($associatedDocComment) {
+            foreach ($arrayPatterns as $arrayPattern) {
+                if (preg_match($arrayPattern, $associatedDocComment, $matches) === 1) {
+                    $allowsNull = $matches[1] === '?';
+                    return $this->parsePhpdocArrayType($matches[2], $allowsNull, $reflectionParameterOrProperty);
+                }
             }
         }
 

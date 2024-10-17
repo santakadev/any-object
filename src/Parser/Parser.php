@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Santakadev\AnyObject\Parser;
 
 use Exception;
@@ -51,7 +53,8 @@ class Parser
                 $reflectionProperty = $reflection->getProperty($parameter->getName());
                 $type = $this->typeFromReflection($reflectionProperty);
             } else {
-                $type = $this->typeFromReflection($parameter, $constructor->getDocComment());
+                $methodDocComment = $constructor->getDocComment();
+                $type = $this->typeFromReflection($parameter, $methodDocComment !== false ? $methodDocComment : null);
             }
 
             $parameterName = $parameter->getName();
