@@ -29,7 +29,6 @@ class ArrayTypesTest extends AnyObjectTestCase
 {
     use AnyObjectDataProvider;
 
-
     /** @dataProvider anyProvider */
     public function test_generic_array_of_string(AnyObject $any): void
     {

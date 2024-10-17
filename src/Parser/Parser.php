@@ -43,7 +43,7 @@ class Parser
 
         $constructorParameters = $constructor->getParameters();
 
-        $current = new GraphNode(new TClass($class, $constructor->getName()));
+        $current = new GraphNode(new TClass($class, $constructor->getName(), $constructor->isVariadic()));
 
         $visited[$class] = $current;
 
@@ -186,8 +186,13 @@ class Parser
         }
 
         if (in_array($typeName, TScalar::values())) {
-            $scalar = TScalar::from($typeName);
-            return $reflectionType->allowsNull() ? new TUnion([$scalar, new TNull()]) : $scalar;
+            if ($reflectionParameterOrProperty instanceof ReflectionParameter && $reflectionParameterOrProperty->isVariadic()) {
+                $scalar = TScalar::from($typeName);
+                return new TArray(new TUnion([$scalar]));
+            } else {
+                $scalar = TScalar::from($typeName);
+                return $reflectionType->allowsNull() ? new TUnion([$scalar, new TNull()]) : $scalar;
+            }
         }
 
         if (interface_exists($typeName)) {
