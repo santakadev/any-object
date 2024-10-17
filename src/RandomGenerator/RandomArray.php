@@ -17,7 +17,7 @@ class RandomArray implements RandomArraySpec
 
     public function generate(GraphNode $arrayNode, callable $builder): array
     {
-        $elementsCount = (Factory::create())->numberBetween($this->maxElements, $this->maxElements);
+        $elementsCount = (Factory::create())->numberBetween($this->minElements, $this->maxElements);
         $array = [];
         for ($i = 0; $i < $elementsCount; $i++) {
             $array[] = $builder($arrayNode->pickRandomBranch());
