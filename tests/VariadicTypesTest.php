@@ -10,7 +10,7 @@ use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfStringObject;
 
 class VariadicTypesTest extends AnyObjectTestCase
 {
-    public function test_generic_array_of_string(): void
+    public function test_string_variadic(): void
     {
         $any = new AnyObject(useConstructor: true);
         $object = $any->of(VariadicOfStringObject::class);
@@ -33,7 +33,7 @@ class VariadicTypesTest extends AnyObjectTestCase
         );
     }
 
-    public function test_generic_array_of_int(): void
+    public function test_int_variadic(): void
     {
         $any = new AnyObject(useConstructor: true);
         $object = $any->of(VariadicOfIntObject::class);
@@ -45,7 +45,7 @@ class VariadicTypesTest extends AnyObjectTestCase
         }
     }
 
-    public function test_generic_array_of_float(): void
+    public function test_float_variadic(): void
     {
         $any = new AnyObject(useConstructor: true);
         $object = $any->of(VariadicOfFloatObject::class);
@@ -57,7 +57,7 @@ class VariadicTypesTest extends AnyObjectTestCase
         }
     }
 
-    public function test_generic_array_of_bool(): void
+    public function test_bool_variadic(): void
     {
         $any = new AnyObject(useConstructor: true);
         $object = $any->of(VariadicOfBoolObject::class);
