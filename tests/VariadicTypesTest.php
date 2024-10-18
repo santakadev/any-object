@@ -13,6 +13,7 @@ use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfIntObject;
 use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfNullableCustomTypeObject;
 use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfNullableString;
 use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfStringObject;
+use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfUnionTypeObject;
 use Santakadev\AnyObject\Tests\Utils\ArrayUtils;
 
 class VariadicTypesTest extends AnyObjectTestCase
@@ -127,6 +128,26 @@ class VariadicTypesTest extends AnyObjectTestCase
             [
                 fn (array $array) => ArrayUtils::array_some($array, fn ($item) => $item instanceof CustomObject),
                 fn (array $array) => ArrayUtils::array_some($array, 'is_null'),
+            ]
+        );
+    }
+
+    public function test_union_types_variadic(): void
+    {
+        $any = new AnyObject(useConstructor: true);
+        $object = $any->of(VariadicOfUnionTypeObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        $this->assertAll(
+            fn () => $any->of(VariadicOfUnionTypeObject::class)->value,
+            [
+                fn (array $array) => ArrayUtils::array_some($array, 'is_string'),
+                fn (array $array) => ArrayUtils::array_some($array, 'is_int'),
+                fn (array $array) => ArrayUtils::array_some($array, 'is_float'),
+                fn (array $array) => ArrayUtils::array_some($array, 'is_bool'),
+                fn (array $array) => ArrayUtils::array_some($array, 'is_null'),
+                fn (array $array) => ArrayUtils::array_some($array, fn ($item) => $item instanceof CustomObject),
             ]
         );
     }

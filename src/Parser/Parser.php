@@ -155,7 +155,7 @@ class Parser
             throw new Exception(sprintf('Missing type declaration for property "%s"', $reflectionParameterOrProperty->getName()));
         }
         return match (get_class($reflectionType)) {
-            ReflectionUnionType::class => $this->parseUnionType($reflectionType),
+            ReflectionUnionType::class => $this->parseUnionType($reflectionType, $reflectionParameterOrProperty),
             ReflectionIntersectionType::class => throw new Exception(sprintf('Intersection type found in property "%s" are not supported', $reflectionParameterOrProperty->getName())),
             ReflectionNamedType::class => $this->typeFromReflectionNamedType($reflectionType, $reflectionParameterOrProperty, $methodDocComment),
         };
@@ -209,10 +209,16 @@ class Parser
         throw new Exception("Unsupported type for stub creation: $typeName");
     }
 
-    private function parseUnionType(ReflectionUnionType $reflectionType): TUnion
+    private function parseUnionType(ReflectionUnionType $reflectionType, ReflectionParameter|ReflectionProperty $reflectionParameterOrProperty): TUnion|TArray
     {
         $types = array_map(fn($x) => $this->typeFromReflectionTypeForUnion($x), $reflectionType->getTypes());
-        return new TUnion($types);
+        $union = new TUnion($types);
+
+        if ($reflectionParameterOrProperty instanceof ReflectionParameter && $reflectionParameterOrProperty->isVariadic()) {
+            return new TArray($union);
+        } else {
+            return $union;
+        }
     }
 
     // TODO: duplicated code. But there are 2 differences: 1) array is not supported in union types 2) nullable types are not supported in union types
