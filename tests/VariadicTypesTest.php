@@ -3,6 +3,9 @@
 namespace Santakadev\AnyObject\Tests;
 
 use Santakadev\AnyObject\AnyObject;
+use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfBoolObject;
+use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfFloatObject;
+use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfIntObject;
 use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfStringObject;
 
 class VariadicTypesTest extends AnyObjectTestCase
@@ -28,5 +31,41 @@ class VariadicTypesTest extends AnyObjectTestCase
                 fn (int $count) => $count > 25,
             ]
         );
+    }
+
+    public function test_generic_array_of_int(): void
+    {
+        $any = new AnyObject(useConstructor: true);
+        $object = $any->of(VariadicOfIntObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        foreach ($object->value as $item) {
+            $this->assertIsInt($item);
+        }
+    }
+
+    public function test_generic_array_of_float(): void
+    {
+        $any = new AnyObject(useConstructor: true);
+        $object = $any->of(VariadicOfFloatObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        foreach ($object->value as $item) {
+            $this->assertIsFloat($item);
+        }
+    }
+
+    public function test_generic_array_of_bool(): void
+    {
+        $any = new AnyObject(useConstructor: true);
+        $object = $any->of(VariadicOfBoolObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        foreach ($object->value as $item) {
+            $this->assertIsBool($item);
+        }
     }
 }
