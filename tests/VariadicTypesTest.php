@@ -1,11 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Santakadev\AnyObject\Tests;
 
 use Santakadev\AnyObject\AnyObject;
+use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomObject;
 use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfBoolObject;
+use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfCustomTypeObject;
 use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfFloatObject;
 use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfIntObject;
+use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfNullableCustomTypeObject;
 use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfNullableString;
 use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfStringObject;
 use Santakadev\AnyObject\Tests\Utils\ArrayUtils;
@@ -98,4 +103,31 @@ class VariadicTypesTest extends AnyObjectTestCase
         );
     }
 
+    public function test_custom_object_variadic(): void
+    {
+        $any = new AnyObject(useConstructor: true);
+        $object = $any->of(VariadicOfCustomTypeObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        foreach ($object->value as $item) {
+            $this->assertInstanceOf(CustomObject::class, $item);
+        }
+    }
+
+    public function test_nullable_custom_object_variadic(): void
+    {
+        $any = new AnyObject(useConstructor: true);
+        $object = $any->of(VariadicOfNullableCustomTypeObject::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+        $this->assertAll(
+            fn () => $any->of(VariadicOfNullableCustomTypeObject::class)->value,
+            [
+                fn (array $array) => ArrayUtils::array_some($array, fn ($item) => $item instanceof CustomObject),
+                fn (array $array) => ArrayUtils::array_some($array, 'is_null'),
+            ]
+        );
+    }
 }

@@ -181,8 +181,14 @@ class Parser
         }
 
         if (class_exists($typeName)) {
-            $class = new TClass($typeName);
-            return $reflectionType->allowsNull() ? new TUnion([$class, new TNull()]) : $class;
+            if ($reflectionParameterOrProperty instanceof ReflectionParameter && $reflectionParameterOrProperty->isVariadic()) {
+                $class = new TClass($typeName);
+                $union = $reflectionType->allowsNull() ? new TUnion([$class, new TNull()]) : new TUnion([$class]);
+                return new TArray($union);
+            } else {
+                $class = new TClass($typeName);
+                return $reflectionType->allowsNull() ? new TUnion([$class, new TNull()]) : $class;
+            }
         }
 
         if (in_array($typeName, TScalar::values())) {
