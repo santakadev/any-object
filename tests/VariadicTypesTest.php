@@ -6,7 +6,9 @@ use Santakadev\AnyObject\AnyObject;
 use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfBoolObject;
 use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfFloatObject;
 use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfIntObject;
+use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfNullableString;
 use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfStringObject;
+use Santakadev\AnyObject\Tests\Utils\ArrayUtils;
 
 class VariadicTypesTest extends AnyObjectTestCase
 {
@@ -68,4 +70,32 @@ class VariadicTypesTest extends AnyObjectTestCase
             $this->assertIsBool($item);
         }
     }
+
+    public function test_nullable_variadic(): void
+    {
+        $any = new AnyObject(useConstructor: true);
+        $object = $any->of(VariadicOfNullableString::class);
+        $this->assertIsArray($object->value);
+        $this->assertGreaterThanOrEqual(0, count($object->value));
+        $this->assertLessThanOrEqual(50, count($object->value));
+
+        $match = function ($fn, array $array) {
+            foreach ($array as $item) {
+                if ($fn($item)) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
+        $this->assertAll(
+            fn () => $any->of(VariadicOfNullableString::class)->value,
+            [
+                fn (array $array) => ArrayUtils::array_some($array, 'is_string'),
+                fn (array $array) => ArrayUtils::array_some($array, 'is_null'),
+            ]
+        );
+    }
+
 }

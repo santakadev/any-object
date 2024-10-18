@@ -188,7 +188,8 @@ class Parser
         if (in_array($typeName, TScalar::values())) {
             if ($reflectionParameterOrProperty instanceof ReflectionParameter && $reflectionParameterOrProperty->isVariadic()) {
                 $scalar = TScalar::from($typeName);
-                return new TArray(new TUnion([$scalar]));
+                $union = $reflectionType->allowsNull() ? new TUnion([$scalar, new TNull()]) : new TUnion([$scalar]);
+                return new TArray($union);
             } else {
                 $scalar = TScalar::from($typeName);
                 return $reflectionType->allowsNull() ? new TUnion([$scalar, new TNull()]) : $scalar;
