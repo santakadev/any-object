@@ -1,0 +1,31 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfNullableStringObject;
+
+final class AnyVariadicOfNullableStringObject
+{
+    public static function with(array|ValueNotProvided $value = new ValueNotProvided()) : VariadicOfNullableStringObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $minElements = 0;
+            $maxElements = 50;
+            $elementsCount = $faker->numberBetween($minElements, $maxElements);
+            $value = [];
+            for ($i = 0; $i < $elementsCount; $i++) {
+                $value[] = match (array_rand(['string', 'null'])) {
+                    0 => $faker->text(200),
+                    1 => null,
+                };
+            }
+        }
+        return new VariadicOfNullableStringObject(...$value);
+    }
+    public static function build() : VariadicOfNullableStringObject
+    {
+        return self::with();
+    }
+}

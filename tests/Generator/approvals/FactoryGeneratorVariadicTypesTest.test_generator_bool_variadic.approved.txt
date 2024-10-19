@@ -1,0 +1,28 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfBoolObject;
+
+final class AnyVariadicOfBoolObject
+{
+    public static function with(array|ValueNotProvided $value = new ValueNotProvided()) : VariadicOfBoolObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $minElements = 0;
+            $maxElements = 50;
+            $elementsCount = $faker->numberBetween($minElements, $maxElements);
+            $value = [];
+            for ($i = 0; $i < $elementsCount; $i++) {
+                $value[] = $faker->boolean(50);
+            }
+        }
+        return new VariadicOfBoolObject(...$value);
+    }
+    public static function build() : VariadicOfBoolObject
+    {
+        return self::with();
+    }
+}

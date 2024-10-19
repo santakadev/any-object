@@ -1,0 +1,35 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfUnionTypeObject;
+
+final class AnyVariadicOfUnionTypeObject
+{
+    public static function with(array|ValueNotProvided $value = new ValueNotProvided()) : VariadicOfUnionTypeObject
+    {
+        if ($value instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $minElements = 0;
+            $maxElements = 50;
+            $elementsCount = $faker->numberBetween($minElements, $maxElements);
+            $value = [];
+            for ($i = 0; $i < $elementsCount; $i++) {
+                $value[] = match (array_rand(['CustomObject', 'string', 'int', 'float', 'bool', 'null'])) {
+                    0 => AnyCustomObject::build(),
+                    1 => $faker->text(200),
+                    2 => $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
+                    3 => $faker->randomFloat(null, 0, null),
+                    4 => $faker->boolean(50),
+                    5 => null,
+                };
+            }
+        }
+        return new VariadicOfUnionTypeObject(...$value);
+    }
+    public static function build() : VariadicOfUnionTypeObject
+    {
+        return self::with();
+    }
+}

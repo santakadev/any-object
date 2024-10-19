@@ -31,6 +31,7 @@ use PhpParser\Node\Stmt\For_;
 use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\Stmt\Return_;
+use PhpParser\Node\VariadicPlaceholder;
 use PhpParser\PrettyPrinter\Standard;
 use ReflectionClass;
 use Santakadev\AnyObject\Parser\GraphNode;
@@ -102,8 +103,17 @@ class FactoryGenerator
                 )
             );
 
+        // TODO: if variadic, add spread operator to the last element
         if ($root->type->constructor === '__construct') {
-            $withMethod ->addStmt(new Return_($factory->new($name, array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList)))));
+            $args = array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList));
+
+            if ($root->type->isVariadic && !empty($args)) {
+                $lastKey = array_key_last($args);
+                $args[$lastKey] = new Arg($args[$lastKey], false, true);
+                $withMethod ->addStmt(new Return_($factory->new($name, $args)));
+            } else {
+                $withMethod ->addStmt(new Return_($factory->new($name, $args)));
+            }
         } else {
             $withMethod ->addStmt(new Return_($factory->staticCall($name, new Identifier($root->type->constructor), array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList)))));
         }
