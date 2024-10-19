@@ -89,19 +89,21 @@ class BuilderGenerator
                 )
             );
 
+        // TODO: Support arrays
+        $createStmts = [
+            $this->initializeFaker($factory),
+            ...array_merge(...array_map(
+                fn(string $argName, GraphNode $n) => $this->buildRandomArgumentValueStatements($argName, $n, $factory, $outputDir, $outputNamespace),
+                array_keys($root->adjacencyList),
+                array_values($root->adjacencyList)
+            )),
+            new Return_($factory->new('self', array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList))))
+        ];
         $create = $factory->method('create')
             ->makePublic()
             ->makeStatic()
             ->setReturnType('self')
-            ->addStmts([
-                $this->initializeFaker($factory),
-                ...array_map(
-                    fn(string $argName, GraphNode $n) => new Expression(new Assign(new Variable($argName), $this->buildRandom($n, $factory))),
-                    array_keys($root->adjacencyList),
-                    array_values($root->adjacencyList)
-                ),
-                new Return_($factory->new('self', array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList))))
-            ]);
+            ->addStmts($createStmts);
 
         $withMethods = array_map(
             fn (string $argName, GraphNode $node) => $factory->method('with' . ucfirst($argName))
@@ -120,11 +122,20 @@ class BuilderGenerator
             array_values($root->adjacencyList)
         );
 
+        // TODO: Support named constructors
+        // TODO: Support variadic named constructor
+        $constructorArgs = array_map(fn($name) => new PropertyFetch(new Variable('this'), $name), array_keys($root->adjacencyList));
+
+        if ($root->type->isVariadic) {
+            $lastKey = array_key_last($constructorArgs);
+            $constructorArgs[$lastKey] = new Arg($constructorArgs[$lastKey], false, true);
+        }
+
         $buildMethod = $factory->method('build')
             ->makePublic()
             ->setReturnType($name)
             ->addStmt(
-                new Return_($factory->new($name, array_map(fn($name) => new PropertyFetch(new Variable('this'), $name), array_keys($root->adjacencyList))))
+                new Return_($factory->new($name, $constructorArgs))
             );
 
         $nodeBuilder = $factory->namespace($outputNamespace)
@@ -338,7 +349,6 @@ class BuilderGenerator
         }
 
         return [
-            $this->initializeFaker($factory),
             new Expression(new Assign(new Variable('minElements'), new LNumber(0))),
             new Expression(new Assign(new Variable('maxElements'), new LNumber(50))),
             new Expression(new Assign(new Variable('elementsCount'), $factory->methodCall(new Variable('faker'), 'numberBetween', [new Variable('minElements'), new Variable('maxElements')]))),

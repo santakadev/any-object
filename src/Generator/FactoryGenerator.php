@@ -105,7 +105,7 @@ class FactoryGenerator
 
         $constructorArgs = array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList));
 
-        if ($root->type->isVariadic && !empty($constructorArgs)) {
+        if ($root->type->isVariadic) {
             $lastKey = array_key_last($constructorArgs);
             $constructorArgs[$lastKey] = new Arg($constructorArgs[$lastKey], false, true);
         }

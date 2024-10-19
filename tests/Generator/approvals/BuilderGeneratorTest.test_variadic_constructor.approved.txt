@@ -1,0 +1,34 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfStringObject;
+
+final class AnyVariadicOfStringObjectBuilder
+{
+    private function __construct(private array $value)
+    {
+    }
+    public static function create() : self
+    {
+        $faker = Factory::create();
+        $minElements = 0;
+        $maxElements = 50;
+        $elementsCount = $faker->numberBetween($minElements, $maxElements);
+        $value = [];
+        for ($i = 0; $i < $elementsCount; $i++) {
+            $value[] = $faker->text(200);
+        }
+        return new self($value);
+    }
+    public function withValue(array $value) : self
+    {
+        $this->value = $value;
+        return $this;
+    }
+    public function build() : VariadicOfStringObject
+    {
+        return new VariadicOfStringObject(...$this->value);
+    }
+}
