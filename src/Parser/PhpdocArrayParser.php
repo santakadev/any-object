@@ -26,7 +26,7 @@ class PhpdocArrayParser
         return $this->parseArrayType($reflectionProperty, $associatedDocComment !== false ? $associatedDocComment : null);
     }
 
-    public function parseParameterArrayType(ReflectionParameter $reflectionParameter, string $methodDocComment): TArray
+    public function parseParameterArrayType(ReflectionParameter $reflectionParameter, ?string $methodDocComment): TArray
     {
         return $this->parseArrayType($reflectionParameter, $methodDocComment);
     }
