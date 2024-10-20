@@ -34,7 +34,7 @@ class GraphNode
 
     public function addNamedEdge(GraphNode $node, string $name): void
     {
-        if (!in_array($node, $this->adjacencyList)) {
+        if (!array_key_exists($name, $this->adjacencyList)) {
             $this->adjacencyList[$name] = $node;
         }
     }
