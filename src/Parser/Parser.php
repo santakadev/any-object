@@ -61,7 +61,9 @@ class Parser
             // TODO: disallow circular dependencies through constructor
             if ($type instanceof TClass) {
                 if (!isset($visited[$type->class])) {
-                    $current->addNamedEdge($this->parseThroughConstructor($type->class, $visited), $parameterName);
+                    $node = $this->parseThroughConstructor($type->class, $visited);
+                    $visited[$type->class] = $node;
+                    $current->addNamedEdge($node, $parameterName);
                 } else {
                     $current->addNamedEdge($visited[$type->class], $parameterName);
                 }
@@ -69,7 +71,9 @@ class Parser
                 $enumNode = new GraphNode($type);
                 foreach ($type->types as $type) {
                     if ($type instanceof TClass) {
-                        $enumNode->addEdge($this->parseThroughConstructor($type->class, $visited));
+                        $node = $this->parseThroughConstructor($type->class, $visited);
+                        $visited[$type->class] = $node;
+                        $enumNode->addEdge($node);
                     } else {
                         $userDefinedSpec = $this->parseUserDefinedSpecAttribute($parameter);
                         $enumNode->addEdge(new GraphNode($type, [], $userDefinedSpec));
@@ -80,7 +84,9 @@ class Parser
                 $enumNode = new GraphNode($type);
                 foreach ($type->union->types as $type) {
                     if ($type instanceof TClass) {
-                        $enumNode->addEdge($this->parseThroughConstructor($type->class, $visited));
+                        $node = $this->parseThroughConstructor($type->class, $visited);
+                        $visited[$type->class] = $node;
+                        $enumNode->addEdge($node);
                     } else {
                         $enumNode->addEdge(new GraphNode($type));
                     }
