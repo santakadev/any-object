@@ -61,16 +61,14 @@ class BuilderGenerator
     public function generate(string $class, string $outputDir, $outputNamespace): void
     {
         $root = $this->parser->parseThroughConstructor($class);
-
-        // TODO: circular references 😬
-        foreach ($root->adjacencyList as $children) {
-            if ($children->type instanceof TClass) {
-                $this->generate($children->type->class, $outputDir, $outputNamespace);
-            }
-            // TODO: support custom types in unions and arrays (same as FactoryGenerator)
+        foreach (DFSIterator::walkClass($root) as $node) {
+            $this->generateClass($node, $outputDir, $outputNamespace);
         }
+    }
 
-        $reflectionClass = new ReflectionClass($root->type->class);
+    public function generateClass(GraphNode $node, string $outputDir, string $outputNamespace): void
+    {
+        $reflectionClass = new ReflectionClass($node->type->class);
         $name = $reflectionClass->getShortName();
         $classNamespace = $reflectionClass->getNamespaceName();
         $stubName = 'Any' . $name . 'Builder';
@@ -85,8 +83,8 @@ class BuilderGenerator
                         ->param($argName)
                         ->setType($this->typeFromGraphNode($n))
                         ->makePrivate(),
-                    array_keys($root->adjacencyList),
-                    array_values($root->adjacencyList),
+                    array_keys($node->adjacencyList),
+                    array_values($node->adjacencyList),
                 )
             );
 
@@ -95,10 +93,10 @@ class BuilderGenerator
             $this->initializeFaker($factory),
             ...array_merge(...array_map(
                 fn(string $argName, GraphNode $n) => $this->buildRandomArgumentValueStatements($argName, $n, $factory, $outputDir, $outputNamespace),
-                array_keys($root->adjacencyList),
-                array_values($root->adjacencyList)
+                array_keys($node->adjacencyList),
+                array_values($node->adjacencyList)
             )),
-            new Return_($factory->new('self', array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList))))
+            new Return_($factory->new('self', array_map(fn($name) => new Variable($name), array_keys($node->adjacencyList))))
         ];
         $create = $factory->method('create')
             ->makePublic()
@@ -119,15 +117,15 @@ class BuilderGenerator
                     new Expression(new Assign(new PropertyFetch(new Variable('this'), $argName), new Variable($argName))),
                     new Return_(new Variable('this'))
                 ]),
-            array_keys($root->adjacencyList),
-            array_values($root->adjacencyList)
+            array_keys($node->adjacencyList),
+            array_values($node->adjacencyList)
         );
 
         // TODO: Support named constructors
         // TODO: Support variadic named constructor
-        $constructorArgs = array_map(fn($name) => new PropertyFetch(new Variable('this'), $name), array_keys($root->adjacencyList));
+        $constructorArgs = array_map(fn($name) => new PropertyFetch(new Variable('this'), $name), array_keys($node->adjacencyList));
 
-        if ($root->type->isVariadic) {
+        if ($node->type->isVariadic) {
             $lastKey = array_key_last($constructorArgs);
             $constructorArgs[$lastKey] = new Arg($constructorArgs[$lastKey], false, true);
         }
@@ -143,7 +141,7 @@ class BuilderGenerator
             ->addStmt($factory->use('Faker\Factory'))
             ->addStmt($factory->use("$classNamespace\\$name"));
 
-        foreach ($root->adjacencyList as $child) {
+        foreach ($node->adjacencyList as $child) {
             if ($child->type instanceof TClass) {
                 $nodeBuilder->addStmt($factory->use($child->type->class));
             }

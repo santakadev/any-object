@@ -59,29 +59,11 @@ class FactoryGenerator
         $this->parser = new Parser();
     }
 
-    public function walkClass(GraphNode $node): iterable
-    {
-        // There's no need to traverse the rest of types to find TClass
-        if (!in_array(get_class($node->type), [TClass::class, TEnum::class, TArray::class])) {
-            return;
-        }
-
-        if ($node->type instanceof TClass) {
-            yield $node;
-        }
-
-        // TODO: circular references 😬
-        // TODO: All generators need to walk through all TClass. Reuse this part with an iterator
-        foreach ($node->adjacencyList as $child) {
-            yield from $this->walkClass($child);
-        }
-    }
-
     // TODO: Read from psr-4 from package.json to build the namespace based on the $outputDir
     public function generate(string $class, string $outputDir, string $outputNamespace): void
     {
         $root = $this->parser->parseThroughConstructor($class);
-        foreach ($this->walkClass($root) as $node) {
+        foreach (DFSIterator::walkClass($root) as $node) {
             $this->generateClass($node, $outputDir, $outputNamespace);
         }
     }
