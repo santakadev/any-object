@@ -31,7 +31,6 @@ use PhpParser\Node\Stmt\For_;
 use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Nop;
 use PhpParser\Node\Stmt\Return_;
-use PhpParser\Node\VariadicPlaceholder;
 use PhpParser\PrettyPrinter\Standard;
 use ReflectionClass;
 use Santakadev\AnyObject\Parser\GraphNode;
@@ -60,28 +59,36 @@ class FactoryGenerator
         $this->parser = new Parser();
     }
 
-    // TODO: Read from psr-4 from package.json to build the namespace based on the $outputDir
-    public function generate(string $class, string $outputDir, $outputNamespace): void
+    public function walkClass(GraphNode $node): iterable
     {
-        $root = $this->parser->parseThroughConstructor($class);
+        // There's no need to traverse the rest of types to find TClass
+        if (!in_array(get_class($node->type), [TClass::class, TEnum::class, TArray::class])) {
+            return;
+        }
+
+        if ($node->type instanceof TClass) {
+            yield $node;
+        }
 
         // TODO: circular references 😬
         // TODO: All generators need to walk through all TClass. Reuse this part with an iterator
-        foreach ($root->adjacencyList as $children) {
-            if ($children->type instanceof TClass) {
-                $this->generate($children->type->class, $outputDir, $outputNamespace);
-            } else if ($children->type instanceof TUnion) {
-                // TODO: Add test that validates that custom types in unions are generated too
-                foreach ($children->adjacencyList as $unionItem) {
-                    if ($unionItem->type instanceof TClass) {
-                        $this->generate($unionItem->type->class, $outputDir, $outputNamespace);
-                    }
-                }
-            }
-            // TODO: generate also for custom types in arrays
+        foreach ($node->adjacencyList as $child) {
+            yield from $this->walkClass($child);
         }
+    }
 
-        $reflectionClass = new ReflectionClass($root->type->class);
+    // TODO: Read from psr-4 from package.json to build the namespace based on the $outputDir
+    public function generate(string $class, string $outputDir, string $outputNamespace): void
+    {
+        $root = $this->parser->parseThroughConstructor($class);
+        foreach ($this->walkClass($root) as $node) {
+            $this->generateClass($node, $outputDir, $outputNamespace);
+        }
+    }
+
+    public function generateClass(GraphNode $node, string $outputDir, string $outputNamespace): void
+    {
+        $reflectionClass = new ReflectionClass($node->type->class);
         $name = $reflectionClass->getShortName();
         $classNamespace = $reflectionClass->getNamespaceName();
         $stubName = 'Any' . $name;
@@ -98,8 +105,8 @@ class FactoryGenerator
                         ->param($argName)
                         ->setType($this->typeFromGraphNode($n) . '|ValueNotProvided')
                         ->setDefault($factory->new(new Name('ValueNotProvided'))),
-                    array_keys($root->adjacencyList),
-                    array_values($root->adjacencyList)
+                    array_keys($node->adjacencyList),
+                    array_values($node->adjacencyList)
                 )
             )
             ->addStmts(
@@ -107,22 +114,22 @@ class FactoryGenerator
                     fn(string $argName, GraphNode $n) => new If_(new Instanceof_(new Variable($argName), new Name('ValueNotProvided')), [
                         'stmts' => $this->buildRandomArgumentValueStatements($argName, $n, $factory, $outputDir, $outputNamespace)
                     ]),
-                    array_keys($root->adjacencyList),
-                    array_values($root->adjacencyList)
+                    array_keys($node->adjacencyList),
+                    array_values($node->adjacencyList)
                 )
             );
 
-        $constructorArgs = array_map(fn($name) => new Variable($name), array_keys($root->adjacencyList));
+        $constructorArgs = array_map(fn($name) => new Variable($name), array_keys($node->adjacencyList));
 
-        if ($root->type->isVariadic) {
+        if ($node->type->isVariadic) {
             $lastKey = array_key_last($constructorArgs);
             $constructorArgs[$lastKey] = new Arg($constructorArgs[$lastKey], false, true);
         }
 
-        if ($root->type->constructor === '__construct') {
+        if ($node->type->constructor === '__construct') {
             $withMethod ->addStmt(new Return_($factory->new($name, $constructorArgs)));
         } else {
-            $withMethod ->addStmt(new Return_($factory->staticCall($name, new Identifier($root->type->constructor), $constructorArgs)));
+            $withMethod ->addStmt(new Return_($factory->staticCall($name, new Identifier($node->type->constructor), $constructorArgs)));
         }
 
         $buildMethod = $factory->method('build')
@@ -135,7 +142,7 @@ class FactoryGenerator
             ->addStmt($factory->use('Faker\Factory'))
             ->addStmt($factory->use("$classNamespace\\$name"));
 
-        foreach ($root->adjacencyList as $child) {
+        foreach ($node->adjacencyList as $child) {
             if ($child->type instanceof TClass) {
                 $nodeBuilder->addStmt($factory->use($child->type->class));
             }
