@@ -66,10 +66,19 @@ class FactoryGenerator
         $root = $this->parser->parseThroughConstructor($class);
 
         // TODO: circular references 😬
+        // TODO: All generators need to walk through all TClass. Reuse this part with an iterator
         foreach ($root->adjacencyList as $children) {
             if ($children->type instanceof TClass) {
                 $this->generate($children->type->class, $outputDir, $outputNamespace);
+            } else if ($children->type instanceof TUnion) {
+                // TODO: Add test that validates that custom types in unions are generated too
+                foreach ($children->adjacencyList as $unionItem) {
+                    if ($unionItem->type instanceof TClass) {
+                        $this->generate($unionItem->type->class, $outputDir, $outputNamespace);
+                    }
+                }
             }
+            // TODO: generate also for custom types in arrays
         }
 
         $reflectionClass = new ReflectionClass($root->type->class);

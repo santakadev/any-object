@@ -67,6 +67,7 @@ class BuilderGenerator
             if ($children->type instanceof TClass) {
                 $this->generate($children->type->class, $outputDir, $outputNamespace);
             }
+            // TODO: support custom types in unions and arrays (same as FactoryGenerator)
         }
 
         $reflectionClass = new ReflectionClass($root->type->class);
