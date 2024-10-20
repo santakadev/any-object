@@ -44,6 +44,7 @@ class PhpdocArrayParser
             }
         }
 
+        // TODO: add method name to the exception message
         throw new Exception(sprintf("Untyped array in %s::%s. Add type Phpdoc typed array comment.", $reflectionParameterOrProperty->getDeclaringClass()->getName(), $reflectionParameterOrProperty->getName()));
     }
 

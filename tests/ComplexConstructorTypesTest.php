@@ -46,4 +46,8 @@ class ComplexConstructorTypesTest extends AnyObjectTest
 
         (new AnyObject())->of(InvalidNamedConstructorObject::class);
     }
+
+    // TODO: find public/protected constructor in parent classes
+    // TODO: find named constructors in parent classes
+    // TODO: use random constructor
 }
