@@ -1,0 +1,28 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorObject;
+
+final class AnyNamedConstructorObjectBuilder
+{
+    private function __construct(private string $value)
+    {
+    }
+    public static function create() : self
+    {
+        $faker = Factory::create();
+        $value = $faker->text(200);
+        return new self($value);
+    }
+    public function withValue(string $value) : self
+    {
+        $this->value = $value;
+        return $this;
+    }
+    public function build() : NamedConstructorObject
+    {
+        return NamedConstructorObject::fromString($this->value);
+    }
+}

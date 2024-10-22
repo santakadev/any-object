@@ -109,9 +109,9 @@ class FactoryGenerator
         }
 
         if ($node->type->constructor === '__construct') {
-            $withMethod ->addStmt(new Return_($factory->new($name, $constructorArgs)));
+            $withMethod->addStmt(new Return_($factory->new($name, $constructorArgs)));
         } else {
-            $withMethod ->addStmt(new Return_($factory->staticCall($name, new Identifier($node->type->constructor), $constructorArgs)));
+            $withMethod->addStmt(new Return_($factory->staticCall($name, new Identifier($node->type->constructor), $constructorArgs)));
         }
 
         $buildMethod = $factory->method('build')

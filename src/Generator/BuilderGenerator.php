@@ -21,6 +21,7 @@ use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\PostInc;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Identifier;
 use PhpParser\Node\MatchArm;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\LNumber;
@@ -88,6 +89,7 @@ class BuilderGenerator
                 )
             );
 
+        // TODO: Support variadic named constructor
         // TODO: Support arrays
         $createStmts = [
             $this->initializeFaker($factory),
@@ -121,8 +123,6 @@ class BuilderGenerator
             array_values($node->adjacencyList)
         );
 
-        // TODO: Support named constructors
-        // TODO: Support variadic named constructor
         $constructorArgs = array_map(fn($name) => new PropertyFetch(new Variable('this'), $name), array_keys($node->adjacencyList));
 
         if ($node->type->isVariadic) {
@@ -130,12 +130,16 @@ class BuilderGenerator
             $constructorArgs[$lastKey] = new Arg($constructorArgs[$lastKey], false, true);
         }
 
+        if ($node->type->constructor === '__construct') {
+            $newStmt = new Return_($factory->new($name, $constructorArgs));
+        } else {
+            $newStmt = new Return_($factory->staticCall($name, new Identifier($node->type->constructor), $constructorArgs));
+        }
+
         $buildMethod = $factory->method('build')
             ->makePublic()
             ->setReturnType($name)
-            ->addStmt(
-                new Return_($factory->new($name, $constructorArgs))
-            );
+            ->addStmt($newStmt);
 
         $nodeBuilder = $factory->namespace($outputNamespace)
             ->addStmt($factory->use('Faker\Factory'))

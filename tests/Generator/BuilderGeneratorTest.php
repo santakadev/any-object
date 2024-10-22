@@ -7,12 +7,14 @@ namespace Santakadev\AnyObject\Tests\Generator;
 use ApprovalTests\Approvals;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyGenericArrayOfStringObjectBuilder;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyMoneyBuilder;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyNamedConstructorObjectBuilder;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyProductBuilder;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyProductPriceBuilder;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyQuantityBuilder;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnySharedTypesInConstructorObjectBuilder;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyVariadicOfStringObjectBuilder;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorObject;
 use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\SharedTypesInConstructorObject;
 use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Money\Amount;
 use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Product;
@@ -36,6 +38,18 @@ class BuilderGeneratorTest extends BuilderGeneratorTestCase
             ->build();
 
         $this->assertEquals(3, $quantity->value);
+    }
+
+    public function test_generator_from_named_constructor(): void
+    {
+        $this->generateBuilderFor(NamedConstructorObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(NamedConstructorObject::class);
+        Approvals::verifyString($text);
+        $test = AnyNamedConstructorObjectBuilder::create()
+            ->withValue("test")
+            ->build();
+        $this->assertEquals("test", $test->value);
     }
 
     public function test_complex_builder(): void
