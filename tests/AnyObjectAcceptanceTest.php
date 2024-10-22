@@ -6,12 +6,12 @@ namespace Santakadev\AnyObject\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Santakadev\AnyObject\AnyObject;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Money\Amount;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Money\Money;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Product;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\ProductPrice;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Quantity;
+use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Cart;
+use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Money\Amount;
+use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Money\Money;
+use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Product;
+use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\ProductPrice;
+use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Quantity;
 
 class AnyObjectAcceptanceTest extends TestCase
 {

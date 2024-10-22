@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Santakadev\AnyObject\Tests\TestData\ComplexType;
+namespace Santakadev\AnyObject\Tests\TestData\ComplexType\Cart;
 
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Money\Currency;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Money\Money;
+use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Money\Currency;
+use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Money\Money;
 
 class Cart
 {

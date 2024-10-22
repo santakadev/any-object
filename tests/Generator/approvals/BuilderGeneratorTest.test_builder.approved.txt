@@ -3,7 +3,7 @@
 namespace Santakadev\AnyObject\Tests\Generator\Generated;
 
 use Faker\Factory;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Quantity;
+use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Quantity;
 
 final class AnyQuantityBuilder
 {
