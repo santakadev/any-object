@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Santakadev\AnyObject\Tests\TestData\ComplexContructorTypes;
+namespace Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes;
 
-class GuessSelfReturnNamedConstructorObject
+class GuessStaticReturnNamedConstructorObject
 {
     private function __construct(public readonly string $value)
     {

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Santakadev\AnyObject\Tests;
 
 use Santakadev\AnyObject\AnyObject;
-use Santakadev\AnyObject\Tests\TestData\ComplexContructorTypes\GuessSelfReturnNamedConstructorObject;
-use Santakadev\AnyObject\Tests\TestData\ComplexContructorTypes\GuessStaticReturnNamedConstructorObject;
-use Santakadev\AnyObject\Tests\TestData\ComplexContructorTypes\InvalidNamedConstructorObject;
-use Santakadev\AnyObject\Tests\TestData\ComplexContructorTypes\NamedConstructorObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\GuessSelfReturnNamedConstructorObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\GuessStaticReturnNamedConstructorObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\InvalidNamedConstructorObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorObject;
 
 class ComplexConstructorTypesTest extends AnyObjectTest
 {
@@ -42,7 +42,7 @@ class ComplexConstructorTypesTest extends AnyObjectTest
     public function test_error_when_tagging_a_non_static_named_constructor(): void
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('You have tagged a non-static method as #[NamedConstructor]. Make it static or tag the correct method: Santakadev\AnyObject\Tests\TestData\ComplexContructorTypes\InvalidNamedConstructorObject::fromString.');
+        $this->expectExceptionMessage('You have tagged a non-static method as #[NamedConstructor]. Make it static or tag the correct method: Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\InvalidNamedConstructorObject::fromString.');
 
         (new AnyObject())->of(InvalidNamedConstructorObject::class);
     }

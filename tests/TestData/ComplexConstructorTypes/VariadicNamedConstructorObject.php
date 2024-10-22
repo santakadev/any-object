@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Santakadev\AnyObject\Tests\TestData\ComplexContructorTypes;
+namespace Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes;
 
 use Santakadev\AnyObject\Parser\NamedConstructor;
 

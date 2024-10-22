@@ -3,7 +3,7 @@
 namespace Santakadev\AnyObject\Tests\Generator\Generated;
 
 use Faker\Factory;
-use Santakadev\AnyObject\Tests\TestData\ComplexContructorTypes\NamedConstructorObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorObject;
 
 final class AnyNamedConstructorObject
 {

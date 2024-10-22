@@ -7,8 +7,8 @@ namespace Santakadev\AnyObject\Tests\Generator;
 use ApprovalTests\Approvals;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyNamedConstructorObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyVariadicNamedConstructorObject;
-use Santakadev\AnyObject\Tests\TestData\ComplexContructorTypes\NamedConstructorObject;
-use Santakadev\AnyObject\Tests\TestData\ComplexContructorTypes\VariadicNamedConstructorObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\VariadicNamedConstructorObject;
 
 class FactoryGeneratorComplexConstructorTypesTest extends FactoryGeneratorTestCase
 {
