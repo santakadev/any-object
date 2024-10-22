@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Santakadev\AnyObject\Tests\TestData\ComplexType\Cart;
+namespace Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart;
 
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Money\Money;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Money\Money;
 
 class ProductPrice
 {

@@ -3,10 +3,10 @@
 namespace Santakadev\AnyObject\Tests\Generator\Generated;
 
 use Faker\Factory;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Product;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\ProductId;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\ProductName;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\ProductPrice;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Product;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\ProductId;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\ProductName;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\ProductPrice;
 use DateTime;
 
 final class AnyProductBuilder

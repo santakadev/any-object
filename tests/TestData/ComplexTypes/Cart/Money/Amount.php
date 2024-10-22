@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Money;
+namespace Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Money;
 
 use Santakadev\AnyObject\RandomGenerator\NumberBetween;
 

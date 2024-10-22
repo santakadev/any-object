@@ -12,12 +12,12 @@ use Santakadev\AnyObject\Tests\Generator\Generated\AnyProductPriceBuilder;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyQuantityBuilder;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyVariadicOfStringObjectBuilder;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Money\Amount;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Product;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\ProductId;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\ProductName;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\ProductPrice;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Quantity;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Money\Amount;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Product;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\ProductId;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\ProductName;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\ProductPrice;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Quantity;
 use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfStringObject;
 
 class BuilderGeneratorTest extends BuilderGeneratorTestCase

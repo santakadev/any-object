@@ -10,12 +10,12 @@ use Santakadev\AnyObject\Tests\Generator\Generated\AnyCartLineCollection;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyMoney;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyProduct;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyProductPrice;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Cart;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Money\Amount;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Money\Money;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Product;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\ProductPrice;
-use Santakadev\AnyObject\Tests\TestData\ComplexType\Cart\Quantity;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Cart;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Money\Amount;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Money\Money;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Product;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\ProductPrice;
+use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Quantity;
 
 class FactoryGeneratorAcceptanceTest extends FactoryGeneratorTestCase
 {
