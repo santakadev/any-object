@@ -141,24 +141,29 @@ class BuilderGenerator
             ->addStmt($factory->use('Faker\Factory'))
             ->addStmt($factory->use("$classNamespace\\$name"));
 
+        $uses = [];
         foreach ($node->adjacencyList as $child) {
             if ($child->type instanceof TClass) {
-                $nodeBuilder->addStmt($factory->use($child->type->class));
+                $uses[$child->type->class] = true;
             }
             if ($child->type instanceof TUnion) {
                 foreach ($child->type->types as $type) {
                     if ($type instanceof TClass) {
-                        $nodeBuilder->addStmt($factory->use($type->class));
+                        $uses[$type->class] = true;
                     }
                     if ($type instanceof TEnum) {
-                        $nodeBuilder->addStmt($factory->use($this->enumName($type)));
+                        $uses[$this->enumName($type)] = true;
                     }
                 }
             }
             if ($child->type instanceof TEnum) {
-                $nodeBuilder->addStmt($factory->use($this->enumName($child->type)));
+                $uses[$this->enumName($child->type)] = true;
             }
         }
+
+        $nodeBuilder->addStmts(
+            array_map(fn (string $class) => $factory->use($class), array_keys($uses))
+        );
 
         $nodeBuilder->addStmt(new Nop())
             ->addStmt($factory->class($stubName)

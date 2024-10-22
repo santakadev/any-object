@@ -1,0 +1,31 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\SharedTypesInConstructorObject;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
+
+final class AnySharedTypesInConstructorObject
+{
+    public static function with(StringObject|ValueNotProvided $value1 = new ValueNotProvided(), StringObject|ValueNotProvided $value2 = new ValueNotProvided(), StringObject|ValueNotProvided $value3 = new ValueNotProvided()) : SharedTypesInConstructorObject
+    {
+        if ($value1 instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value1 = AnyStringObject::build();
+        }
+        if ($value2 instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value2 = AnyStringObject::build();
+        }
+        if ($value3 instanceof ValueNotProvided) {
+            $faker = Factory::create();
+            $value3 = AnyStringObject::build();
+        }
+        return new SharedTypesInConstructorObject($value1, $value2, $value3);
+    }
+    public static function build() : SharedTypesInConstructorObject
+    {
+        return self::with();
+    }
+}

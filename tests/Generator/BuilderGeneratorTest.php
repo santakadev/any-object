@@ -10,14 +10,17 @@ use Santakadev\AnyObject\Tests\Generator\Generated\AnyMoneyBuilder;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyProductBuilder;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyProductPriceBuilder;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyQuantityBuilder;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnySharedTypesInConstructorObjectBuilder;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyVariadicOfStringObjectBuilder;
 use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfStringObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\SharedTypesInConstructorObject;
 use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Money\Amount;
 use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Product;
 use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\ProductId;
 use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\ProductName;
 use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\ProductPrice;
 use Santakadev\AnyObject\Tests\TestData\ComplexTypes\Cart\Quantity;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
 use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfStringObject;
 
 class BuilderGeneratorTest extends BuilderGeneratorTestCase
@@ -77,6 +80,17 @@ class BuilderGeneratorTest extends BuilderGeneratorTestCase
 
         AnyVariadicOfStringObjectBuilder::create()
             ->withValue(["a", "b"])
+            ->build();
+    }
+    public function test_shared_types_in_constructor(): void
+    {
+        $this->generateBuilderFor(SharedTypesInConstructorObject::class);
+        $text = $this->readGeneratedAnyFileFor(SharedTypesInConstructorObject::class);
+        Approvals::verifyString($text);
+        AnySharedTypesInConstructorObjectBuilder::create()
+            ->withValue1(new StringObject("value1"))
+            ->withValue1(new StringObject("value2"))
+            ->withValue1(new StringObject("value3"))
             ->build();
     }
 }

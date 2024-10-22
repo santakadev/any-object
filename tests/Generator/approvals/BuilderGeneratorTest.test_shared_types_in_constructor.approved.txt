@@ -1,0 +1,41 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\SharedTypesInConstructorObject;
+use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
+
+final class AnySharedTypesInConstructorObjectBuilder
+{
+    private function __construct(private StringObject $value1, private StringObject $value2, private StringObject $value3)
+    {
+    }
+    public static function create() : self
+    {
+        $faker = Factory::create();
+        $value1 = AnyStringObjectBuilder::create()->build();
+        $value2 = AnyStringObjectBuilder::create()->build();
+        $value3 = AnyStringObjectBuilder::create()->build();
+        return new self($value1, $value2, $value3);
+    }
+    public function withValue1(StringObject $value1) : self
+    {
+        $this->value1 = $value1;
+        return $this;
+    }
+    public function withValue2(StringObject $value2) : self
+    {
+        $this->value2 = $value2;
+        return $this;
+    }
+    public function withValue3(StringObject $value3) : self
+    {
+        $this->value3 = $value3;
+        return $this;
+    }
+    public function build() : SharedTypesInConstructorObject
+    {
+        return new SharedTypesInConstructorObject($this->value1, $this->value2, $this->value3);
+    }
+}

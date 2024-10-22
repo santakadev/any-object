@@ -7,7 +7,9 @@ namespace Santakadev\AnyObject\Tests\Generator;
 use ApprovalTests\Approvals;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyNamedConstructorObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyVariadicNamedConstructorObject;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnySharedTypesInConstructorObject;
 use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\SharedTypesInConstructorObject;
 use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\VariadicNamedConstructorObject;
 
 class FactoryGeneratorComplexConstructorTypesTest extends FactoryGeneratorTestCase
@@ -30,5 +32,14 @@ class FactoryGeneratorComplexConstructorTypesTest extends FactoryGeneratorTestCa
         Approvals::verifyString($text);
         $test = AnyVariadicNamedConstructorObject::with(value: ["a", "b"]);
         $this->assertEquals(["a", "b"], $test->value);
+    }
+
+    public function test_generator_shared_types_in_constructor(): void
+    {
+        $this->generateFactoryFor(SharedTypesInConstructorObject::class);
+
+        $text = $this->readGeneratedAnyFileFor(SharedTypesInConstructorObject::class);
+        Approvals::verifyString($text);
+        AnySharedTypesInConstructorObject::build();
     }
 }
