@@ -7,9 +7,9 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\BoolObject;
 
 final class AnyBoolObject
 {
-    public static function with(bool|ValueNotProvided $value = new ValueNotProvided()) : BoolObject
+    public static function with(bool|None $value = new None()) : BoolObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = $faker->boolean(50);
         }

@@ -7,9 +7,9 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
 
 final class AnyStringObject
 {
-    public static function with(string|ValueNotProvided $value = new ValueNotProvided()) : StringObject
+    public static function with(string|None $value = new None()) : StringObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = $faker->text(200);
         }

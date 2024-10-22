@@ -7,9 +7,9 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableFloatObject;
 
 final class AnyNullableFloatObject
 {
-    public static function with(float|null|ValueNotProvided $value = new ValueNotProvided()) : NullableFloatObject
+    public static function with(float|null|None $value = new None()) : NullableFloatObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = match (array_rand(['float', 'null'])) {
                 0 => $faker->randomFloat(null, 0, null),

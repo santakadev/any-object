@@ -8,9 +8,9 @@ use Santakadev\AnyObject\Tests\TestData\CustomTypes\EnumType;
 
 final class AnyNullableEnumTypeObject
 {
-    public static function with(EnumType|null|ValueNotProvided $value = new ValueNotProvided()) : NullableEnumTypeObject
+    public static function with(EnumType|null|None $value = new None()) : NullableEnumTypeObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = match (array_rand(['EnumType', 'null'])) {
                 0 => EnumType::cases()[array_rand(EnumType::cases())],

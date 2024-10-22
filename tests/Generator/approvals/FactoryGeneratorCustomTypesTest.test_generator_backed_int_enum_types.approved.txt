@@ -8,9 +8,9 @@ use Santakadev\AnyObject\Tests\TestData\CustomTypes\BackedIntEnumType;
 
 final class AnyBackedIntEnumTypeObject
 {
-    public static function with(BackedIntEnumType|ValueNotProvided $value = new ValueNotProvided()) : BackedIntEnumTypeObject
+    public static function with(BackedIntEnumType|None $value = new None()) : BackedIntEnumTypeObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = BackedIntEnumType::cases()[array_rand(BackedIntEnumType::cases())];
         }

@@ -7,9 +7,9 @@ use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfUnionBasicTypes
 
 final class AnyGenericArrayOfUnionBasicTypesObject
 {
-    public static function with(array|ValueNotProvided $value = new ValueNotProvided()) : GenericArrayOfUnionBasicTypesObject
+    public static function with(array|None $value = new None()) : GenericArrayOfUnionBasicTypesObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $minElements = 0;
             $maxElements = 50;

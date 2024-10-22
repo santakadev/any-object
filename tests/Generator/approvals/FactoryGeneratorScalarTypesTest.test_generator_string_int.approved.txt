@@ -7,13 +7,13 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringIntObject;
 
 final class AnyStringIntObject
 {
-    public static function with(string|ValueNotProvided $string = new ValueNotProvided(), int|ValueNotProvided $number = new ValueNotProvided()) : StringIntObject
+    public static function with(string|None $string = new None(), int|None $number = new None()) : StringIntObject
     {
-        if ($string instanceof ValueNotProvided) {
+        if ($string instanceof None) {
             $faker = Factory::create();
             $string = $faker->text(200);
         }
-        if ($number instanceof ValueNotProvided) {
+        if ($number instanceof None) {
             $faker = Factory::create();
             $number = $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX);
         }

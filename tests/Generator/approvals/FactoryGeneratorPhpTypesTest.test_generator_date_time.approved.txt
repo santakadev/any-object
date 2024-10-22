@@ -8,9 +8,9 @@ use DateTime;
 
 final class AnyDateTimeObject
 {
-    public static function with(DateTime|ValueNotProvided $value = new ValueNotProvided()) : DateTimeObject
+    public static function with(DateTime|None $value = new None()) : DateTimeObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = new DateTime();
         }

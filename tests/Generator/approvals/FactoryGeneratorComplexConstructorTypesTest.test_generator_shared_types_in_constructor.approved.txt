@@ -8,17 +8,17 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\StringObject;
 
 final class AnySharedTypesInConstructorObject
 {
-    public static function with(StringObject|ValueNotProvided $value1 = new ValueNotProvided(), StringObject|ValueNotProvided $value2 = new ValueNotProvided(), StringObject|ValueNotProvided $value3 = new ValueNotProvided()) : SharedTypesInConstructorObject
+    public static function with(StringObject|None $value1 = new None(), StringObject|None $value2 = new None(), StringObject|None $value3 = new None()) : SharedTypesInConstructorObject
     {
-        if ($value1 instanceof ValueNotProvided) {
+        if ($value1 instanceof None) {
             $faker = Factory::create();
             $value1 = AnyStringObject::build();
         }
-        if ($value2 instanceof ValueNotProvided) {
+        if ($value2 instanceof None) {
             $faker = Factory::create();
             $value2 = AnyStringObject::build();
         }
-        if ($value3 instanceof ValueNotProvided) {
+        if ($value3 instanceof None) {
             $faker = Factory::create();
             $value3 = AnyStringObject::build();
         }

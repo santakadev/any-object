@@ -7,9 +7,9 @@ use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructor
 
 final class AnyNamedConstructorObject
 {
-    public static function with(string|ValueNotProvided $value = new ValueNotProvided()) : NamedConstructorObject
+    public static function with(string|None $value = new None()) : NamedConstructorObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = $faker->text(200);
         }

@@ -8,9 +8,9 @@ use Santakadev\AnyObject\Tests\TestData\CustomTypes\CustomSubObject;
 
 final class AnyNullableCustomObject
 {
-    public static function with(CustomSubObject|null|ValueNotProvided $value = new ValueNotProvided()) : NullableCustomObject
+    public static function with(CustomSubObject|null|None $value = new None()) : NullableCustomObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = match (array_rand(['CustomSubObject', 'null'])) {
                 0 => AnyCustomSubObject::build(),

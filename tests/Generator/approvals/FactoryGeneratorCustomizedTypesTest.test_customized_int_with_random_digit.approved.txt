@@ -7,9 +7,9 @@ use Santakadev\AnyObject\Tests\TestData\CustomizedTypes\RandomDigitCustomizedObj
 
 final class AnyRandomDigitCustomizedObject
 {
-    public static function with(int|ValueNotProvided $value = new ValueNotProvided()) : RandomDigitCustomizedObject
+    public static function with(int|None $value = new None()) : RandomDigitCustomizedObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = $faker->randomDigit();
         }

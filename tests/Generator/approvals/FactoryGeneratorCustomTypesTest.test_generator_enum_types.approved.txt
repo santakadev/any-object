@@ -8,9 +8,9 @@ use Santakadev\AnyObject\Tests\TestData\CustomTypes\EnumType;
 
 final class AnyEnumTypeObject
 {
-    public static function with(EnumType|ValueNotProvided $enum = new ValueNotProvided()) : EnumTypeObject
+    public static function with(EnumType|None $enum = new None()) : EnumTypeObject
     {
-        if ($enum instanceof ValueNotProvided) {
+        if ($enum instanceof None) {
             $faker = Factory::create();
             $enum = EnumType::cases()[array_rand(EnumType::cases())];
         }

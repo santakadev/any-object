@@ -7,9 +7,9 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\FloatObject;
 
 final class AnyFloatObject
 {
-    public static function with(float|ValueNotProvided $value = new ValueNotProvided()) : FloatObject
+    public static function with(float|None $value = new None()) : FloatObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = $faker->randomFloat(null, 0, null);
         }

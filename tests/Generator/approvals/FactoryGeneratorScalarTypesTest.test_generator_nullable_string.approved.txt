@@ -7,9 +7,9 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableStringObject;
 
 final class AnyNullableStringObject
 {
-    public static function with(string|null|ValueNotProvided $value = new ValueNotProvided()) : NullableStringObject
+    public static function with(string|null|None $value = new None()) : NullableStringObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = match (array_rand(['string', 'null'])) {
                 0 => $faker->text(200),

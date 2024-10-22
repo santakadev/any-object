@@ -7,9 +7,9 @@ use Santakadev\AnyObject\Tests\TestData\UnionTypes\UnionBasicTypes;
 
 final class AnyUnionBasicTypes
 {
-    public static function with(string|int|float|bool|ValueNotProvided $value = new ValueNotProvided()) : UnionBasicTypes
+    public static function with(string|int|float|bool|None $value = new None()) : UnionBasicTypes
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = match (array_rand(['string', 'int', 'float', 'bool'])) {
                 0 => $faker->text(200),

@@ -7,13 +7,13 @@ use Santakadev\AnyObject\Tests\TestData\CustomizedTypes\NumberBetweenCustomizedO
 
 final class AnyNumberBetweenCustomizedObject
 {
-    public static function with(int|ValueNotProvided $value = new ValueNotProvided(), int|ValueNotProvided $value2 = new ValueNotProvided()) : NumberBetweenCustomizedObject
+    public static function with(int|None $value = new None(), int|None $value2 = new None()) : NumberBetweenCustomizedObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = $faker->numberBetween(5, 7);
         }
-        if ($value2 instanceof ValueNotProvided) {
+        if ($value2 instanceof None) {
             $faker = Factory::create();
             $value2 = $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX);
         }

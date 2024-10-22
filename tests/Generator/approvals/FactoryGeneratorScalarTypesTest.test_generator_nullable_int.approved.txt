@@ -7,9 +7,9 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableIntObject;
 
 final class AnyNullableIntObject
 {
-    public static function with(int|null|ValueNotProvided $value = new ValueNotProvided()) : NullableIntObject
+    public static function with(int|null|None $value = new None()) : NullableIntObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = match (array_rand(['int', 'null'])) {
                 0 => $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),

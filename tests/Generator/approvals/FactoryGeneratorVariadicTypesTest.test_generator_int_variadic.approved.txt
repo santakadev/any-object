@@ -7,9 +7,9 @@ use Santakadev\AnyObject\Tests\TestData\VariadicTypes\VariadicOfIntObject;
 
 final class AnyVariadicOfIntObject
 {
-    public static function with(array|ValueNotProvided $value = new ValueNotProvided()) : VariadicOfIntObject
+    public static function with(array|None $value = new None()) : VariadicOfIntObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $minElements = 0;
             $maxElements = 50;

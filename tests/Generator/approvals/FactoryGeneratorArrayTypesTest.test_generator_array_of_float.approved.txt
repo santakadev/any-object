@@ -7,9 +7,9 @@ use Santakadev\AnyObject\Tests\TestData\ArrayTypes\GenericArrayOfFloatObject;
 
 final class AnyGenericArrayOfFloatObject
 {
-    public static function with(array|ValueNotProvided $value = new ValueNotProvided()) : GenericArrayOfFloatObject
+    public static function with(array|None $value = new None()) : GenericArrayOfFloatObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $minElements = 0;
             $maxElements = 50;

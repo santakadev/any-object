@@ -85,15 +85,15 @@ class FactoryGenerator
                 array_map(
                     fn(string $argName, GraphNode $n) => $factory
                         ->param($argName)
-                        ->setType($this->typeFromGraphNode($n) . '|ValueNotProvided')
-                        ->setDefault($factory->new(new Name('ValueNotProvided'))),
+                        ->setType($this->typeFromGraphNode($n) . '|None')
+                        ->setDefault($factory->new(new Name('None'))),
                     array_keys($node->adjacencyList),
                     array_values($node->adjacencyList)
                 )
             )
             ->addStmts(
                 array_map(
-                    fn(string $argName, GraphNode $n) => new If_(new Instanceof_(new Variable($argName), new Name('ValueNotProvided')), [
+                    fn(string $argName, GraphNode $n) => new If_(new Instanceof_(new Variable($argName), new Name('None')), [
                         'stmts' => $this->buildRandomArgumentValueStatements($argName, $n, $factory, $outputDir, $outputNamespace)
                     ]),
                     array_keys($node->adjacencyList),
@@ -165,7 +165,7 @@ class FactoryGenerator
 
         file_put_contents($outputDir . DIRECTORY_SEPARATOR . "$stubName.php", $file);
 
-        $this->generateValueNotProvidedFile($outputDir, $outputNamespace);
+        $this->generateNoneFile($outputDir, $outputNamespace);
     }
 
     private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, string $outputDir, string $outputNamespace): array
@@ -253,18 +253,18 @@ class FactoryGenerator
         return (new ReflectionClass($class))->getShortName();
     }
 
-    private function generateValueNotProvidedFile(string $outputDir, string $outputNamespace): void
+    private function generateNoneFile(string $outputDir, string $outputNamespace): void
     {
         $factory = new BuilderFactory;
         $node = $factory->namespace($outputNamespace)
-            ->addStmt($factory->class('ValueNotProvided')
+            ->addStmt($factory->class('None')
                 ->makeFinal()
             )
             ->getNode();
         $stmts = [$node];
         $prettyPrinter = new Standard();
-        $valueNotProvided = $prettyPrinter->prettyPrintFile($stmts) . "\n";
-        file_put_contents($outputDir . DIRECTORY_SEPARATOR . "ValueNotProvided.php", $valueNotProvided);
+        $None = $prettyPrinter->prettyPrintFile($stmts) . "\n";
+        file_put_contents($outputDir . DIRECTORY_SEPARATOR . "None.php", $None);
     }
 
     private function buildRandomUnion(GraphNode $node, BuilderFactory $factory): Match_

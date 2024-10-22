@@ -9,9 +9,9 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\IntObject;
 
 final class AnyUnionCustomTypes
 {
-    public static function with(StringObject|IntObject|ValueNotProvided $value = new ValueNotProvided()) : UnionCustomTypes
+    public static function with(StringObject|IntObject|None $value = new None()) : UnionCustomTypes
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = match (array_rand(['StringObject', 'IntObject'])) {
                 0 => AnyStringObject::build(),

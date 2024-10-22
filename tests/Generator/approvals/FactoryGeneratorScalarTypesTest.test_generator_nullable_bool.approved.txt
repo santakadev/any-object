@@ -7,9 +7,9 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\NullableBoolObject;
 
 final class AnyNullableBoolObject
 {
-    public static function with(bool|null|ValueNotProvided $value = new ValueNotProvided()) : NullableBoolObject
+    public static function with(bool|null|None $value = new None()) : NullableBoolObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = match (array_rand(['bool', 'null'])) {
                 0 => $faker->boolean(50),

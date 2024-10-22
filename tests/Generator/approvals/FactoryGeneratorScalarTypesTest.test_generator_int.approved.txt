@@ -7,9 +7,9 @@ use Santakadev\AnyObject\Tests\TestData\ScalarTypes\IntObject;
 
 final class AnyIntObject
 {
-    public static function with(int|ValueNotProvided $value = new ValueNotProvided()) : IntObject
+    public static function with(int|None $value = new None()) : IntObject
     {
-        if ($value instanceof ValueNotProvided) {
+        if ($value instanceof None) {
             $faker = Factory::create();
             $value = $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX);
         }
