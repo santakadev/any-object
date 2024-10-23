@@ -68,7 +68,7 @@ class FactoryGenerator
         }
     }
 
-    public function generateClass(GraphNode $node, string $outputDir, string $outputNamespace): void
+    private function generateClass(GraphNode $node, string $outputDir, string $outputNamespace): void
     {
         $reflectionClass = new ReflectionClass($node->type->class);
         $name = $reflectionClass->getShortName();
