@@ -11,7 +11,7 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Variable;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
-class RandomFloat implements RandomFloatSpec, RandomSpec
+class RandomFloat implements RandomSpec, RandomCodeGenSpec
 {
     public function __construct(
         private readonly ?int $nbMaxDecimals = null,

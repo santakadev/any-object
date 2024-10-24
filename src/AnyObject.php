@@ -77,13 +77,8 @@ class AnyObject
             TArray::class => $this->buildRandomArray($node, $builder),
             TEnum::class => $node->type->pickRandomCase(),
             TNull::class => null,
-            TScalar::class => $this->random($node->type->value)
+            TScalar::class => $this->specRegistry->get($node->type->value)->generate()
         };
-    }
-
-    private function random(string $type)
-    {
-        return $this->specRegistry->get($type)->generate();
     }
 
     private function buildRandomArray(GraphNode $arrayNode, callable $builder): array

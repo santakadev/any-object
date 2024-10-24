@@ -11,7 +11,7 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
-final class RandomDigit implements RandomIntSpec
+final class RandomDigit implements RandomSpec, RandomCodeGenSpec
 {
     public function generate(): int
     {

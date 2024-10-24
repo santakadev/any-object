@@ -7,7 +7,7 @@ namespace Santakadev\AnyObject\RandomGenerator;
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Expr;
 
-interface RandomFloatSpec
+interface RandomCodeGenSpec
 {
     public function generateCode(BuilderFactory $factory): Expr;
 }

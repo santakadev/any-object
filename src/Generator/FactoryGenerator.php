@@ -8,7 +8,6 @@ use DateTime;
 use DateTimeImmutable;
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Arg;
-use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
@@ -37,11 +36,10 @@ use Santakadev\AnyObject\Parser\GraphNode;
 use Santakadev\AnyObject\Parser\Parser;
 use Santakadev\AnyObject\RandomGenerator\Boolean;
 use Santakadev\AnyObject\RandomGenerator\NumberBetween;
-use Santakadev\AnyObject\RandomGenerator\RandomBoolSpec;
+use Santakadev\AnyObject\RandomGenerator\RandomDateTime;
+use Santakadev\AnyObject\RandomGenerator\RandomDateTimeImmutable;
 use Santakadev\AnyObject\RandomGenerator\RandomFloat;
-use Santakadev\AnyObject\RandomGenerator\RandomFloatSpec;
-use Santakadev\AnyObject\RandomGenerator\RandomIntSpec;
-use Santakadev\AnyObject\RandomGenerator\RandomStringSpec;
+use Santakadev\AnyObject\RandomGenerator\RandomSpecRegistry;
 use Santakadev\AnyObject\RandomGenerator\Text;
 use Santakadev\AnyObject\Types\TArray;
 use Santakadev\AnyObject\Types\TClass;
@@ -53,10 +51,18 @@ use Santakadev\AnyObject\Types\TUnion;
 class FactoryGenerator
 {
     private readonly Parser $parser;
+    private readonly RandomSpecRegistry $specRegistry;
 
     public function __construct()
     {
         $this->parser = new Parser();
+        $this->specRegistry = new RandomSpecRegistry();
+        $this->specRegistry->register(new RandomDateTime());
+        $this->specRegistry->register(new RandomDateTimeImmutable());
+        $this->specRegistry->register(new NumberBetween(PHP_INT_MIN, PHP_INT_MAX));
+        $this->specRegistry->register(new Text());
+        $this->specRegistry->register(new RandomFloat());
+        $this->specRegistry->register(new Boolean());
     }
 
     // TODO: Read from psr-4 from package.json to build the namespace based on the $outputDir
@@ -181,71 +187,18 @@ class FactoryGenerator
 
     private function buildRandom(GraphNode $node, BuilderFactory $factory)
     {
+        if ($node->userDefinedSpec) {
+            return $node->userDefinedSpec->generateCode($factory);
+        }
+
         return match (get_class($node->type)) {
             TClass::class => $this->buildRandomClass($factory, $node),
             TUnion::class => $this->buildRandomUnion($node, $factory),
             TArray::class => $this->buildRandomArray($node, $factory),
             TEnum::class => $this->buildRandomEnum($node, $factory),
             TNull::class => new ConstFetch(new Name('null')),
-            TScalar::class => match ($node->type) {
-                TScalar::string => $this->buildRandomString($node->userDefinedSpec, $factory),
-                TScalar::int => $this->buildRandomInt($node->userDefinedSpec, $factory),
-                TScalar::float => $this->buildRandomFloat($node->userDefinedSpec, $factory),
-                TScalar::bool => $this->buildRandomBool($node->userDefinedSpec, $factory),
-            },
+            TScalar::class => $this->specRegistry->get($node->type->value)->generateCode($factory),
         };
-    }
-
-    private function buildRandomInt(?RandomIntSpec $userDefinedSpec, BuilderFactory $factory): Expr
-    {
-        $spec = $userDefinedSpec ?? $this->defaultIntSpec();
-
-        return $spec->generateCode($factory);
-    }
-
-    // TODO: Duplicated code
-    private function defaultIntSpec(): RandomIntSpec
-    {
-        return new NumberBetween(PHP_INT_MIN, PHP_INT_MAX);
-    }
-
-    private function buildRandomString(?RandomStringSpec $userDefinedSpec, BuilderFactory $factory): Expr
-    {
-        $spec = $userDefinedSpec ?? $this->defaultStringSpec();
-
-        return $spec->generateCode($factory);
-    }
-
-    // TODO: Duplicated code
-    private function defaultStringSpec(): RandomStringSpec
-    {
-        return new Text();
-    }
-
-    private function buildRandomFloat(?RandomFloatSpec $userDefinedSpec, BuilderFactory $factory): Expr
-    {
-        $spec = $userDefinedSpec ?? $this->defaultFloatSpec();
-
-        return $spec->generateCode($factory);
-    }
-
-    // TODO: Duplicated code
-    private function defaultFloatSpec(): RandomFloatSpec
-    {
-        return new RandomFloat();
-    }
-
-    private function buildRandomBool(?RandomBoolSpec $userDefinedSpec, $factory): Expr
-    {
-        $spec = $userDefinedSpec ?? $this->defaultBoolSpec();
-
-        return $spec->generateCode($factory);
-    }
-
-    // TODO: Duplicated code
-    private function defaultBoolSpec(): RandomBoolSpec
-    {
-        return new Boolean();
     }
 
     private function classShortName(string $class): string

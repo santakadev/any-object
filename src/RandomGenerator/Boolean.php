@@ -11,7 +11,7 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Variable;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
-final class Boolean implements RandomBoolSpec, RandomSpec
+final class Boolean implements RandomSpec, RandomCodeGenSpec
 {
     public function __construct(private readonly int $chanceOfGettingTrue = 50)
     {

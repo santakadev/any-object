@@ -11,7 +11,7 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Variable;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
-class Url implements RandomStringSpec
+class Url implements RandomSpec, RandomCodeGenSpec
 {
     public function generate(): string
     {
