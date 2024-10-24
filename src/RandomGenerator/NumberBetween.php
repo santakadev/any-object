@@ -13,7 +13,7 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
-final class NumberBetween implements RandomIntSpec
+final class NumberBetween implements RandomIntSpec, RandomSpec
 {
     public function __construct(
         public readonly int $min,

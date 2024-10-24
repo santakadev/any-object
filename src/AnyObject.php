@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Santakadev\AnyObject;
 
-use DateTime;
-use DateTimeImmutable;
-use Faker\Factory;
-use Faker\Generator;
 use ReflectionClass;
 use Santakadev\AnyObject\Parser\GraphNode;
 use Santakadev\AnyObject\Parser\Parser;
@@ -15,11 +11,10 @@ use Santakadev\AnyObject\RandomGenerator\Boolean;
 use Santakadev\AnyObject\RandomGenerator\NumberBetween;
 use Santakadev\AnyObject\RandomGenerator\RandomArray;
 use Santakadev\AnyObject\RandomGenerator\RandomArraySpec;
-use Santakadev\AnyObject\RandomGenerator\RandomBoolSpec;
+use Santakadev\AnyObject\RandomGenerator\RandomDateTime;
+use Santakadev\AnyObject\RandomGenerator\RandomDateTimeImmutable;
 use Santakadev\AnyObject\RandomGenerator\RandomFloat;
-use Santakadev\AnyObject\RandomGenerator\RandomFloatSpec;
-use Santakadev\AnyObject\RandomGenerator\RandomIntSpec;
-use Santakadev\AnyObject\RandomGenerator\RandomStringSpec;
+use Santakadev\AnyObject\RandomGenerator\RandomSpecRegistry;
 use Santakadev\AnyObject\RandomGenerator\Text;
 use Santakadev\AnyObject\Types\TArray;
 use Santakadev\AnyObject\Types\TClass;
@@ -30,13 +25,19 @@ use Santakadev\AnyObject\Types\TUnion;
 
 class AnyObject
 {
-    private readonly Generator $faker;
     private readonly Parser $parser;
+    private RandomSpecRegistry $specRegistry;
 
     public function __construct(private readonly bool $useConstructor = true)
     {
-        $this->faker = Factory::create();
         $this->parser = new Parser();
+        $this->specRegistry = new RandomSpecRegistry();
+        $this->specRegistry->register(new RandomDateTime());
+        $this->specRegistry->register(new RandomDateTimeImmutable());
+        $this->specRegistry->register(new NumberBetween(PHP_INT_MIN, PHP_INT_MAX));
+        $this->specRegistry->register(new Text());
+        $this->specRegistry->register(new RandomFloat());
+        $this->specRegistry->register(new Boolean());
     }
 
     public function of(string $class, array $with = []): object
@@ -64,6 +65,10 @@ class AnyObject
 
     private function build(GraphNode $node, array $with, callable $classBuilder, array $visited = [])
     {
+        if ($node->userDefinedSpec) {
+            return $node->userDefinedSpec->generate();
+        }
+
         $builder = fn(GraphNode $node) => $this->build($node, $with, $classBuilder, $visited);
 
         return match (get_class($node->type)) {
@@ -72,68 +77,18 @@ class AnyObject
             TArray::class => $this->buildRandomArray($node, $builder),
             TEnum::class => $node->type->pickRandomCase(),
             TNull::class => null,
-            TScalar::class => match ($node->type) {
-                TScalar::string => $this->randomString($node->userDefinedSpec),
-                TScalar::int => $this->randomInt($node->userDefinedSpec),
-                TScalar::float => $this->randomFloat($node->userDefinedSpec),
-                TScalar::bool => $this->randomBool($node->userDefinedSpec),
-            },
+            TScalar::class => $this->random($node->type->value)
         };
     }
 
-    private function randomInt(?RandomIntSpec $userDefinedSpec): int
+    private function random(string $type)
     {
-        $spec = $userDefinedSpec ?? $this->defaultIntSpec();
-
-        return $spec->generate();
-    }
-
-    private function defaultIntSpec(): RandomIntSpec
-    {
-        return new NumberBetween(PHP_INT_MIN, PHP_INT_MAX);
-    }
-
-    private function randomString(?RandomStringSpec $userDefinedSpec): string
-    {
-        $spec = $userDefinedSpec ?? $this->defaultStringSpec();
-
-        return $spec->generate();
-    }
-
-    private function defaultStringSpec(): RandomStringSpec
-    {
-        return new Text();
-    }
-
-    private function randomFloat(?RandomFloatSpec $userDefinedSpec): float
-    {
-        $spec = $userDefinedSpec ?? $this->defaultFloatSpec();
-
-        return $spec->generate();
-    }
-
-    private function defaultFloatSpec(): RandomFloatSpec
-    {
-        return new RandomFloat();
-    }
-
-    private function randomBool(?RandomBoolSpec $userDefinedSpec): bool
-    {
-        $spec = $userDefinedSpec ?? $this->defaultBoolSpec();
-
-        return $spec->generate();
-    }
-
-    private function defaultBoolSpec(): RandomBoolSpec
-    {
-        return new Boolean();
+        return $this->specRegistry->get($type)->generate();
     }
 
     private function buildRandomArray(GraphNode $arrayNode, callable $builder): array
     {
-        $spec = $arrayNode->userDefinedSpec ?? $this->defaultArraySpec();
-
-        return $spec->generate($arrayNode, $builder);
+        return $this->defaultArraySpec()->generate($arrayNode, $builder);
     }
 
     private function defaultArraySpec(): RandomArraySpec
@@ -148,10 +103,8 @@ class AnyObject
 
     public function buildRandomClassThroughConstructor(GraphNode $node, array $with, array $visited): object
     {
-        if ($node->type->class === DateTime::class) {
-            return new DateTime(); // TODO: make it random
-        } elseif ($node->type->class === DateTimeImmutable::class) {
-            return new DateTimeImmutable(); // TODO: make it random
+        if ($this->specRegistry->has($node->type->class)) {
+            return $this->specRegistry->get($node->type->class)->generate();
         }
 
         $arguments = [];
@@ -179,12 +132,10 @@ class AnyObject
         return $node->type->build($arguments);
     }
 
-    public function buildRandomClassThroughProperties(GraphNode $node, array $with, array $visited): string|object
+    public function buildRandomClassThroughProperties(GraphNode $node, array $with, array $visited): object
     {
-        if ($node->type->class === DateTime::class) {
-            return new DateTime(); // TODO: make it random
-        } elseif ($node->type->class === DateTimeImmutable::class) {
-            return new DateTimeImmutable(); // TODO: make it random
+        if ($this->specRegistry->has($node->type->class)) {
+            return $this->specRegistry->get($node->type->class)->generate();
         }
 
         $reflectionClass = new ReflectionClass($node->type->class);

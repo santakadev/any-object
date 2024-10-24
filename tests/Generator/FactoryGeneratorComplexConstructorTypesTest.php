@@ -6,8 +6,8 @@ namespace Santakadev\AnyObject\Tests\Generator;
 
 use ApprovalTests\Approvals;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyNamedConstructorObject;
-use Santakadev\AnyObject\Tests\Generator\Generated\AnyVariadicNamedConstructorObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnySharedTypesInConstructorObject;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyVariadicNamedConstructorObject;
 use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorObject;
 use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\SharedTypesInConstructorObject;
 use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\VariadicNamedConstructorObject;

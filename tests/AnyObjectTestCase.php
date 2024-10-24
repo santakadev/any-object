@@ -57,4 +57,23 @@ class AnyObjectTestCase extends TestCase
             $this->assertTrue($assertion($callable()), "Assertion in index '$assertionName' never matched."); // TODO: assertion could be a closure, that could not be able to convert to string
         }
     }
+
+    public function assertNonDeterministic(callable $callable, $maxIterations = 50): void
+    {
+        $firstValue = $callable();
+        $lastValue = null;
+        $iteration = 1;
+
+        while ($iteration < $maxIterations) {
+            $lastValue = $callable();
+
+            if ($firstValue != $lastValue) {
+                break;
+            }
+
+            $iteration++;
+        }
+
+        $this->assertTrue($firstValue != $lastValue, 'All values of callable returned the same value, so it seems a deterministic function.');
+    }
 }

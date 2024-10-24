@@ -9,7 +9,5 @@ use PhpParser\Node\Expr;
 
 interface RandomStringSpec
 {
-    public function generate(): string;
-
     public function generateCode(BuilderFactory $factory): Expr;
 }

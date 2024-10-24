@@ -18,7 +18,7 @@ class PhpTypesTest extends AnyObjectTestCase
         $object = $any->of(DateTimeObject::class);
 
         $this->assertInstanceOf(DateTime::class, $object->value);
-        $this->assertLessThanOrEqual(new DateTime(), $object->value);
+        $this->assertNonDeterministic(fn () => $any->of(DateTimeObject::class)->value);
     }
 
     /** @dataProvider anyProvider */
@@ -27,6 +27,6 @@ class PhpTypesTest extends AnyObjectTestCase
         $object = $any->of(DateTimeImmutableObject::class);
 
         $this->assertInstanceOf(DateTimeImmutable::class, $object->value);
-        $this->assertLessThanOrEqual(new DateTimeImmutable(), $object->value);
+        $this->assertNonDeterministic(fn () => $any->of(DateTimeImmutableObject::class)->value);
     }
 }

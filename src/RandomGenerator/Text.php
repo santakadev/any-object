@@ -11,7 +11,7 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Variable;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
-class Text implements RandomStringSpec
+class Text implements RandomStringSpec, RandomSpec
 {
     public function __construct(private readonly int $maxNbChars = 200)
     {
