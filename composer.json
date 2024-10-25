@@ -5,7 +5,11 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Santakadev\\AnyObject\\": "src/",
+            "Santakadev\\AnyObject\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "Santakadev\\AnyObject\\Tests\\": "tests/"
         }
     },
