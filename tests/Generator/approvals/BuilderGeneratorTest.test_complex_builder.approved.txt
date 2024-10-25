@@ -20,7 +20,7 @@ final class AnyProductBuilder
         $id = AnyProductIdBuilder::create()->build();
         $name = AnyProductNameBuilder::create()->build();
         $price = AnyProductPriceBuilder::create()->build();
-        $createdAt = new DateTime();
+        $createdAt = $faker->dateTimeBetween('-30 years', '+30 years');
         return new self($id, $name, $price, $createdAt);
     }
     public function withId(ProductId $id) : self

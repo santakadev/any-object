@@ -11,8 +11,8 @@ use Santakadev\AnyObject\RandomGenerator\Boolean;
 use Santakadev\AnyObject\RandomGenerator\NumberBetween;
 use Santakadev\AnyObject\RandomGenerator\RandomArray;
 use Santakadev\AnyObject\RandomGenerator\RandomArraySpec;
-use Santakadev\AnyObject\RandomGenerator\RandomDateTime;
-use Santakadev\AnyObject\RandomGenerator\RandomDateTimeImmutable;
+use Santakadev\AnyObject\RandomGenerator\RandomDateTimeBetween;
+use Santakadev\AnyObject\RandomGenerator\RandomDateTimeImmutableBetween;
 use Santakadev\AnyObject\RandomGenerator\RandomFloat;
 use Santakadev\AnyObject\RandomGenerator\RandomSpecRegistry;
 use Santakadev\AnyObject\RandomGenerator\Text;
@@ -32,8 +32,8 @@ class AnyObject
     {
         $this->parser = new Parser();
         $this->specRegistry = new RandomSpecRegistry();
-        $this->specRegistry->register(new RandomDateTime());
-        $this->specRegistry->register(new RandomDateTimeImmutable());
+        $this->specRegistry->register(new RandomDateTimeBetween());
+        $this->specRegistry->register(new RandomDateTimeImmutableBetween());
         $this->specRegistry->register(new NumberBetween(PHP_INT_MIN, PHP_INT_MAX));
         $this->specRegistry->register(new Text());
         $this->specRegistry->register(new RandomFloat());

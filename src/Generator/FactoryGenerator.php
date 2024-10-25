@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Santakadev\AnyObject\Generator;
 
-use DateTime;
-use DateTimeImmutable;
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Arg;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
@@ -16,9 +15,7 @@ use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\Instanceof_;
 use PhpParser\Node\Expr\Match_;
-use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\PostInc;
-use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\MatchArm;
@@ -36,8 +33,8 @@ use Santakadev\AnyObject\Parser\GraphNode;
 use Santakadev\AnyObject\Parser\Parser;
 use Santakadev\AnyObject\RandomGenerator\Boolean;
 use Santakadev\AnyObject\RandomGenerator\NumberBetween;
-use Santakadev\AnyObject\RandomGenerator\RandomDateTime;
-use Santakadev\AnyObject\RandomGenerator\RandomDateTimeImmutable;
+use Santakadev\AnyObject\RandomGenerator\RandomDateTimeBetween;
+use Santakadev\AnyObject\RandomGenerator\RandomDateTimeImmutableBetween;
 use Santakadev\AnyObject\RandomGenerator\RandomFloat;
 use Santakadev\AnyObject\RandomGenerator\RandomSpecRegistry;
 use Santakadev\AnyObject\RandomGenerator\Text;
@@ -57,8 +54,8 @@ class FactoryGenerator
     {
         $this->parser = new Parser();
         $this->specRegistry = new RandomSpecRegistry();
-        $this->specRegistry->register(new RandomDateTime());
-        $this->specRegistry->register(new RandomDateTimeImmutable());
+        $this->specRegistry->register(new RandomDateTimeBetween());
+        $this->specRegistry->register(new RandomDateTimeImmutableBetween());
         $this->specRegistry->register(new NumberBetween(PHP_INT_MIN, PHP_INT_MAX));
         $this->specRegistry->register(new Text());
         $this->specRegistry->register(new RandomFloat());
@@ -278,12 +275,10 @@ class FactoryGenerator
         return get_class($enumType->values[0]);
     }
 
-    private function buildRandomClass(BuilderFactory $factory, GraphNode $node): StaticCall|New_
+    private function buildRandomClass(BuilderFactory $factory, GraphNode $node): Expr
     {
-        if ($node->type->class === DateTime::class) {
-            return $factory->new('DateTime');
-        } elseif ($node->type->class === DateTimeImmutable::class) {
-            return $factory->new('DateTimeImmutable');
+        if ($this->specRegistry->has($node->type->class)) {
+             return $this->specRegistry->get($node->type->class)->generateCode($factory);
         }
 
         return $factory->staticCall('Any' . $this->classShortName($node->type->class), 'build');

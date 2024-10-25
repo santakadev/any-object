@@ -1,0 +1,23 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\PhpTypes\DateTimeImmutableObject;
+use DateTimeImmutable;
+
+final class AnyDateTimeImmutableObject
+{
+    public static function with(DateTimeImmutable|None $value = new None()) : DateTimeImmutableObject
+    {
+        if ($value instanceof None) {
+            $faker = Factory::create();
+            $value = DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-30 years', '+30 years'));
+        }
+        return new DateTimeImmutableObject($value);
+    }
+    public static function build() : DateTimeImmutableObject
+    {
+        return self::with();
+    }
+}

@@ -1,0 +1,23 @@
+<?php
+
+namespace Santakadev\AnyObject\Tests\Generator\Generated;
+
+use Faker\Factory;
+use Santakadev\AnyObject\Tests\TestData\PhpTypes\DateTimeObject;
+use DateTime;
+
+final class AnyDateTimeObject
+{
+    public static function with(DateTime|None $value = new None()) : DateTimeObject
+    {
+        if ($value instanceof None) {
+            $faker = Factory::create();
+            $value = $faker->dateTimeBetween('-30 years', '+30 years');
+        }
+        return new DateTimeObject($value);
+    }
+    public static function build() : DateTimeObject
+    {
+        return self::with();
+    }
+}
