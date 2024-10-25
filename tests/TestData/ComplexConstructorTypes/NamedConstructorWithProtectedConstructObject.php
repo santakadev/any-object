@@ -6,9 +6,9 @@ namespace Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes;
 
 use Santakadev\AnyObject\Parser\NamedConstructor;
 
-class NamedConstructorObject
+class NamedConstructorWithProtectedConstructObject
 {
-    private function __construct(public readonly string $value)
+    protected function __construct(public readonly string $value)
     {
     }
 

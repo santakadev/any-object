@@ -3,19 +3,19 @@
 namespace Santakadev\AnyObject\Tests\Generator\Generated;
 
 use Faker\Factory;
-use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorWithPrivateConstructObject;
 
-final class AnyNamedConstructorObject
+final class AnyNamedConstructorWithPrivateConstructObject
 {
-    public static function with(string|None $value = new None()) : NamedConstructorObject
+    public static function with(string|None $value = new None()) : NamedConstructorWithPrivateConstructObject
     {
         if ($value instanceof None) {
             $faker = Factory::create();
             $value = $faker->text(200);
         }
-        return NamedConstructorObject::fromString($value);
+        return NamedConstructorWithPrivateConstructObject::fromString($value);
     }
-    public static function build() : NamedConstructorObject
+    public static function build() : NamedConstructorWithPrivateConstructObject
     {
         return self::with();
     }

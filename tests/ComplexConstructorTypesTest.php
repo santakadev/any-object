@@ -8,7 +8,9 @@ use Santakadev\AnyObject\AnyObject;
 use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\GuessSelfReturnNamedConstructorObject;
 use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\GuessStaticReturnNamedConstructorObject;
 use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\InvalidNamedConstructorObject;
-use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorWithoutConstructObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorWithPrivateConstructObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorWithProtectedConstructObject;
 
 class ComplexConstructorTypesTest extends AnyObjectTest
 {
@@ -16,7 +18,25 @@ class ComplexConstructorTypesTest extends AnyObjectTest
     {
         $any = new AnyObject();
 
-        $object = $any->of(NamedConstructorObject::class);
+        $object = $any->of(NamedConstructorWithPrivateConstructObject::class);
+
+        $this->assertIsString($object->value);
+    }
+
+    public function test_build_from_named_constructor_when_constructor_is_protected(): void
+    {
+        $any = new AnyObject();
+
+        $object = $any->of(NamedConstructorWithProtectedConstructObject::class);
+
+        $this->assertIsString($object->value);
+    }
+
+    public function test_build_from_named_constructor_when_there_is_no_construct(): void
+    {
+        $any = new AnyObject();
+
+        $object = $any->of(NamedConstructorWithoutConstructObject::class);
 
         $this->assertIsString($object->value);
     }

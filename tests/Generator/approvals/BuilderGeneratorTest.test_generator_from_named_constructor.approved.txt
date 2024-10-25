@@ -3,9 +3,9 @@
 namespace Santakadev\AnyObject\Tests\Generator\Generated;
 
 use Faker\Factory;
-use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorWithPrivateConstructObject;
 
-final class AnyNamedConstructorObjectBuilder
+final class AnyNamedConstructorWithPrivateConstructObjectBuilder
 {
     private function __construct(private string $value)
     {
@@ -21,8 +21,8 @@ final class AnyNamedConstructorObjectBuilder
         $this->value = $value;
         return $this;
     }
-    public function build() : NamedConstructorObject
+    public function build() : NamedConstructorWithPrivateConstructObject
     {
-        return NamedConstructorObject::fromString($this->value);
+        return NamedConstructorWithPrivateConstructObject::fromString($this->value);
     }
 }

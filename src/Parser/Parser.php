@@ -278,7 +278,7 @@ class Parser
     {
         $mainConstructor = $reflection->getConstructor();
 
-        if ($mainConstructor->isPublic()) {
+        if ($mainConstructor && $mainConstructor->isPublic()) {
             return $mainConstructor;
         }
 

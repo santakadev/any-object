@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Santakadev\AnyObject\Tests\Generator;
 
 use ApprovalTests\Approvals;
-use Santakadev\AnyObject\Tests\Generator\Generated\AnyNamedConstructorObject;
+use Santakadev\AnyObject\Tests\Generator\Generated\AnyNamedConstructorWithPrivateConstructObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnySharedTypesInConstructorObject;
 use Santakadev\AnyObject\Tests\Generator\Generated\AnyVariadicNamedConstructorObject;
-use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorObject;
+use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\NamedConstructorWithPrivateConstructObject;
 use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\SharedTypesInConstructorObject;
 use Santakadev\AnyObject\Tests\TestData\ComplexConstructorTypes\VariadicNamedConstructorObject;
 
@@ -16,11 +16,11 @@ class FactoryGeneratorComplexConstructorTypesTest extends FactoryGeneratorTestCa
 {
     public function test_generator_from_named_constructor(): void
     {
-        $this->generateFactoryFor(NamedConstructorObject::class);
+        $this->generateFactoryFor(NamedConstructorWithPrivateConstructObject::class);
 
-        $text = $this->readGeneratedAnyFileFor(NamedConstructorObject::class);
+        $text = $this->readGeneratedAnyFileFor(NamedConstructorWithPrivateConstructObject::class);
         Approvals::verifyString($text);
-        $test = AnyNamedConstructorObject::with(value: "test");
+        $test = AnyNamedConstructorWithPrivateConstructObject::with(value: "test");
         $this->assertEquals("test", $test->value);
     }
 
