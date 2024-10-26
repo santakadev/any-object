@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Santakadev\AnyObject\RandomGenerator;
+namespace Santakadev\AnyObject\RandomGenerator\Faker;
 
 use Attribute;
 use Faker\Factory;
@@ -11,6 +11,8 @@ use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
+use Santakadev\AnyObject\RandomGenerator\RandomCodeGenSpec;
+use Santakadev\AnyObject\RandomGenerator\RandomSpec;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 final class NumberBetween implements RandomSpec, RandomCodeGenSpec

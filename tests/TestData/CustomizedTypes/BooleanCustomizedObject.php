@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Santakadev\AnyObject\Tests\TestData\CustomizedTypes;
 
-use Santakadev\AnyObject\RandomGenerator\Boolean;
+use Santakadev\AnyObject\RandomGenerator\Faker\Boolean;
 
 class BooleanCustomizedObject
 {

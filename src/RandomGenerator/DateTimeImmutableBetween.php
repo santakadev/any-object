@@ -12,7 +12,7 @@ use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
 
-class RandomDateTimeImmutableBetween implements RandomSpec, RandomCodeGenSpec
+class DateTimeImmutableBetween implements RandomSpec, RandomCodeGenSpec
 {
     public function __construct(
         private readonly string $startDate = '-30 years',

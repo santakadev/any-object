@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Santakadev\AnyObject\Tests\TestData\CustomizedTypes;
 
-use Santakadev\AnyObject\RandomGenerator\Url;
+use Santakadev\AnyObject\RandomGenerator\Faker\Url;
 
 class UrlCustomizedObject
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Santakadev\AnyObject\RandomGenerator;
+namespace Santakadev\AnyObject\RandomGenerator\Faker;
 
 use DateTime;
 use Faker\Factory;
@@ -11,8 +11,10 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
+use Santakadev\AnyObject\RandomGenerator\RandomCodeGenSpec;
+use Santakadev\AnyObject\RandomGenerator\RandomSpec;
 
-class RandomDateTimeBetween implements RandomSpec, RandomCodeGenSpec
+class DateTimeBetween implements RandomSpec, RandomCodeGenSpec
 {
     public function __construct(
         private readonly string $startDate = '-30 years',
