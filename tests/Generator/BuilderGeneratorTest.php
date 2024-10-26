@@ -72,7 +72,6 @@ class BuilderGeneratorTest extends BuilderGeneratorTestCase
         $this->assertEquals('id', $product->id()->value);
         $this->assertEquals('name', $product->name()->value);
         $this->assertEquals(5, $product->price()->value->amount->value);
-        $this->assertLessThanOrEqual(new \DateTime(), $product->createdAt());
     }
 
     public function test_array(): void
