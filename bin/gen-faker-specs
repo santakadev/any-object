@@ -1,0 +1,151 @@
+#!/usr/bin/env php
+
+<?php
+
+use Faker\Core\Number;
+use Faker\Core\DateTime;
+use Faker\Core\Uuid;
+use PhpParser\BuilderFactory;
+use PhpParser\Node\Expr\Assign;
+use PhpParser\Node\Expr\BinaryOp\BitwiseOr;
+use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
+use PhpParser\Node\Scalar\LNumber;
+use PhpParser\Node\Stmt\Declare_;
+use PhpParser\Node\Stmt\DeclareDeclare;
+use PhpParser\Node\Stmt\Nop;
+use PhpParser\Node\Stmt\Return_;
+use PhpParser\PrettyPrinter\Standard;
+
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+$dest = dirname(__DIR__) . '/src/RandomGenerator/Faker';
+
+$formatters = [
+    Number::class,
+    DateTime::class,
+    Uuid::class
+];
+
+foreach ($formatters as $formatter) {
+
+    $reflection = new ReflectionClass($formatter);
+
+    $factory = new BuilderFactory();
+    $prettyPrinter = new Standard(['shortArraySyntax' => true]);
+
+    foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+        $className = ucfirst($method->name);
+        $attribute = $factory->attribute(new Name('Attribute'), [
+            new BitwiseOr(
+                $factory->classConstFetch('Attribute', 'TARGET_PARAMETER'),
+                $factory->classConstFetch('Attribute', 'TARGET_PROPERTY'),
+            )
+        ]);
+
+        $strict = new Declare_([
+            new DeclareDeclare(new Identifier('strict_types'), new LNumber(1))
+        ]);
+        $namespace = $factory->namespace('Santakadev\AnyObject\RandomGenerator\Faker\\' . $reflection->getShortName());
+        $uses = [
+            $factory->use('Attribute')->getNode(),
+            $factory->use('Faker\Factory')->getNode(),
+            $factory->use('PhpParser\BuilderFactory')->getNode(),
+            $factory->use('PhpParser\Node\Expr')->getNode(),
+            $factory->use('PhpParser\Node\Expr\Variable')->getNode(),
+            $factory->use('Santakadev\AnyObject\RandomGenerator\RandomCodeGenSpec')->getNode(),
+            $factory->use('Santakadev\AnyObject\RandomGenerator\RandomSpec')->getNode(),
+        ];
+
+
+        $params = [];
+
+        foreach ($method->getParameters() as $parameter) {
+            $newParam = $factory
+                ->param($parameter->name)
+                ->makePublic()
+                ->makeReadonly();
+
+            // TODO: parameters can be union types (not sure if in Faker there are any union definition)
+            if ($parameter->getType()) {
+                if ($parameter->allowsNull()) {
+                    $newParam->setType('?' . $parameter->getType()->getName());
+                } else {
+                    $newParam->setType($parameter->getType()->getName());
+                }
+            }
+
+            if ($parameter->isDefaultValueAvailable()) {
+                $newParam->setDefault($parameter->getDefaultValue());
+            }
+
+            $params[] = $newParam;
+        }
+
+        $constructor = $factory
+            ->method('__construct')
+            ->makePublic()
+            ->addParams($params)
+            ->getNode();
+
+        $fakerCall = $factory->methodCall(
+            new Variable('factory'),
+            $method->name,
+            array_map(fn(ReflectionParameter $p) => $factory->propertyFetch(new Variable('this'), $p->name), $method->getParameters())
+        );
+        $body = [
+            new Assign(new Variable('factory'), $factory->staticCall(new Name('Factory'), 'create')),
+            new Return_($fakerCall)
+        ];
+        $generateMethod = $factory
+            ->method('generate')
+            ->makePublic()
+            // TODO: return can be nullable or a union type (not sure if in Faker there are any union definition)
+            ->setReturnType($method->getReturnType()->getName())
+            ->addStmts($body);
+
+        // return $factory->methodCall(new Variable('faker'), 'numberBetween', [$min, $max]);
+        $body = new Return_(
+            $factory->methodCall(
+                new Variable('factory'),
+                'methodCall',
+                [
+                    $factory->new(new Name('Variable'), ['faker']),
+                    $method->name,
+                    array_map(fn(ReflectionParameter $p) => $factory->propertyFetch(new Variable('this'), $p->name), $method->getParameters()),
+                ]
+            )
+        );
+        $generateCodeMethod = $factory
+            ->method('generateCode')
+            ->makePublic()
+            ->addParam($factory->param('factory')->setType('BuilderFactory'))
+            ->setReturnType('Expr')
+            ->addStmt($body);
+
+        $class_ = $factory
+            ->class($className)
+            ->implement(new Name('RandomSpec'), new Name('RandomCodeGenSpec'))
+            ->makeFinal()
+            ->addAttribute($attribute)
+            ->addStmt($constructor) // TODO: only add constructor if there are params
+            ->addStmt($generateMethod)
+            ->addStmt($generateCodeMethod);
+
+        $fileContent = $prettyPrinter->prettyPrintFile([
+            $strict,
+            new Nop(),
+            $namespace->getNode(),
+            ...$uses,
+            new Nop(),
+            $class_->getNode()
+        ]);
+
+        $dir = $dest . DIRECTORY_SEPARATOR . $reflection->getShortName();
+        if (!is_dir($dir)) {
+            mkdir($dir);
+        }
+        file_put_contents("$dir/$className.php", $fileContent);
+    }
+}
