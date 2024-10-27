@@ -7,12 +7,6 @@ namespace Santakadev\AnyObject;
 use ReflectionClass;
 use Santakadev\AnyObject\Parser\GraphNode;
 use Santakadev\AnyObject\Parser\Parser;
-use Santakadev\AnyObject\RandomGenerator\DateTimeImmutableBetween;
-use Santakadev\AnyObject\RandomGenerator\Faker\Boolean;
-use Santakadev\AnyObject\RandomGenerator\Faker\DateTimeBetween;
-use Santakadev\AnyObject\RandomGenerator\Faker\NumberBetween;
-use Santakadev\AnyObject\RandomGenerator\Faker\RandomFloat;
-use Santakadev\AnyObject\RandomGenerator\Faker\Text;
 use Santakadev\AnyObject\RandomGenerator\RandomArray;
 use Santakadev\AnyObject\RandomGenerator\RandomArraySpec;
 use Santakadev\AnyObject\RandomGenerator\RandomSpecRegistry;
@@ -31,13 +25,7 @@ class AnyObject
     public function __construct(private readonly bool $useConstructor = true)
     {
         $this->parser = new Parser();
-        $this->specRegistry = new RandomSpecRegistry();
-        $this->specRegistry->register(new DateTimeBetween());
-        $this->specRegistry->register(new DateTimeImmutableBetween());
-        $this->specRegistry->register(new NumberBetween(PHP_INT_MIN, PHP_INT_MAX));
-        $this->specRegistry->register(new Text());
-        $this->specRegistry->register(new RandomFloat());
-        $this->specRegistry->register(new Boolean());
+        $this->specRegistry = RandomSpecRegistry::default();
     }
 
     public function of(string $class, array $with = []): object

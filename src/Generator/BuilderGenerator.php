@@ -30,12 +30,6 @@ use PhpParser\PrettyPrinter\Standard;
 use ReflectionClass;
 use Santakadev\AnyObject\Parser\GraphNode;
 use Santakadev\AnyObject\Parser\Parser;
-use Santakadev\AnyObject\RandomGenerator\DateTimeImmutableBetween;
-use Santakadev\AnyObject\RandomGenerator\Faker\Boolean;
-use Santakadev\AnyObject\RandomGenerator\Faker\DateTimeBetween;
-use Santakadev\AnyObject\RandomGenerator\Faker\NumberBetween;
-use Santakadev\AnyObject\RandomGenerator\Faker\RandomFloat;
-use Santakadev\AnyObject\RandomGenerator\Faker\Text;
 use Santakadev\AnyObject\RandomGenerator\RandomSpecRegistry;
 use Santakadev\AnyObject\Types\TArray;
 use Santakadev\AnyObject\Types\TClass;
@@ -47,17 +41,12 @@ use Santakadev\AnyObject\Types\TUnion;
 class BuilderGenerator
 {
     private readonly Parser $parser;
+    private readonly RandomSpecRegistry $specRegistry;
 
     public function __construct()
     {
         $this->parser = new Parser();
-        $this->specRegistry = new RandomSpecRegistry();
-        $this->specRegistry->register(new DateTimeBetween());
-        $this->specRegistry->register(new DateTimeImmutableBetween());
-        $this->specRegistry->register(new NumberBetween(PHP_INT_MIN, PHP_INT_MAX));
-        $this->specRegistry->register(new Text());
-        $this->specRegistry->register(new RandomFloat());
-        $this->specRegistry->register(new Boolean());
+        $this->specRegistry = RandomSpecRegistry::default();
     }
 
     // TODO: Read from psr-4 from package.json to build the namespace based on the $outputDir
