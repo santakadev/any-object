@@ -63,7 +63,8 @@ class BuilderGenerator
         $reflectionClass = new ReflectionClass($node->type->class);
         $name = $reflectionClass->getShortName();
         $classNamespace = $reflectionClass->getNamespaceName();
-        $stubName = 'Any' . $name . 'Builder';
+        $nameResolver = new WrapNameResolver('Any', 'Builder');
+        $stubName = $nameResolver->resolve($name);
 
         $factory = new BuilderFactory;
 

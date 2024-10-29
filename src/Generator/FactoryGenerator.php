@@ -64,7 +64,8 @@ class FactoryGenerator
         $reflectionClass = new ReflectionClass($node->type->class);
         $name = $reflectionClass->getShortName();
         $classNamespace = $reflectionClass->getNamespaceName();
-        $stubName = 'Any' . $name;
+        $nameResolver = new WrapNameResolver('Any', '');
+        $stubName = $nameResolver->resolve($name);
 
         $factory = new BuilderFactory;
 
