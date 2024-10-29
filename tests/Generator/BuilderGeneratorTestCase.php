@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Santakadev\AnyObject\Tests\Generator;
 
 use Santakadev\AnyObject\Generator\BuilderGenerator;
+use Santakadev\AnyObject\Generator\FixedOutputResolver;
 use Santakadev\AnyObject\Tests\AnyObjectTestCase;
 
 class BuilderGeneratorTestCase extends AnyObjectTestCase
@@ -52,8 +53,7 @@ class BuilderGeneratorTestCase extends AnyObjectTestCase
         $generator = new BuilderGenerator();
         $generator->generate(
             $class,
-            self::OUTPUT_DIR,
-            self::OUTPUT_NAMESPACE
+            new FixedOutputResolver(self::OUTPUT_DIR, self::OUTPUT_NAMESPACE)
         );
     }
 

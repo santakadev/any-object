@@ -50,21 +50,22 @@ class BuilderGenerator
     }
 
     // TODO: Read from psr-4 from package.json to build the namespace based on the $outputDir
-    public function generate(string $class, string $outputDir, $outputNamespace): void
+    public function generate(string $class, OutputResolver $outputDeterminer): void
     {
         $root = $this->parser->parseThroughConstructor($class);
         foreach (DFSIterator::walkClass($root) as $node) {
-            $this->generateClass($node, $outputDir, $outputNamespace);
+            $this->generateClass($node, $outputDeterminer);
         }
     }
 
-    private function generateClass(GraphNode $node, string $outputDir, string $outputNamespace): void
+    private function generateClass(GraphNode $node, OutputResolver $outputDeterminer): void
     {
         $reflectionClass = new ReflectionClass($node->type->class);
         $name = $reflectionClass->getShortName();
         $classNamespace = $reflectionClass->getNamespaceName();
         $nameResolver = new WrapNameResolver('Any', 'Builder');
         $stubName = $nameResolver->resolve($name);
+        $output = $outputDeterminer->resolve($node->type->class);
 
         $factory = new BuilderFactory;
 
@@ -86,7 +87,7 @@ class BuilderGenerator
         $createStmts = [
             $this->initializeFaker($factory),
             ...array_merge(...array_map(
-                fn(string $argName, GraphNode $n) => $this->buildRandomArgumentValueStatements($argName, $n, $factory, $outputDir, $outputNamespace),
+                fn(string $argName, GraphNode $n) => $this->buildRandomArgumentValueStatements($argName, $n, $factory, $outputDeterminer),
                 array_keys($node->adjacencyList),
                 array_values($node->adjacencyList)
             )),
@@ -133,7 +134,7 @@ class BuilderGenerator
             ->setReturnType($name)
             ->addStmt($newStmt);
 
-        $nodeBuilder = $factory->namespace($outputNamespace)
+        $nodeBuilder = $factory->namespace($output->namespace)
             ->addStmt($factory->use('Faker\Factory'))
             ->addStmt($factory->use("$classNamespace\\$name"));
 
@@ -169,22 +170,22 @@ class BuilderGenerator
                 ->addStmts($withMethods)
                 ->addStmt($buildMethod)
             );
-        $node = $nodeBuilder->getNode();
-        $stmts = [$node];
+        $stmts = [$nodeBuilder->getNode()];
         $prettyPrinter = new Standard(['shortArraySyntax' => true]);
         $file = $prettyPrinter->prettyPrintFile($stmts) . "\n";
 
-        if (!is_dir($outputDir)) {
-            mkdir($outputDir);
+
+        if (!is_dir($output->path)) {
+            mkdir($output->path);
         }
 
-        file_put_contents($outputDir . DIRECTORY_SEPARATOR . "$stubName.php", $file);
+        file_put_contents($output->path . DIRECTORY_SEPARATOR . "$stubName.php", $file);
     }
 
-    private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, string $outputDir, string $outputNamespace): array
+    private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, OutputResolver $outputDeterminer): array
     {
         return match (get_class($node->type)) {
-            TArray::class => $this->buildRandomArrayArgumentValueStatements($argName, $node, $factory, $outputDir, $outputNamespace),
+            TArray::class => $this->buildRandomArrayArgumentValueStatements($argName, $node, $factory, $outputDeterminer),
             default => [
                 new Expression(new Assign(new Variable($argName), $this->buildRandom($node, $factory)))
             ]
@@ -284,12 +285,13 @@ class BuilderGenerator
         return new Expression(new Assign(new Variable('faker'), $factory->staticCall(new Name('Factory'), 'create')));
     }
 
-    private function buildRandomArrayArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, string $outputDir, string $outputNamespace)
+    private function buildRandomArrayArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, OutputResolver $outputDeterminer)
     {
         // TODO: 2 responsibilities here: children classes generation and build random array statements
         foreach ($node->adjacencyList as $child) {
             if ($child->type instanceof TClass) {
-                $this->generate($child->type->class, $outputDir, $outputNamespace); // TODO: here I'm relying in the default outputDir :/
+                $output = $outputDeterminer->resolve($child->type->class);
+                $this->generate($output->class, $outputDeterminer);
             }
         }
 
