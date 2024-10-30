@@ -6,5 +6,5 @@ namespace Santakadev\AnyObject\Generator;
 
 interface GeneratorInterface
 {
-    public function generate(string $class, OutputResolver $outputResolver, NameResolver $nameResolver): void;
+    public function generate(string $class, OutputResolver $outputResolver, ?NameResolver $nameResolver): void;
 }

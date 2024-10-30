@@ -50,8 +50,12 @@ class BuilderGenerator implements GeneratorInterface
     }
 
     // TODO: OutputResolver and NameResolver could be properties, so there would no need to pass them on each generate.
-    public function generate(string $class, OutputResolver $outputResolver, NameResolver $nameResolver = new WrapNameResolver(prefix: 'Any', suffix: 'Builder')): void
+    public function generate(string $class, OutputResolver $outputResolver, ?NameResolver $nameResolver = null): void
     {
+        if (!$nameResolver) {
+            $nameResolver = new WrapNameResolver(prefix: 'Any', suffix: 'Builder');
+        }
+
         $root = $this->parser->parseThroughConstructor($class);
         foreach (DFSIterator::walkClass($root) as $node) {
             $this->generateClass($node, $outputResolver, $nameResolver);

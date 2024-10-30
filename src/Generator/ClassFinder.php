@@ -6,20 +6,18 @@ namespace Santakadev\AnyObject\Generator;
 
 class ClassFinder
 {
+    public function __construct(private readonly AutoloadEntries $autoloadEntries)
+    {
+    }
+
     public function find(array $includes, array $excludes): array
     {
-        // TODO: Remove duplication
-        // This 3 lines can be cached and lazy evaluated
-        // TODO: 2 value must be changed to 5 in production
-        $composerJsonPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'composer.json';
-        $entries = AutoloadEntries::fromComposerJson($composerJsonPath);
-
         $files = $this->findFiles($includes, $excludes);
 
         $classes = [];
 
         foreach ($files as $filePath) {
-            $entry = $entries->findByPath($filePath);
+            $entry = $this->autoloadEntries->findByPath($filePath);
             $offset = strlen($entry->path);
             $fileExtensionSize = strrpos($filePath, '.');
             $substr = substr($filePath, $offset, $fileExtensionSize - $offset);

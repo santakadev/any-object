@@ -8,17 +8,16 @@ namespace Santakadev\AnyObject\Generator;
 // TODO: simplify code
 class MirrorOutputResolver implements OutputResolver
 {
+    public function __construct(private readonly AutoloadEntries $autoloadEntries)
+    {
+    }
+
     public function resolve(string $class): Output
     {
-        // TODO: Remove duplication
-        // This 3 lines can be cached and lazy evaluated
-        // TODO: 2 value must be changed to 5 in production
-        $composerJsonPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'composer.json';
-        $entries = AutoloadEntries::fromComposerJson($composerJsonPath);
-        $destEntry = $entries->findByPath('tests/');
+        $destEntry = $this->autoloadEntries->findByPath('tests/');
 
         $reflectionClass = new \ReflectionClass($class);
-        $sourceEntry = $entries->findByNamespace($reflectionClass->getNamespaceName());
+        $sourceEntry = $this->autoloadEntries->findByNamespace($reflectionClass->getNamespaceName());
 
         $filePath = $sourceEntry->path . str_replace('\\', '/', substr($class, strlen($sourceEntry->namespace), strlen($class) - strlen($sourceEntry->namespace)));
 
