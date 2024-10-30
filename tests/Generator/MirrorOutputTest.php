@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Santakadev\AnyObject\Tests\Generator;
 
 use PHPUnit\Framework\TestCase;
-use Santakadev\AnyObject\Generator\BuilderGenerator;
-use Santakadev\AnyObject\Generator\FilesFinder;
+use Santakadev\AnyObject\Generator\Generator;
 use Santakadev\AnyObject\Generator\MirrorOutputResolver;
+use Santakadev\AnyObject\Generator\WrapNameResolver;
 
 class MirrorOutputTest extends TestCase
 {
@@ -29,19 +29,17 @@ class MirrorOutputTest extends TestCase
         //$finder->find('./src/Generator/*.php');
         //$finder->find(__DIR__ . '/src/Generator/*.php');
 
-        $generator = new BuilderGenerator();
 
-        // TODO: split responsibilities
-        $files = (new FilesFinder())->find($includes, $excludes);
-        foreach ($files as $file) {
-            // One responsibility is to get class from file
-            // Another one is to mirror that class
-            $psr4MirrorToTest = new MirrorOutputResolver();
-            $dest = $psr4MirrorToTest->mirrorFile($file);
-            if ($dest) {
-                $generator->generate($dest->class, $psr4MirrorToTest);
-            }
-        }
+        $generator = new Generator();
+        $generator->generate(
+            'factory',
+            $includes,
+            $excludes,
+            new WrapNameResolver('Any', 'Builer'),
+            //new FixedOutputResolver('tests/Tests', 'Test'),
+            new MirrorOutputResolver()
+        );
+
 
         $this->assertTrue(true);
     }

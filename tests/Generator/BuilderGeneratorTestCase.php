@@ -53,7 +53,7 @@ class BuilderGeneratorTestCase extends AnyObjectTestCase
         $generator = new BuilderGenerator();
         $generator->generate(
             $class,
-            new FixedOutputResolver(self::OUTPUT_DIR, self::OUTPUT_NAMESPACE)
+            new FixedOutputResolver(self::OUTPUT_DIR, self::OUTPUT_NAMESPACE),
         );
     }
 

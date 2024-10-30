@@ -10,7 +10,9 @@ class MirrorOutputResolver implements OutputResolver
 {
     public function resolve(string $class): Output
     {
+        // TODO: Remove duplication
         // This 3 lines can be cached and lazy evaluated
+        // TODO: 2 value must be changed to 5 in production
         $composerJsonPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'composer.json';
         $entries = AutoloadEntries::fromComposerJson($composerJsonPath);
         $destEntry = $entries->findByPath('tests/');
@@ -23,44 +25,6 @@ class MirrorOutputResolver implements OutputResolver
         // ignore enums and interfaces
         if (enum_exists($class) || interface_exists($class)) {
             return throw new \Exception('Trying to determine the output of a enum or interface');
-        }
-
-        // namespace
-        $length = strrpos($filePath, "/");
-        $offset = strlen($sourceEntry->path);
-        $substr = substr($filePath, $offset, $length - $offset);
-        $str_replace = str_replace("/", "\\", $substr);
-        $outputNamespace = $destEntry->namespace . $str_replace;
-
-        // output
-        $length = strrpos($filePath, "/");
-        $offset = strlen($sourceEntry->path);
-        $substr = substr($filePath, $offset, $length - $offset);
-        $output = $destEntry->path . $substr;
-
-        return new Output($class, $output, $outputNamespace);
-    }
-
-    public function mirrorFile(string $filePath): ?Output
-    {
-        // TODO: Remove duplication
-        // This 3 lines can be cached and lazy evaluated
-        // TODO: 2 value must be changed to 5 in production
-        $composerJsonPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'composer.json';
-        $entries = AutoloadEntries::fromComposerJson($composerJsonPath);
-        $destEntry = $entries->findByPath('tests/');
-
-        $sourceEntry = $entries->findByPath($filePath);
-
-        // class
-        $offset = strlen($sourceEntry->path);
-        $fileExtensionSize = strrpos($filePath, '.');
-        $substr = substr($filePath, $offset, $fileExtensionSize - $offset);
-        $class = $sourceEntry->namespace . str_replace("/", "\\", $substr);
-
-        // ignore enums and interfaces
-        if (enum_exists($class) || interface_exists($class)) {
-            return null;
         }
 
         // namespace

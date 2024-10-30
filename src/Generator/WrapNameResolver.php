@@ -7,8 +7,8 @@ namespace Santakadev\AnyObject\Generator;
 class WrapNameResolver implements NameResolver
 {
     public function __construct(
-        private readonly string $prefix,
-        private readonly string $suffix,
+        private readonly string $prefix = '',
+        private readonly string $suffix = '',
     ) {
     }
 

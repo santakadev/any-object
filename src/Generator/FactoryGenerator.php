@@ -39,7 +39,7 @@ use Santakadev\AnyObject\Types\TNull;
 use Santakadev\AnyObject\Types\TScalar;
 use Santakadev\AnyObject\Types\TUnion;
 
-class FactoryGenerator
+class FactoryGenerator implements GeneratorInterface
 {
     private readonly Parser $parser;
     private readonly RandomSpecRegistry $specRegistry;
@@ -50,22 +50,22 @@ class FactoryGenerator
         $this->specRegistry = RandomSpecRegistry::default();
     }
 
-    // TODO: Read from psr-4 from package.json to build the namespace based on the $outputDir
-    public function generate(string $class, string $outputDir, string $outputNamespace): void
+    // TODO: OutputResolver and NameResolver could be properties, so there would no need to pass them on each generate.
+    public function generate(string $class, OutputResolver $outputResolver, NameResolver $nameResolver = new WrapNameResolver(prefix: 'Any')): void
     {
         $root = $this->parser->parseThroughConstructor($class);
         foreach (DFSIterator::walkClass($root) as $node) {
-            $this->generateClass($node, $outputDir, $outputNamespace);
+            $this->generateClass($node, $outputResolver, $nameResolver);
         }
     }
 
-    private function generateClass(GraphNode $node, string $outputDir, string $outputNamespace): void
+    private function generateClass(GraphNode $node, OutputResolver $outputResolver, NameResolver $nameResolver): void
     {
         $reflectionClass = new ReflectionClass($node->type->class);
         $name = $reflectionClass->getShortName();
         $classNamespace = $reflectionClass->getNamespaceName();
-        $nameResolver = new WrapNameResolver('Any', '');
         $stubName = $nameResolver->resolve($name);
+        $output = $outputResolver->resolve($node->type->class);
 
         $factory = new BuilderFactory;
 
@@ -86,7 +86,7 @@ class FactoryGenerator
             ->addStmts(
                 array_map(
                     fn(string $argName, GraphNode $n) => new If_(new Instanceof_(new Variable($argName), new Name('None')), [
-                        'stmts' => $this->buildRandomArgumentValueStatements($argName, $n, $factory, $outputDir, $outputNamespace)
+                        'stmts' => $this->buildRandomArgumentValueStatements($argName, $n, $factory, $outputResolver, $nameResolver)
                     ]),
                     array_keys($node->adjacencyList),
                     array_values($node->adjacencyList)
@@ -112,7 +112,7 @@ class FactoryGenerator
             ->makeStatic()
             ->addStmt(new Return_($factory->staticCall(new Name('self'), 'with')));
 
-        $nodeBuilder = $factory->namespace($outputNamespace)
+        $nodeBuilder = $factory->namespace($output->namespace)
             ->addStmt($factory->use('Faker\Factory'))
             ->addStmt($factory->use("$classNamespace\\$name"));
 
@@ -151,19 +151,20 @@ class FactoryGenerator
         $prettyPrinter = new Standard(['shortArraySyntax' => true]);
         $file = $prettyPrinter->prettyPrintFile($stmts) . "\n";
 
-        if (!is_dir($outputDir)) {
-            mkdir($outputDir);
+        if (!is_dir($output->path)) {
+            mkdir($output->path);
         }
 
-        file_put_contents($outputDir . DIRECTORY_SEPARATOR . "$stubName.php", $file);
+        file_put_contents($output->path . DIRECTORY_SEPARATOR . "$stubName.php", $file);
 
-        $this->generateNoneFile($outputDir, $outputNamespace);
+        // TODO: Review None file generation location
+        $this->generateNoneFile($output->path, $output->namespace);
     }
 
-    private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, string $outputDir, string $outputNamespace): array
+    private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, OutputResolver $outputResolver, NameResolver $nameResolver): array
     {
         return match (get_class($node->type)) {
-            TArray::class => $this->buildRandomArrayArgumentValueStatements($argName, $node, $factory, $outputDir, $outputNamespace),
+            TArray::class => $this->buildRandomArrayArgumentValueStatements($argName, $node, $factory, $outputResolver, $nameResolver),
             default => [
                 $this->initializeFaker($factory),
                 new Expression(new Assign(new Variable($argName), $this->buildRandom($node, $factory)))
@@ -278,12 +279,12 @@ class FactoryGenerator
         return new Expression(new Assign(new Variable('faker'), $factory->staticCall(new Name('Factory'), 'create')));
     }
 
-    private function buildRandomArrayArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, string $outputDir, string $outputNamespace)
+    private function buildRandomArrayArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, OutputResolver $outputResolver, NameResolver $nameResolver)
     {
         // TODO: 2 responsibilities here: children classes generation and build random array statements
         foreach ($node->adjacencyList as $child) {
             if ($child->type instanceof TClass) {
-                $this->generate($child->type->class, $outputDir, $outputNamespace); // TODO: here I'm relying in the default outputDir :/
+                $this->generate($child->type->class, $outputResolver, $nameResolver);
             }
         }
 

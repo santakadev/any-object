@@ -38,7 +38,7 @@ use Santakadev\AnyObject\Types\TNull;
 use Santakadev\AnyObject\Types\TScalar;
 use Santakadev\AnyObject\Types\TUnion;
 
-class BuilderGenerator
+class BuilderGenerator implements GeneratorInterface
 {
     private readonly Parser $parser;
     private readonly RandomSpecRegistry $specRegistry;
@@ -49,23 +49,22 @@ class BuilderGenerator
         $this->specRegistry = RandomSpecRegistry::default();
     }
 
-    // TODO: Read from psr-4 from package.json to build the namespace based on the $outputDir
-    public function generate(string $class, OutputResolver $outputDeterminer): void
+    // TODO: OutputResolver and NameResolver could be properties, so there would no need to pass them on each generate.
+    public function generate(string $class, OutputResolver $outputResolver, NameResolver $nameResolver = new WrapNameResolver(prefix: 'Any', suffix: 'Builder')): void
     {
         $root = $this->parser->parseThroughConstructor($class);
         foreach (DFSIterator::walkClass($root) as $node) {
-            $this->generateClass($node, $outputDeterminer);
+            $this->generateClass($node, $outputResolver, $nameResolver);
         }
     }
 
-    private function generateClass(GraphNode $node, OutputResolver $outputDeterminer): void
+    private function generateClass(GraphNode $node, OutputResolver $outputResolver, NameResolver $nameResolver): void
     {
         $reflectionClass = new ReflectionClass($node->type->class);
         $name = $reflectionClass->getShortName();
         $classNamespace = $reflectionClass->getNamespaceName();
-        $nameResolver = new WrapNameResolver('Any', 'Builder');
         $stubName = $nameResolver->resolve($name);
-        $output = $outputDeterminer->resolve($node->type->class);
+        $output = $outputResolver->resolve($node->type->class);
 
         $factory = new BuilderFactory;
 
@@ -87,7 +86,7 @@ class BuilderGenerator
         $createStmts = [
             $this->initializeFaker($factory),
             ...array_merge(...array_map(
-                fn(string $argName, GraphNode $n) => $this->buildRandomArgumentValueStatements($argName, $n, $factory, $outputDeterminer),
+                fn(string $argName, GraphNode $n) => $this->buildRandomArgumentValueStatements($argName, $n, $factory, $outputResolver, $nameResolver),
                 array_keys($node->adjacencyList),
                 array_values($node->adjacencyList)
             )),
@@ -182,10 +181,10 @@ class BuilderGenerator
         file_put_contents($output->path . DIRECTORY_SEPARATOR . "$stubName.php", $file);
     }
 
-    private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, OutputResolver $outputDeterminer): array
+    private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, OutputResolver $outputResolver, NameResolver $nameResolver): array
     {
         return match (get_class($node->type)) {
-            TArray::class => $this->buildRandomArrayArgumentValueStatements($argName, $node, $factory, $outputDeterminer),
+            TArray::class => $this->buildRandomArrayArgumentValueStatements($argName, $node, $factory, $outputResolver, $nameResolver),
             default => [
                 new Expression(new Assign(new Variable($argName), $this->buildRandom($node, $factory)))
             ]
@@ -285,13 +284,12 @@ class BuilderGenerator
         return new Expression(new Assign(new Variable('faker'), $factory->staticCall(new Name('Factory'), 'create')));
     }
 
-    private function buildRandomArrayArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, OutputResolver $outputDeterminer)
+    private function buildRandomArrayArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, OutputResolver $outputResolver, NameResolver $nameResolver)
     {
         // TODO: 2 responsibilities here: children classes generation and build random array statements
         foreach ($node->adjacencyList as $child) {
             if ($child->type instanceof TClass) {
-                $output = $outputDeterminer->resolve($child->type->class);
-                $this->generate($output->class, $outputDeterminer);
+                $this->generate($child->type->class, $outputResolver, $nameResolver);
             }
         }
 
