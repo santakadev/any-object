@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Santakadev\AnyObject\RandomGenerator;
 
 use Santakadev\AnyObject\RandomGenerator\Faker\DateTimeBetween;
-use Santakadev\AnyObject\RandomGenerator\Faker\RandomFloat;
 use Santakadev\AnyObject\RandomGenerator\Faker\Text;
 
 class RandomSpecRegistry

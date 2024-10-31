@@ -12,7 +12,7 @@ final class AnyNullableFloatObject
         if ($value instanceof None) {
             $faker = Factory::create();
             $value = match (array_rand(['float', 'null'])) {
-                0 => $faker->randomFloat(null, 0, null),
+                0 => PHP_FLOAT_MIN + (PHP_FLOAT_MAX - PHP_FLOAT_MIN) * (mt_rand(0, (1 << 53) - 1) / (1 << 53)),
                 1 => null,
             };
         }

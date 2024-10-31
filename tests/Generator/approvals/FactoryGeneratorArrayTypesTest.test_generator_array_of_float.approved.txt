@@ -14,7 +14,7 @@ final class AnyGenericArrayOfFloatObject
             $elementsCount = mt_rand(0, 50);
             $value = [];
             for ($i = 0; $i < $elementsCount; $i++) {
-                $value[] = $faker->randomFloat(null, 0, null);
+                $value[] = PHP_FLOAT_MIN + (PHP_FLOAT_MAX - PHP_FLOAT_MIN) * (mt_rand(0, (1 << 53) - 1) / (1 << 53));
             }
         }
         return new GenericArrayOfFloatObject($value);
