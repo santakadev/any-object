@@ -21,10 +21,13 @@ class ClassFinder
             $offset = strlen($entry->path);
             $fileExtensionSize = strrpos($filePath, '.');
             $substr = substr($filePath, $offset, $fileExtensionSize - $offset);
-            $classes[] = $entry->namespace . str_replace("/", "\\", $substr);
-        }
+            $class = $entry->namespace . str_replace("/", "\\", $substr);
 
-        // TODO: Should I ensure here that it's a real class (no enum or interface)
+            // ignore enums and interfaces
+            if (!interface_exists($class) && !enum_exists($class)) {
+                $classes[] = $class;
+            }
+        }
 
         return $classes;
     }
