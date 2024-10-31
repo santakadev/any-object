@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Santakadev\AnyObject\Tests\TestData\CustomizedTypes;
 
-use Santakadev\AnyObject\RandomGenerator\Faker\Url;
+use Santakadev\AnyObject\RandomGenerator\Faker\Faker;
 
 class UrlCustomizedObject
 {
-    #[Url]
+    #[Faker("url")]
     public readonly string $value;
 
     public function __construct(
-        #[Url]
+        #[Faker("url")]
         string $value
     ) {
         $this->value = $value;

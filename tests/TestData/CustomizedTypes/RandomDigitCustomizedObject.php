@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Santakadev\AnyObject\Tests\TestData\CustomizedTypes;
 
-use Santakadev\AnyObject\RandomGenerator\Faker\RandomDigit;
+use Santakadev\AnyObject\RandomGenerator\Faker\Faker;
 
 class RandomDigitCustomizedObject
 {
-    #[RandomDigit]
+    #[Faker("randomDigit")]
     public readonly int $value;
 
     public function __construct(
-        #[RandomDigit]
+        #[Faker("randomDigit")]
         int $value
     ) {
         $this->value = $value;

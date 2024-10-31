@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Santakadev\AnyObject\Tests\TestData\CustomizedTypes;
 
-use Santakadev\AnyObject\RandomGenerator\Faker\Uuid;
+use Santakadev\AnyObject\RandomGenerator\Faker\Faker;
 
 class UuidCustomizedObject
 {
-    #[Uuid]
+    #[Faker("uuid")]
     public readonly string $value;
 
     public function __construct(
-        #[Uuid]
+        #[Faker("uuid")]
         string $value
     ) {
         $this->value = $value;
