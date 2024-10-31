@@ -9,9 +9,6 @@ class Generator
     /** @var array<string, GeneratorInterface>  */
     private array $generators = [];
 
-    /** @var array<string, OutputResolver>  */
-    private array $outputResolvers = [];
-
     public function __construct(private readonly AutoloadEntries $autoloadEntries)
     {
     }
@@ -21,17 +18,12 @@ class Generator
         $this->generators[$name] = $generator;
     }
 
-    public function registerOutputResolver(string $name, OutputResolver $outputResolver): void
-    {
-        $this->outputResolvers[$name] = $outputResolver;
-    }
-
     // TODO: add defaults: name resolvers for default generators and mirror ad default resolver
     public function generate(
         string $type,
         array $includes,
         array $excludes,
-        string $outputResolver,
+        OutputResolver $outputResolver,
         ?NameResolver $nameResolver = null,
     ): void
     {
@@ -40,12 +32,6 @@ class Generator
         }
 
         $generator = $this->generators[$type];
-
-        if (!isset($this->outputResolvers[$outputResolver])) {
-            throw new \Exception(sprintf('There\'s no output resolver of name "%s"', $outputResolver));
-        }
-
-        $outputResolver = $this->outputResolvers[$outputResolver];
 
         $classes = (new ClassFinder($this->autoloadEntries))->find($includes, $excludes);
         foreach ($classes as $class) {
