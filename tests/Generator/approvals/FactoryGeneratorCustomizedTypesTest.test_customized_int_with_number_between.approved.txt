@@ -11,11 +11,11 @@ final class AnyNumberBetweenCustomizedObject
     {
         if ($value instanceof None) {
             $faker = Factory::create();
-            $value = $faker->numberBetween(5, 7);
+            $value = mt_rand(5, 7);
         }
         if ($value2 instanceof None) {
             $faker = Factory::create();
-            $value2 = $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX);
+            $value2 = mt_rand(PHP_INT_MIN, PHP_INT_MAX);
         }
         return new NumberBetweenCustomizedObject($value, $value2);
     }

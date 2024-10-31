@@ -13,7 +13,7 @@ final class AnyQuantityBuilder
     public static function create() : self
     {
         $faker = Factory::create();
-        $value = $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX);
+        $value = mt_rand(PHP_INT_MIN, PHP_INT_MAX);
         return new self($value);
     }
     public function withValue(int $value) : self

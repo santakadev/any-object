@@ -15,7 +15,7 @@ final class AnyStringIntObject
         }
         if ($number instanceof None) {
             $faker = Factory::create();
-            $number = $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX);
+            $number = mt_rand(PHP_INT_MIN, PHP_INT_MAX);
         }
         return new StringIntObject($string, $number);
     }

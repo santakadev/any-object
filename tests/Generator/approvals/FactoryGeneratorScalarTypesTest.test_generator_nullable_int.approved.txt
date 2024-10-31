@@ -12,7 +12,7 @@ final class AnyNullableIntObject
         if ($value instanceof None) {
             $faker = Factory::create();
             $value = match (array_rand(['int', 'null'])) {
-                0 => $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
+                0 => mt_rand(PHP_INT_MIN, PHP_INT_MAX),
                 1 => null,
             };
         }

@@ -2,20 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Santakadev\AnyObject\RandomGenerator\Faker;
+namespace Santakadev\AnyObject\RandomGenerator;
 
 use Attribute;
-use Faker\Factory;
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Expr\ConstFetch;
-use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
-use Santakadev\AnyObject\RandomGenerator\RandomCodeGenSpec;
-use Santakadev\AnyObject\RandomGenerator\RandomSpec;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
-final class NumberBetween implements RandomSpec, RandomCodeGenSpec
+final class Integer implements RandomSpec, RandomCodeGenSpec
 {
     public function __construct(
         public readonly int $min,
@@ -25,10 +21,10 @@ final class NumberBetween implements RandomSpec, RandomCodeGenSpec
 
     public function generate(): int
     {
-        return (Factory::create())->numberBetween($this->min, $this->max);
+        return mt_rand($this->min, $this->max);
     }
 
-    public function generateCode(BuilderFactory $factory): MethodCall
+    public function generateCode(BuilderFactory $factory): FuncCall
     {
         if ($this->min === PHP_INT_MIN) {
             $min = new ConstFetch(new Name('PHP_INT_MIN'));
@@ -42,6 +38,6 @@ final class NumberBetween implements RandomSpec, RandomCodeGenSpec
             $max = $this->max;
         }
 
-        return $factory->methodCall(new Variable('faker'), 'numberBetween', [$min, $max]);
+        return $factory->funcCall('mt_rand', [$min, $max]);
     }
 }

@@ -11,7 +11,7 @@ final class AnyIntObject
     {
         if ($value instanceof None) {
             $faker = Factory::create();
-            $value = $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX);
+            $value = mt_rand(PHP_INT_MIN, PHP_INT_MAX);
         }
         return new IntObject($value);
     }
