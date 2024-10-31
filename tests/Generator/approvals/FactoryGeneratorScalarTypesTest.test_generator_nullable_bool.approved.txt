@@ -12,7 +12,7 @@ final class AnyNullableBoolObject
         if ($value instanceof None) {
             $faker = Factory::create();
             $value = match (array_rand(['bool', 'null'])) {
-                0 => $faker->boolean(50),
+                0 => (bool) mt_rand(0, 1),
                 1 => null,
             };
         }

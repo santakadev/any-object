@@ -16,7 +16,7 @@ final class AnyVariadicOfBoolObject
             $elementsCount = $faker->numberBetween($minElements, $maxElements);
             $value = [];
             for ($i = 0; $i < $elementsCount; $i++) {
-                $value[] = $faker->boolean(50);
+                $value[] = (bool) mt_rand(0, 1);
             }
         }
         return new VariadicOfBoolObject(...$value);

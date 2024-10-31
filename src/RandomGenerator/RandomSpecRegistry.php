@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Santakadev\AnyObject\RandomGenerator;
 
-use Santakadev\AnyObject\RandomGenerator\Faker\Boolean;
 use Santakadev\AnyObject\RandomGenerator\Faker\DateTimeBetween;
 use Santakadev\AnyObject\RandomGenerator\Faker\NumberBetween;
 use Santakadev\AnyObject\RandomGenerator\Faker\RandomFloat;

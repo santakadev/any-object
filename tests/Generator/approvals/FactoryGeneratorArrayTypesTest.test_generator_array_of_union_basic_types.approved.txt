@@ -20,7 +20,7 @@ final class AnyGenericArrayOfUnionBasicTypesObject
                     0 => $faker->text(200),
                     1 => $faker->numberBetween(PHP_INT_MIN, PHP_INT_MAX),
                     2 => $faker->randomFloat(null, 0, null),
-                    3 => $faker->boolean(50),
+                    3 => (bool) mt_rand(0, 1),
                 };
             }
         }
