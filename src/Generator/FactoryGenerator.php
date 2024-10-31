@@ -171,21 +171,21 @@ class FactoryGenerator implements GeneratorInterface
             TArray::class => $this->buildRandomArrayArgumentValueStatements($argName, $node, $factory, $outputResolver, $nameResolver),
             default => [
                 $this->initializeFaker($factory),
-                new Expression(new Assign(new Variable($argName), $this->buildRandom($node, $factory)))
+                new Expression(new Assign(new Variable($argName), $this->buildRandom($node, $factory, $nameResolver)))
             ]
         };
     }
 
-    private function buildRandom(GraphNode $node, BuilderFactory $factory)
+    private function buildRandom(GraphNode $node, BuilderFactory $factory, NameResolver $nameResolver)
     {
         if ($node->userDefinedSpec) {
             return $node->userDefinedSpec->generateCode($factory);
         }
 
         return match (get_class($node->type)) {
-            TClass::class => $this->buildRandomClass($factory, $node),
-            TUnion::class => $this->buildRandomUnion($node, $factory),
-            TArray::class => $this->buildRandomArray($node, $factory),
+            TClass::class => $this->buildRandomClass($factory, $node, $nameResolver),
+            TUnion::class => $this->buildRandomUnion($node, $factory, $nameResolver),
+            TArray::class => $this->buildRandomArray($node, $factory, $nameResolver),
             TEnum::class => $this->buildRandomEnum($node, $factory),
             TNull::class => new ConstFetch(new Name('null')),
             TScalar::class => $this->specRegistry->get($node->type->value)->generateCode($factory),
@@ -211,7 +211,7 @@ class FactoryGenerator implements GeneratorInterface
         file_put_contents($outputDir . DIRECTORY_SEPARATOR . "None.php", $None);
     }
 
-    private function buildRandomUnion(GraphNode $node, BuilderFactory $factory): Match_
+    private function buildRandomUnion(GraphNode $node, BuilderFactory $factory, NameResolver $nameResolver): Match_
     {
         $types = array_map(fn ($type) => $this->typeFromGraphNode($type), $node->adjacencyList);
 
@@ -222,17 +222,17 @@ class FactoryGenerator implements GeneratorInterface
             ]
         );
 
-        $matchArms = array_map(fn (GraphNode $node, int $index) => new MatchArm([new LNumber($index)], $this->buildRandom($node, $factory)), $node->adjacencyList, array_keys($node->adjacencyList));
+        $matchArms = array_map(fn (GraphNode $node, int $index) => new MatchArm([new LNumber($index)], $this->buildRandom($node, $factory, $nameResolver)), $node->adjacencyList, array_keys($node->adjacencyList));
 
         return new Match_($arrayRandFuncCall, $matchArms);
     }
 
-    private function buildRandomArray(GraphNode $node, BuilderFactory $factory)
+    private function buildRandomArray(GraphNode $node, BuilderFactory $factory, NameResolver $nameResolver)
     {
         if (count($node->adjacencyList) === 1) {
-            return $this->buildRandom($node->adjacencyList[0], $factory);
+            return $this->buildRandom($node->adjacencyList[0], $factory, $nameResolver);
         } else {
-            return $this->buildRandomUnion($node, $factory);
+            return $this->buildRandomUnion($node, $factory, $nameResolver);
         }
     }
 
@@ -269,13 +269,13 @@ class FactoryGenerator implements GeneratorInterface
         return get_class($enumType->values[0]);
     }
 
-    private function buildRandomClass(BuilderFactory $factory, GraphNode $node): Expr
+    private function buildRandomClass(BuilderFactory $factory, GraphNode $node, NameResolver $nameResolver): Expr
     {
         if ($this->specRegistry->has($node->type->class)) {
              return $this->specRegistry->get($node->type->class)->generateCode($factory);
         }
 
-        return $factory->staticCall('Any' . $this->classShortName($node->type->class), 'build');
+        return $factory->staticCall($nameResolver->resolve($this->classShortName($node->type->class)), 'build');
     }
 
     private function initializeFaker(BuilderFactory $factory): Expression
@@ -304,7 +304,7 @@ class FactoryGenerator implements GeneratorInterface
                     'cond' => [new Smaller(new Variable('i'), new Variable('elementsCount'))],
                     'loop' => [new PostInc(new Variable('i'))],
                     'stmts' => [
-                        new Expression(new Assign(new ArrayDimFetch(new Variable($argName)), $this->buildRandom($node, $factory)))
+                        new Expression(new Assign(new ArrayDimFetch(new Variable($argName)), $this->buildRandom($node, $factory, $nameResolver)))
                     ]
                 ]
             )
