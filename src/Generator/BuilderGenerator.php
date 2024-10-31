@@ -141,27 +141,7 @@ class BuilderGenerator implements GeneratorInterface
             ->addStmt($factory->use('Faker\Factory'))
             ->addStmt($factory->use("$classNamespace\\$name"));
 
-        // TODO: Add uses of Any classes in other namespaces
-        // TODO: Use an iterator
-        $uses = [];
-        foreach ($node->adjacencyList as $child) {
-            if ($child->type instanceof TClass) {
-                $uses[$child->type->class] = true;
-            }
-            if ($child->type instanceof TUnion) {
-                foreach ($child->type->types as $type) {
-                    if ($type instanceof TClass) {
-                        $uses[$type->class] = true;
-                    }
-                    if ($type instanceof TEnum) {
-                        $uses[$this->enumName($type)] = true;
-                    }
-                }
-            }
-            if ($child->type instanceof TEnum) {
-                $uses[$this->enumName($child->type)] = true;
-            }
-        }
+        $uses = $this->getUses($node, $output->namespace, $nameResolver, $outputResolver);
 
         $nodeBuilder->addStmts(
             array_map(fn (string $class) => $factory->use($class), array_keys($uses))
@@ -316,5 +296,58 @@ class BuilderGenerator implements GeneratorInterface
                 ]
             )
         ];
+    }
+
+    // TODO: duplicated code
+    private function getUses(GraphNode $node, string $rootOutputNamespace, NameResolver $nameResolver, OutputResolver $outputResolver, int $depth = 0): array
+    {
+        // TODO: This could lead to a unused import then there is TClass -> TClass -> TClass hierarchy
+        if ($depth > 2) {
+            return [];
+        }
+
+        // ignore root node
+        if ($depth > 0) {
+            if ($node->type instanceof TClass) {
+                return $this->getUsesOfClassName($node->type->class, $nameResolver, $outputResolver, $rootOutputNamespace);
+            }
+        }
+
+        if ($node->type instanceof TEnum) {
+            return $this->getUsesOfClassName($this->enumName($node->type), $nameResolver, $outputResolver, $rootOutputNamespace);
+        }
+
+        // only traverse TClass and TUnion
+        if (!in_array(get_class($node->type), [TClass::class, TUnion::class])) {
+            return [];
+        }
+
+        $uses = [];
+
+        foreach ($node->adjacencyList as $child) {
+            $uses[] = $this->getUses($child, $rootOutputNamespace, $nameResolver, $outputResolver, $depth + 1);
+        }
+
+        return array_merge(...$uses);
+    }
+
+    private function getUsesOfClassName(string $className, NameResolver $nameResolver, OutputResolver $outputResolver, string $rootOutputNamespace): array
+    {
+        $uses = [$className => true];
+
+        if (enum_exists($className)) {
+            return $uses;
+        }
+
+        $reflectionClass = new ReflectionClass($className);
+
+        $name = $nameResolver->resolve($reflectionClass->getShortName());
+        $output = $outputResolver->resolve($className);
+
+        if ($output->namespace !== $rootOutputNamespace) {
+            $uses[$output->namespace . '\\' . $name] = true;
+        }
+
+        return $uses;
     }
 }
