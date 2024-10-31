@@ -276,9 +276,7 @@ class FactoryGenerator implements GeneratorInterface
 
         return [
             $this->initializeFaker($factory),
-            new Expression(new Assign(new Variable('minElements'), new LNumber(0))),
-            new Expression(new Assign(new Variable('maxElements'), new LNumber(50))),
-            new Expression(new Assign(new Variable('elementsCount'), $factory->methodCall(new Variable('faker'), 'numberBetween', [new Variable('minElements'), new Variable('maxElements')]))),
+            new Expression(new Assign(new Variable('elementsCount'), $factory->funcCall('mt_rand', [new LNumber(0), new LNumber(50)]))),
             new Expression(new Assign(new Variable($argName), new Array_())),
             new For_(
                 [

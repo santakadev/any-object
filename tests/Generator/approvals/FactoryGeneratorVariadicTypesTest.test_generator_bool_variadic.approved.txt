@@ -11,9 +11,7 @@ final class AnyVariadicOfBoolObject
     {
         if ($value instanceof None) {
             $faker = Factory::create();
-            $minElements = 0;
-            $maxElements = 50;
-            $elementsCount = $faker->numberBetween($minElements, $maxElements);
+            $elementsCount = mt_rand(0, 50);
             $value = [];
             for ($i = 0; $i < $elementsCount; $i++) {
                 $value[] = (bool) mt_rand(0, 1);
