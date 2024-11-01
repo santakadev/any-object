@@ -7,7 +7,7 @@ namespace Santakadev\AnyObject\Generator;
 class Output
 {
     public function __construct(
-        public readonly string $path,
+        public readonly string $dir,
         public readonly string $namespace
     ) {
     }

@@ -159,12 +159,11 @@ class BuilderGenerator implements GeneratorInterface
         $prettyPrinter = new Standard(['shortArraySyntax' => true]);
         $file = $prettyPrinter->prettyPrintFile($stmts) . "\n";
 
-        if (!is_dir($output->path)) {
-            // TODO: this may fail if ancestor directores don't exist
-            mkdir($output->path);
+        if (!is_dir($output->dir)) {
+            mkdir($output->dir, 0775, true);
         }
 
-        file_put_contents($output->path . DIRECTORY_SEPARATOR . "$stubName.php", $file);
+        file_put_contents($output->dir . DIRECTORY_SEPARATOR . "$stubName.php", $file);
     }
 
     private function buildRandomArgumentValueStatements(string $argName, GraphNode $node, BuilderFactory $factory, OutputResolver $outputResolver, NameResolver $nameResolver): array

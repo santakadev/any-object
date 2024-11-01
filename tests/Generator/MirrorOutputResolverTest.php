@@ -23,7 +23,7 @@ class MirrorOutputResolverTest extends TestCase
         $this->defineClass($class);
         $output = $mirror->resolve($class);
 
-        $this->assertSame('tests/Module/SubModule', $output->path);
+        $this->assertSame('tests/Module/SubModule', $output->dir);
         $this->assertSame('Org\\Package\\Tests\\Module\\SubModule', $output->namespace);
     }
 
@@ -39,7 +39,7 @@ class MirrorOutputResolverTest extends TestCase
         $this->defineClass($class);
         $output = $mirror->resolve($class);
 
-        $this->assertSame('tests/Module/SubModule', $output->path);
+        $this->assertSame('tests/Module/SubModule', $output->dir);
         $this->assertSame('Org\\Package\\Tests\\Module\\SubModule', $output->namespace);
     }
 
