@@ -12,7 +12,7 @@ final class AnyDateTimeImmutableObject
     {
         if ($value instanceof None) {
             $faker = Factory::create();
-            $value = DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-30 years', '+30 years'));
+            $value = new DateTimeImmutable('@' . mt_rand(strtotime('-30 years'), strtotime('+30 years')));
         }
         return new DateTimeImmutableObject($value);
     }

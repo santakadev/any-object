@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Santakadev\AnyObject\RandomGenerator;
 
-use Santakadev\AnyObject\RandomGenerator\Faker\DateTimeBetween;
-
 class RandomSpecRegistry
 {
     /** @var array<string,RandomSpec> */

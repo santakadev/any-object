@@ -12,7 +12,7 @@ final class AnyDateTimeObject
     {
         if ($value instanceof None) {
             $faker = Factory::create();
-            $value = $faker->dateTimeBetween('-30 years', '+30 years');
+            $value = new DateTime('@' . mt_rand(strtotime('-30 years'), strtotime('+30 years')));
         }
         return new DateTimeObject($value);
     }

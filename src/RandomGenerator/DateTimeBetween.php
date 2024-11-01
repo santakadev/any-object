@@ -5,30 +5,33 @@ declare(strict_types=1);
 namespace Santakadev\AnyObject\RandomGenerator;
 
 use Attribute;
-use DateTimeImmutable;
+use DateTime;
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Name;
+use function mt_rand;
+use function strtotime;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
-class DateTimeImmutableBetween implements RandomSpec, RandomCodeGenSpec
+class DateTimeBetween implements RandomSpec, RandomCodeGenSpec
 {
     public function __construct(
         private readonly string $startDate = '-30 years',
         private readonly string $endDate = '+30 years',
     ) {
+        // TODO: end < start
     }
 
-    public function generate(): DateTimeImmutable
+    public function generate(): DateTime
     {
         $start = strtotime($this->startDate);
         $end = strtotime($this->endDate);
-        return new DateTimeImmutable('@' . mt_rand($start, $end));
+        return new DateTime('@' . mt_rand($start, $end));
     }
 
     public function generateCode(BuilderFactory $factory): Expr
     {
-        return $factory->new('DateTimeImmutable', [
+        return $factory->new('DateTime', [
             new Expr\BinaryOp\Concat(
                 $factory->constFetch(new Name("'@'")),
                 $factory->funcCall(
