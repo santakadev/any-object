@@ -12,6 +12,17 @@ class AutoloadEntries
     ) {
     }
 
+    public static function fromArray(array $array): self
+    {
+        $entries = array_map(
+            fn ($key, $value) => new AutoloadEntry($key, $value),
+            array_keys($array),
+            array_values($array)
+        );
+
+        return new self($entries);
+    }
+
     public static function fromComposerJson(string $path): self
     {
         // Possible errors

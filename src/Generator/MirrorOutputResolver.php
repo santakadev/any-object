@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Santakadev\AnyObject\Generator;
 
 // TODO: Windows compatibility
-// TODO: simplify code
 class MirrorOutputResolver implements OutputResolver
 {
     public function __construct(private readonly AutoloadEntries $autoloadEntries)
@@ -14,6 +13,7 @@ class MirrorOutputResolver implements OutputResolver
 
     public function resolve(string $class): Output
     {
+        // TODO: destination path should be configurable
         $destEntry = $this->autoloadEntries->findByPath('tests/');
 
         $reflectionClass = new \ReflectionClass($class);
@@ -21,24 +21,27 @@ class MirrorOutputResolver implements OutputResolver
 
         $filePath = $sourceEntry->path . str_replace('\\', '/', substr($class, strlen($sourceEntry->namespace), strlen($class) - strlen($sourceEntry->namespace)));
 
-        // ignore enums and interfaces
-        if (enum_exists($class) || interface_exists($class)) {
-            return throw new \Exception('Trying to determine the output of a enum or interface');
+        if (enum_exists($class)) {
+            return throw new \Exception('Trying to determine the output of an enum');
         }
 
-        // namespace
+        if (interface_exists($class)) {
+            return throw new \Exception('Trying to determine the output of an interface');
+        }
+
+        // output namespace
         $length = strrpos($filePath, "/");
         $offset = strlen($sourceEntry->path);
         $substr = substr($filePath, $offset, $length - $offset);
         $str_replace = str_replace("/", "\\", $substr);
         $outputNamespace = $destEntry->namespace . $str_replace;
 
-        // output
+        // output path
         $length = strrpos($filePath, "/");
         $offset = strlen($sourceEntry->path);
         $substr = substr($filePath, $offset, $length - $offset);
-        $output = $destEntry->path . $substr;
+        $outputPath = $destEntry->path . $substr;
 
-        return new Output($class, $output, $outputNamespace);
+        return new Output($outputPath, $outputNamespace);
     }
 }

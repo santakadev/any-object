@@ -14,6 +14,6 @@ class FixedOutputResolver implements OutputResolver
 
     public function resolve(string $class): Output
     {
-        return new Output($class, $this->outputDir, $this->namespace);
+        return new Output($this->outputDir, $this->namespace);
     }
 }

@@ -36,7 +36,7 @@ class Generator
         $classes = (new ClassFinder($this->autoloadEntries))->find($includes, $excludes);
         foreach ($classes as $class) {
             $dest = $outputResolver->resolve($class);
-            $generator->generate($dest->class, $outputResolver, $nameResolver);
+            $generator->generate($class, $outputResolver, $nameResolver);
         }
     }
 }

@@ -159,8 +159,8 @@ class BuilderGenerator implements GeneratorInterface
         $prettyPrinter = new Standard(['shortArraySyntax' => true]);
         $file = $prettyPrinter->prettyPrintFile($stmts) . "\n";
 
-
         if (!is_dir($output->path)) {
+            // TODO: this may fail if ancestor directores don't exist
             mkdir($output->path);
         }
 

@@ -6,10 +6,18 @@ namespace Santakadev\AnyObject\Generator;
 
 final class AutoloadEntry
 {
+    public readonly string $path;
+
     public function __construct(
         public readonly string $namespace,
-        public readonly string $path,
+        string $path,
     ) {
+        // TODO: review if I can avoid this mutation here
+        if ($path[-1] !== '/') {
+            $path .= '/';
+        }
+
+        $this->path = $path;
     }
 
     public function matchPath(string $path): bool
