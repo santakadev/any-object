@@ -8,7 +8,7 @@ use PhpParser\BuilderFactory;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Name;
 
-final class Boolean implements RandomSpec, RandomCodeGenSpec
+final class RandomBoolean implements RandomSpec, RandomCodeGenSpec
 {
     public function __construct()
     {

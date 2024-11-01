@@ -14,7 +14,7 @@ final class AnyVariadicOfStringObject
             $elementsCount = mt_rand(0, 50);
             $value = [];
             for ($i = 0; $i < $elementsCount; $i++) {
-                $value[] = $faker->text(200);
+                $value[] = \Santakadev\AnyObject\RandomGenerator\RandomUnicodeText::random(200);
             }
         }
         return new VariadicOfStringObject(...$value);

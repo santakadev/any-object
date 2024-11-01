@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Santakadev\AnyObject\RandomGenerator;
 
 use Santakadev\AnyObject\RandomGenerator\Faker\DateTimeBetween;
-use Santakadev\AnyObject\RandomGenerator\Faker\Text;
 
 class RandomSpecRegistry
 {
@@ -17,10 +16,10 @@ class RandomSpecRegistry
         $registry = new self();
         $registry->register(new DateTimeBetween());
         $registry->register(new DateTimeImmutableBetween());
-        $registry->register(new Integer(PHP_INT_MIN, PHP_INT_MAX));
-        $registry->register(new Text());
+        $registry->register(new RandomInteger());
+        $registry->register(new RandomUnicodeText());
         $registry->register(new RandomFloat());
-        $registry->register(new Boolean());
+        $registry->register(new RandomBoolean());
         return $registry;
     }
 

@@ -12,7 +12,7 @@ final class AnyUnionBasicTypes
         if ($value instanceof None) {
             $faker = Factory::create();
             $value = match (array_rand(['string', 'int', 'float', 'bool'])) {
-                0 => $faker->text(200),
+                0 => \Santakadev\AnyObject\RandomGenerator\RandomUnicodeText::random(200),
                 1 => mt_rand(PHP_INT_MIN, PHP_INT_MAX),
                 2 => PHP_FLOAT_MIN + (PHP_FLOAT_MAX - PHP_FLOAT_MIN) * (mt_rand(0, (1 << 53) - 1) / (1 << 53)),
                 3 => (bool) mt_rand(0, 1),

@@ -12,7 +12,7 @@ final class AnyUnionStringIntNull
         if ($value instanceof None) {
             $faker = Factory::create();
             $value = match (array_rand(['string', 'int', 'null'])) {
-                0 => $faker->text(200),
+                0 => \Santakadev\AnyObject\RandomGenerator\RandomUnicodeText::random(200),
                 1 => mt_rand(PHP_INT_MIN, PHP_INT_MAX),
                 2 => null,
             };

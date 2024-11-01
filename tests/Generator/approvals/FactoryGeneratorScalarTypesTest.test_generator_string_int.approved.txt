@@ -11,7 +11,7 @@ final class AnyStringIntObject
     {
         if ($string instanceof None) {
             $faker = Factory::create();
-            $string = $faker->text(200);
+            $string = \Santakadev\AnyObject\RandomGenerator\RandomUnicodeText::random(200);
         }
         if ($number instanceof None) {
             $faker = Factory::create();

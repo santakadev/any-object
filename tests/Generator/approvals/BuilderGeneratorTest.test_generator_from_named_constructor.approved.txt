@@ -13,7 +13,7 @@ final class AnyNamedConstructorWithPrivateConstructObjectBuilder
     public static function create() : self
     {
         $faker = Factory::create();
-        $value = $faker->text(200);
+        $value = \Santakadev\AnyObject\RandomGenerator\RandomUnicodeText::random(200);
         return new self($value);
     }
     public function withValue(string $value) : self

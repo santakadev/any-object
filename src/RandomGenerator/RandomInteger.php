@@ -11,11 +11,11 @@ use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
-final class Integer implements RandomSpec, RandomCodeGenSpec
+final class RandomInteger implements RandomSpec, RandomCodeGenSpec
 {
     public function __construct(
-        public readonly int $min,
-        public readonly int $max
+        public readonly int $min = PHP_INT_MIN,
+        public readonly int $max = PHP_INT_MAX
     ) {
     }
 

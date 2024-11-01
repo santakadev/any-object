@@ -11,7 +11,7 @@ final class AnyStringObject
     {
         if ($value instanceof None) {
             $faker = Factory::create();
-            $value = $faker->text(200);
+            $value = \Santakadev\AnyObject\RandomGenerator\RandomUnicodeText::random(200);
         }
         return new StringObject($value);
     }
